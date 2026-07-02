@@ -8,7 +8,7 @@
       "dato_hentet": "2026-07-02",
       "geografi": "Norge, fylker",
       "beskrivelse": "Norges befolkning har vokst med nesten to og en halv million siden krigen. Hvor bor vi nå — og hvor gikk veksten?",
-      "demo": false
+      "demo": true
     },
     {
       "id": "navn",

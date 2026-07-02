@@ -40,6 +40,30 @@ def _hent_json(url: str, body: dict | None = None):
         return json.loads(svar.read().decode("utf-8"))
 
 
+def velg_folkemengde_maal(koder: list[str], tekster: list[str]) -> str:
+    """Velger folkemengde-målet — og aldri tilvekst/endringer/fødte/døde.
+
+    Tabell 06913 har flere måltall der flere inneholder «folke»
+    (f.eks. «Folketilvekst»); et naivt tekstsøk kan derfor treffe feil
+    mål og gi tall i titusener der folketallet skulle vært millioner.
+    """
+    def poeng(tekst: str) -> int:
+        t = tekst.lower()
+        if any(o in t for o in ("tilvekst", "vekst", "endring", "fød", "død", "flytt")):
+            return -1
+        if any(o in t for o in ("folkemengd", "folketal", "befolkning")):
+            return 2
+        return 1 if "person" in t else 0
+
+    beste = max(zip(koder, tekster), key=lambda kt: poeng(kt[1]))
+    if poeng(beste[1]) <= 0:
+        raise SystemExit(
+            f"Fant ikke folkemengde-målet i tabell {TABELL_ID}. "
+            f"Tilgjengelige mål: {tekster}"
+        )
+    return beste[0]
+
+
 def hent_folkemengde() -> tuple[dict[int, int], dict[str, int], int]:
     """Returnerer (landserie {år: folketall}, {fylkesnr: folketall}, siste år)."""
     meta = _hent_json(API + TABELL_ID)
@@ -49,9 +73,7 @@ def hent_folkemengde() -> tuple[dict[int, int], dict[str, int], int]:
     if not region_kode or not innhold:
         raise SystemExit(f"Tabell {TABELL_ID} ser annerledes ut enn ventet — sjekk den på data.ssb.no.")
 
-    # folkemengde-målet (ikke fødte/døde/flyttinger)
-    maal = next((v for v, t in zip(innhold["values"], innhold["valueTexts"])
-                 if "folke" in t.lower()), innhold["values"][0])
+    maal = velg_folkemengde_maal(innhold["values"], innhold["valueTexts"])
 
     tilgjengelige = set(variabler[region_kode]["values"])
     regioner = [r for r in [LANDET, *FYLKER] if r in tilgjengelige]
@@ -90,6 +112,12 @@ def hent_folkemengde() -> tuple[dict[int, int], dict[str, int], int]:
             landserie[aar] = int(v)
 
     siste_aar = max(landserie)
+    if landserie[siste_aar] < 1_000_000:
+        raise SystemExit(
+            f"Landstallet for {siste_aar} er {landserie[siste_aar]:,} — det er "
+            "ikke et folketall. Feil måltall er valgt; sjekk tabellens "
+            "statistikkvariabler på data.ssb.no."
+        )
     fylkestall = {}
     for f in FYLKER:
         if f in reg_indeks:
