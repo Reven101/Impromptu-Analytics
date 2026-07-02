@@ -11,9 +11,13 @@ Primærkilde er PxWebApi v2 direkte mot tabell-ID-en:
     https://data.ssb.no/api/pxwebapi/v2/tables/10467/...
 
 Faller v2 bort, prøves det eldre PxWeb-API-et (v0) mot samme tabell.
-Scriptet leser tabellens metadata og finner selv fornavn-, kjønns- og
-tidsvariablene, så det tåler at variabelkoder endres. Snapshots er
-statiske filer — nettsiden spør aldri SSB direkte.
+
+Kjønn er ikke egen variabel i tabellen: det ligger som sifferprefiks i
+Fornavn-kodene («1ADA» = jentenavn, «2AKSEL» = guttenavn). Parseren leser
+prefikset og VERIFISERER antakelsen 1=jenter/2=gutter mot kjente
+ankernavn (Emma/Nora mot Jakob/Noah m.fl.) — er prefiksene motsatt,
+byttes gruppene automatisk; er ankrene tvetydige, nektes skriving.
+Snapshots er statiske filer — nettsiden spør aldri SSB direkte.
 """
 
 from __future__ import annotations
@@ -147,6 +151,46 @@ def _kjonn_gruppe(etikett: str) -> str | None:
     return None
 
 
+# Antakelse for sifferprefikset i Fornavn-kodene — verifiseres mot ankernavnene.
+PREFIKS_GRUPPE = {"1": "jenter", "2": "gutter"}
+JENTE_ANKER = ("Emma", "Nora", "Anne", "Ida")
+GUTTE_ANKER = ("Jakob", "Noah", "Jan", "Thomas")
+
+
+def _verifiser_kjonnsdeling(ut: dict, kan_bytte: bool) -> dict:
+    """Sjekker gruppene mot ankernavn alle kjenner kjønnet på.
+
+    Hvert ankernavn skal ha klart størst totalsum i sin egen gruppe.
+    Peker alle ankrene motsatt vei og delingen kom fra prefiks-antakelsen,
+    byttes gruppene om. Tvetydige ankre stopper kjøringen — da skal ingen
+    snapshot skrives.
+    """
+    def total(gruppe: str, navn: str) -> int:
+        return sum(ut[gruppe].get(navn, {}).values())
+
+    stemmer = mot = 0
+    for navn, hjemme in [(n, "jenter") for n in JENTE_ANKER] + [(n, "gutter") for n in GUTTE_ANKER]:
+        borte = "gutter" if hjemme == "jenter" else "jenter"
+        t_hjemme, t_borte = total(hjemme, navn), total(borte, navn)
+        if t_hjemme == t_borte == 0:
+            continue  # ankeret finnes ikke i datasettet
+        if t_hjemme > t_borte:
+            stemmer += 1
+        elif t_borte > t_hjemme:
+            mot += 1
+
+    if stemmer >= 2 and mot == 0:
+        return ut
+    if mot >= 2 and stemmer == 0 and kan_bytte:
+        print("  NB: kjønnsprefiksene var motsatt av antatt — gruppene er byttet om")
+        return {"jenter": ut["gutter"], "gutter": ut["jenter"]}
+    raise SystemExit(
+        f"Kjønnsdelingen lot seg ikke verifisere mot ankernavnene "
+        f"({stemmer} stemmer, {mot} imot av {len(JENTE_ANKER) + len(GUTTE_ANKER)}). "
+        "Sjekk Fornavn-kodene i tabellen på data.ssb.no — skriver ikke snapshot."
+    )
+
+
 def parse_navnedata(stat: dict) -> dict[str, dict[str, dict[int, int]]]:
     """json-stat2 → {"jenter"|"gutter": {navn: {år: antall}}}."""
     navn_dim, tid_dim, kjonn_dim, faste = _klassifiser_dimensjoner(stat)
@@ -161,21 +205,6 @@ def parse_navnedata(stat: dict) -> dict[str, dict[str, dict[int, int]]]:
     tidskoder, _ = kategorier(tid_dim)
     posisjon = {d: i for i, d in enumerate(rekkefolge)}
 
-    grupper: list[tuple[str, dict[str, int]]] = []  # (gruppe, {dim: kategori-indeks})
-    if kjonn_dim:
-        kjonnkoder, kjonntekst = kategorier(kjonn_dim)
-        for k in kjonnkoder:
-            gruppe = _kjonn_gruppe(str(kjonntekst.get(k, k)))
-            if gruppe:
-                grupper.append((gruppe, {kjonn_dim: dims[kjonn_dim]["category"]["index"][k]}))
-        if not {g for g, _ in grupper} == {"jenter", "gutter"}:
-            raise ValueError("fant ikke både jenter og gutter i kjønnsvariabelen")
-    else:
-        raise ValueError(
-            "tabellen har ingen kjønnsdeling — sjekk tabell "
-            f"{TABELL_ID} på data.ssb.no"
-        )
-
     faste_indekser = {d: dims[d]["category"]["index"][kode] for d, kode in faste.items()}
 
     def flat(koord: dict[str, int]) -> int:
@@ -184,21 +213,57 @@ def parse_navnedata(stat: dict) -> dict[str, dict[str, dict[int, int]]]:
             i = i * størrelser[dim_i] + koord.get(d, 0)
         return i
 
+    def serie_for(navn_i: int, ekstra: dict[str, int]) -> dict[int, int]:
+        serie = {}
+        for ti, tid_id in enumerate(tidskoder):
+            if not str(tid_id).isdigit() or int(tid_id) < FRA_AAR:
+                continue
+            v = stat["value"][flat({**faste_indekser, **ekstra,
+                                    navn_dim: navn_i, tid_dim: ti})]
+            if v:
+                serie[int(tid_id)] = int(v)
+        return serie
+
     ut: dict[str, dict[str, dict[int, int]]] = {"jenter": {}, "gutter": {}}
-    for gruppe, kjonn_koord in grupper:
-        for ni, navn_id in enumerate(navnekoder):
-            navn = str(navnetekst.get(navn_id, navn_id)).strip().title()
-            serie = {}
-            for ti, tid_id in enumerate(tidskoder):
-                if not str(tid_id).isdigit() or int(tid_id) < FRA_AAR:
-                    continue
-                v = stat["value"][flat({**faste_indekser, **kjonn_koord,
-                                        navn_dim: ni, tid_dim: ti})]
-                if v:
-                    serie[int(tid_id)] = int(v)
-            if serie:
-                ut[gruppe][navn] = serie
-    return ut
+
+    if kjonn_dim:
+        # egen kjønnsvariabel (eller kjønnsdelte måltall)
+        kjonnkoder, kjonntekst = kategorier(kjonn_dim)
+        grupper = [(g, {kjonn_dim: dims[kjonn_dim]["category"]["index"][k]})
+                   for k in kjonnkoder
+                   if (g := _kjonn_gruppe(str(kjonntekst.get(k, k))))]
+        if {g for g, _ in grupper} != {"jenter", "gutter"}:
+            raise ValueError("fant ikke både jenter og gutter i kjønnsvariabelen")
+        for gruppe, kjonn_koord in grupper:
+            for ni, navn_id in enumerate(navnekoder):
+                navn = str(navnetekst.get(navn_id, navn_id)).strip().title()
+                serie = serie_for(ni, kjonn_koord)
+                if serie:
+                    ut[gruppe][navn] = serie
+        return _verifiser_kjonnsdeling(ut, kan_bytte=False)
+
+    # ingen kjønnsdimensjon: kjønnet ligger som sifferprefiks i
+    # Fornavn-kodene («1ADA» = jente, «2AKSEL» = gutt)
+    treff = 0
+    for ni, navn_id in enumerate(navnekoder):
+        gruppe = PREFIKS_GRUPPE.get(str(navn_id)[:1])
+        if not gruppe:
+            continue
+        treff += 1
+        navn = str(navnetekst.get(navn_id, navn_id)).strip()
+        if navn[:1] in PREFIKS_GRUPPE:
+            navn = navn[1:]  # etiketten kan bære samme prefiks som koden
+        navn = navn.strip().title()
+        serie = serie_for(ni, {})
+        if serie:
+            ut[gruppe].setdefault(navn, {}).update(serie)
+
+    if not navnekoder or treff / len(navnekoder) < 0.9:
+        raise ValueError(
+            "Fornavn-kodene har verken kjønnsvariabel eller ventet "
+            f"sifferprefiks (1/2) — sjekk tabell {TABELL_ID} på data.ssb.no"
+        )
+    return _verifiser_kjonnsdeling(ut, kan_bytte=True)
 
 
 # ------------------------------------------------------- snapshot ----
