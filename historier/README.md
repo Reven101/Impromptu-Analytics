@@ -9,7 +9,7 @@ ingen skedulerte jobber — alt er statiske filer som deployes via GitHub → Ve
 ```
 pipeline/                      DATALAG (Python, kjøres manuelt ved behov)
   kontrakt.py                  metadata-kontrakten + validering
-  hent_ssb_navn.py             henter SSBs navnestatistikk → snapshot
+  hent_ssb_navn.py             henter SSB-tabell 10467 (navn) → snapshot
   hent_ssb_befolkning.py       henter SSBs befolkningstall → snapshot
   lag_demodata.py              plassholderdata (merket «Demodata» på sidene)
   bygg_manifest.py             skanner innhold/ → manifest.json for forsiden

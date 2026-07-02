@@ -5,113 +5,203 @@ Kjøring (krever nett mot data.ssb.no):
     python3 pipeline/hent_ssb_navn.py
     python3 pipeline/bygg_manifest.py
 
-Datakilde: SSBs åpne PxWeb-API (https://data.ssb.no/api/v0/no/).
-Scriptet finner navnetabellene via API-søket (robust mot at tabell-id-er
-endres), henter alle navn × alle år, og normaliserer til snapshot-formatet
-definert i kontrakt.py. Snapshots er statiske filer — ingen live-spørringer
-fra nettsiden, ingen jobber å vedlikeholde.
+Datakilde: SSB-tabell 10467, «Fødte, etter fornavn og år».
+Primærkilde er PxWebApi v2 direkte mot tabell-ID-en:
+
+    https://data.ssb.no/api/pxwebapi/v2/tables/10467/...
+
+Faller v2 bort, prøves det eldre PxWeb-API-et (v0) mot samme tabell.
+Scriptet leser tabellens metadata og finner selv fornavn-, kjønns- og
+tidsvariablene, så det tåler at variabelkoder endres. Snapshots er
+statiske filer — nettsiden spør aldri SSB direkte.
 """
 
 from __future__ import annotations
 
 import json
 import sys
+import urllib.parse
 import urllib.request
 from collections import Counter
 from datetime import date
-from pathlib import Path
 
 from kontrakt import INNHOLD_DIR, valider_snapshot
 
-API = "https://data.ssb.no/api/v0/no/table/"
+TABELL_ID = "10467"  # Fødte, etter fornavn og år
+API_V2 = "https://data.ssb.no/api/pxwebapi/v2/tables/"
+API_V0 = "https://data.ssb.no/api/v0/no/table/"
 FRA_AAR = 1946          # nyere del av serien: komplett og relevant for fødselsår
 ANTALL_SERIER = 4       # navn per tidslinje (maks 6 — validert palett)
 
 UTFIL = INNHOLD_DIR / "navn" / "data.json"
 
 
-def _hent_json(url: str, body: dict | None = None) -> dict | list:
+def _hent_json(url: str, body: dict | None = None):
     data = json.dumps(body).encode() if body else None
     req = urllib.request.Request(
         url, data=data, headers={"Content-Type": "application/json"} if body else {}
     )
-    with urllib.request.urlopen(req, timeout=120) as svar:
+    with urllib.request.urlopen(req, timeout=300) as svar:
         return json.loads(svar.read().decode("utf-8"))
 
 
-def finn_navnetabeller() -> dict[str, str]:
-    """Finner tabell-id for jente- og guttenavn via API-søket."""
-    resultat = _hent_json(API + "?query=fornavn")
-    tabeller = resultat if isinstance(resultat, list) else resultat.get("tables", [])
-    funnet = {}
-    for t in tabeller:
-        tittel = (t.get("title") or "").lower()
-        if "fornavn" not in tittel:
-            continue
-        if "jente" in tittel and "jenter" not in funnet:
-            funnet["jenter"] = t["id"]
-        if "gutte" in tittel and "gutter" not in funnet:
-            funnet["gutter"] = t["id"]
-    if len(funnet) != 2:
-        raise SystemExit(
-            "Fant ikke navnetabellene via API-søket. Søk manuelt på "
-            "https://data.ssb.no etter «fornavn» og oppdater dette scriptet."
-        )
-    return funnet
+# ------------------------------------------------------------ henting ----
+
+def _tidskoder_fra_metadata(meta: dict) -> list[str]:
+    """Årskoder >= FRA_AAR fra v2-metadataene (tåler begge kjente former)."""
+    variabler = meta.get("variables") or []
+    for v in variabler:
+        kode = (v.get("id") or v.get("code") or "").lower()
+        if kode == "tid" or v.get("type") == "TimeVariable":
+            verdier = v.get("values") or []
+            koder = [w.get("code", w) if isinstance(w, dict) else w for w in verdier]
+            return [k for k in koder if str(k).isdigit() and int(k) >= FRA_AAR]
+    # json-stat2-formet metadata
+    for kode, dim in (meta.get("dimension") or {}).items():
+        if kode.lower() == "tid":
+            return [k for k in dim["category"]["index"]
+                    if str(k).isdigit() and int(k) >= FRA_AAR]
+    raise ValueError("fant ingen tidsvariabel i metadataene")
 
 
-def hent_navnedata(tabell_id: str) -> dict[str, dict[int, int]]:
-    """Returnerer {navn: {år: antall}} for alle navn i tabellen."""
-    meta = _hent_json(API + tabell_id)
-    koder = {v["code"].lower(): v["code"] for v in meta["variables"]}
-    navn_kode = next((k for l, k in koder.items() if "fornavn" in l), None)
-    if not navn_kode:
-        raise SystemExit(f"Tabell {tabell_id} har ingen fornavn-variabel — sjekk tabellen.")
+def _variabelkoder_fra_metadata(meta: dict) -> list[str]:
+    if meta.get("variables"):
+        return [v.get("id") or v.get("code") for v in meta["variables"]]
+    return list(meta.get("dimension") or [])
 
+
+def hent_v2(tabell_id: str) -> dict:
+    """PxWebApi v2: metadata for variabel- og årskodene, data som json-stat2."""
+    meta = _hent_json(f"{API_V2}{tabell_id}/metadata?lang=no")
+    aar = _tidskoder_fra_metadata(meta)
+    params = {"lang": "no", "outputFormat": "json-stat2"}
+    for kode in _variabelkoder_fra_metadata(meta):
+        params[f"valueCodes[{kode}]"] = ",".join(aar) if kode.lower() == "tid" else "*"
+    return _hent_json(f"{API_V2}{tabell_id}/data?{urllib.parse.urlencode(params)}")
+
+
+def hent_v0(tabell_id: str) -> dict:
+    """Eldre PxWeb-API (v0): alt i én POST, filtrerer år under parsing."""
+    meta = _hent_json(API_V0 + tabell_id)
     sporring = {
         "query": [
-            {"code": navn_kode, "selection": {"filter": "all", "values": ["*"]}},
-            {"code": "Tid", "selection": {"filter": "all", "values": ["*"]}},
+            {"code": v["code"], "selection": {"filter": "all", "values": ["*"]}}
+            for v in meta["variables"]
         ],
         "response": {"format": "json-stat2"},
     }
-    stat = _hent_json(API + tabell_id, sporring)
+    return _hent_json(API_V0 + tabell_id, sporring)
 
+
+# ------------------------------------------------------- json-stat2 ----
+
+def _klassifiser_dimensjoner(stat: dict) -> tuple[str, str, str | None, dict]:
+    """Finner (navn-dim, tid-dim, kjønn-dim, faste_valg) i et json-stat2-svar.
+
+    Dimensjoner som verken er fornavn, tid eller kjønn (typisk ContentsCode)
+    låses til én verdi i faste_valg — fortrinnsvis et antall/fødte-mål.
+    """
     dims = stat["dimension"]
-    rekkefolge = stat["id"]
-    navn_dim = next(d for d in rekkefolge if "fornavn" in d.lower())
-    navneliste = sorted(dims[navn_dim]["category"]["index"],
-                        key=dims[navn_dim]["category"]["index"].get)
-    navnetekst = dims[navn_dim]["category"]["label"]
-    aarliste = sorted(dims["Tid"]["category"]["index"],
-                      key=dims["Tid"]["category"]["index"].get)
+    navn_dim = tid_dim = kjonn_dim = None
+    faste: dict[str, str] = {}
 
-    # json-stat2: flat verdi-liste i dimensjonsrekkefølgen fra "id"/"size"
-    posisjon = {d: i for i, d in enumerate(rekkefolge)}
-    størrelser = stat["size"]
-    verdier = stat["value"]
+    for kode in stat["id"]:
+        etikett = (dims[kode].get("label") or kode).lower()
+        n = kode.lower()
+        if "fornavn" in n or "fornavn" in etikett:
+            navn_dim = kode
+        elif n == "tid" or etikett in ("år", "aar", "year"):
+            tid_dim = kode
+        elif "kjønn" in etikett or "kjonn" in n or n == "kjonn" or n == "sex":
+            kjonn_dim = kode
 
-    def indeks(navn_i: int, aar_i: int) -> int:
-        koord = [0] * len(rekkefolge)
-        koord[posisjon[navn_dim]] = navn_i
-        koord[posisjon["Tid"]] = aar_i
-        flat = 0
-        for dim_i, k in enumerate(koord):
-            flat = flat * størrelser[dim_i] + k
-        return flat
-
-    ut: dict[str, dict[int, int]] = {}
-    for ni, navn_id in enumerate(navneliste):
-        navn = navnetekst.get(navn_id, navn_id).strip().title()
-        for ai, aar_id in enumerate(aarliste):
-            aar = int(aar_id)
-            if aar < FRA_AAR:
+    for kode in stat["id"]:
+        if kode in (navn_dim, tid_dim, kjonn_dim):
+            continue
+        kategori = dims[kode]["category"]
+        etiketter = kategori.get("label", {})
+        koder = list(kategori["index"])
+        # skjuler kjønnsdelingen seg i et måltall-sett (f.eks. «Jenter, antall»)?
+        if kjonn_dim is None and len(koder) > 1:
+            tekster = " ".join(str(t).lower() for t in etiketter.values())
+            if ("jent" in tekster or "kvinn" in tekster) and ("gutt" in tekster or "menn" in tekster):
+                kjonn_dim = kode
                 continue
-            v = verdier[indeks(ni, ai)]
-            if v:
-                ut.setdefault(navn, {})[aar] = int(v)
+        # ellers: lås til antalls-/fødte-målet, eller første verdi
+        valgt = next((k for k in koder
+                      if any(o in str(etiketter.get(k, "")).lower()
+                             for o in ("fød", "antall", "person"))), koder[0])
+        faste[kode] = valgt
+
+    if not navn_dim or not tid_dim:
+        raise ValueError(f"uventet tabellform — fant dimensjonene {stat['id']}")
+    return navn_dim, tid_dim, kjonn_dim, faste
+
+
+def _kjonn_gruppe(etikett: str) -> str | None:
+    t = etikett.lower()
+    if any(o in t for o in ("jent", "kvinn", "pike")):
+        return "jenter"
+    if any(o in t for o in ("gutt", "menn", "mann")):
+        return "gutter"
+    return None
+
+
+def parse_navnedata(stat: dict) -> dict[str, dict[str, dict[int, int]]]:
+    """json-stat2 → {"jenter"|"gutter": {navn: {år: antall}}}."""
+    navn_dim, tid_dim, kjonn_dim, faste = _klassifiser_dimensjoner(stat)
+    dims, rekkefolge, størrelser = stat["dimension"], stat["id"], stat["size"]
+
+    def kategorier(kode):
+        kat = dims[kode]["category"]
+        koder = sorted(kat["index"], key=kat["index"].get)
+        return koder, kat.get("label", {})
+
+    navnekoder, navnetekst = kategorier(navn_dim)
+    tidskoder, _ = kategorier(tid_dim)
+    posisjon = {d: i for i, d in enumerate(rekkefolge)}
+
+    grupper: list[tuple[str, dict[str, int]]] = []  # (gruppe, {dim: kategori-indeks})
+    if kjonn_dim:
+        kjonnkoder, kjonntekst = kategorier(kjonn_dim)
+        for k in kjonnkoder:
+            gruppe = _kjonn_gruppe(str(kjonntekst.get(k, k)))
+            if gruppe:
+                grupper.append((gruppe, {kjonn_dim: dims[kjonn_dim]["category"]["index"][k]}))
+        if not {g for g, _ in grupper} == {"jenter", "gutter"}:
+            raise ValueError("fant ikke både jenter og gutter i kjønnsvariabelen")
+    else:
+        raise ValueError(
+            "tabellen har ingen kjønnsdeling — sjekk tabell "
+            f"{TABELL_ID} på data.ssb.no"
+        )
+
+    faste_indekser = {d: dims[d]["category"]["index"][kode] for d, kode in faste.items()}
+
+    def flat(koord: dict[str, int]) -> int:
+        i = 0
+        for dim_i, d in enumerate(rekkefolge):
+            i = i * størrelser[dim_i] + koord.get(d, 0)
+        return i
+
+    ut: dict[str, dict[str, dict[int, int]]] = {"jenter": {}, "gutter": {}}
+    for gruppe, kjonn_koord in grupper:
+        for ni, navn_id in enumerate(navnekoder):
+            navn = str(navnetekst.get(navn_id, navn_id)).strip().title()
+            serie = {}
+            for ti, tid_id in enumerate(tidskoder):
+                if not str(tid_id).isdigit() or int(tid_id) < FRA_AAR:
+                    continue
+                v = stat["value"][flat({**faste_indekser, **kjonn_koord,
+                                        navn_dim: ni, tid_dim: ti})]
+                if v:
+                    serie[int(tid_id)] = int(v)
+            if serie:
+                ut[gruppe][navn] = serie
     return ut
 
+
+# ------------------------------------------------------- snapshot ----
 
 def topp_per_aar(data: dict[str, dict[int, int]]) -> dict[int, tuple[str, int]]:
     per_aar: dict[int, tuple[str, int]] = {}
@@ -209,18 +299,19 @@ def bygg_snapshot(jenter: dict, gutter: dict) -> dict:
 
 
 def main() -> int:
-    print("Søker etter navnetabeller hos SSB …")
-    tabeller = finn_navnetabeller()
-    print(f"  jenter: tabell {tabeller['jenter']}, gutter: tabell {tabeller['gutter']}")
+    print(f"Henter tabell {TABELL_ID} («Fødte, etter fornavn og år») fra SSB …")
+    try:
+        stat = hent_v2(TABELL_ID)
+        print("  hentet via PxWebApi v2")
+    except Exception as e:
+        print(f"  PxWebApi v2 feilet ({e}) — prøver eldre API (v0) …")
+        stat = hent_v0(TABELL_ID)
+        print("  hentet via PxWeb-API v0")
 
-    print("Henter jentenavn …")
-    jenter = hent_navnedata(tabeller["jenter"])
-    print(f"  {len(jenter)} navn")
-    print("Henter guttenavn …")
-    gutter = hent_navnedata(tabeller["gutter"])
-    print(f"  {len(gutter)} navn")
+    data = parse_navnedata(stat)
+    print(f"  {len(data['jenter'])} jentenavn, {len(data['gutter'])} guttenavn")
 
-    snapshot = bygg_snapshot(jenter, gutter)
+    snapshot = bygg_snapshot(data["jenter"], data["gutter"])
     feil = valider_snapshot(snapshot, "navn")
     if feil:
         for f in feil:
