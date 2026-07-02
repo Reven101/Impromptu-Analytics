@@ -1,7 +1,7 @@
 """Bygger historier/innhold/manifest.json fra innholdsmappen.
 
-Forsiden (historier/index.html) leser manifestet og genererer galleriet
-automatisk. Kjør dette scriptet etter at du har lagt til eller endret en
+Forsiden på impromptu.no (index.html i repo-roten) leser manifestet og
+genererer galleriet automatisk. Kjør dette scriptet etter at du har lagt til eller endret en
 historie:
 
     python3 pipeline/bygg_manifest.py

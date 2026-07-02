@@ -1,11 +1,15 @@
-# Impromptu Analytics - AI Datainnsikt
+# Impromptu — datahistorier fra offentlige data
 
-En komplett SaaS-løsning for AI-drevet dataanalyse, klar til å deployes på impromptu.no.
+impromptu.no er en datahistorie-plattform: forsiden (`index.html`) er et
+galleri av visuelle historier bygget på åpne, offentlige datakilder. Motoren
+ligger i [`historier/`](historier/README.md) (frontend + innhold) og
+`pipeline/` (Python-datalag) — se `historier/README.md` for hvordan du legger
+til en ny historie uten å skrive frontend-kode.
 
-> **Datahistorier:** motoren for visuelle historier bygget på offentlige data
-> ligger i [`historier/`](historier/README.md) (frontend + innhold) og
-> `pipeline/` (Python-datalag). Se `historier/README.md` for hvordan du legger
-> til en ny historie uten å skrive frontend-kode.
+Konsulentvirksomheten (Impromptu Analytics) presenteres nøkternt på
+`tjenester.html`, kun lenket diskret fra footeren. Det tidligere
+SaaS-analyseproduktet (opplasting + KI-analyse, priser) er tatt av forsiden;
+resten av dette dokumentet beskriver deploy-oppsettet.
 
 ## 💰 Forretningsmodell
 

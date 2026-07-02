@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tjenester — Impromptu Analytics</title>
+  <meta name="description" content="Impromptu Analytics tilbyr dataanalyse, datavisualisering og datahistorier på oppdrag.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="historier/motor/tokens.css">
+  <style>
+    .side-topp { text-align: center; padding: var(--rom-4) var(--rom-4) 0; }
+    .side-topp a {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .side-topp a:hover { text-decoration: underline; }
+
+    header {
+      text-align: center;
+      padding: var(--rom-5) var(--rom-4);
+      border-bottom: 3px double var(--gran);
+      max-width: var(--maal-bredde);
+      margin: 0 auto;
+    }
+    header h1 {
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--gran);
+      margin: .25em 0 .3em;
+    }
+    header p { max-width: 52ch; margin: 0 auto; color: var(--blekk-sekundaer); }
+
+    main {
+      max-width: var(--tekst-bredde);
+      margin: var(--rom-5) auto var(--rom-6);
+      padding: 0 var(--rom-4);
+    }
+    main h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--gran);
+      margin: var(--rom-5) 0 var(--rom-2);
+      text-align: center;
+    }
+    main p { color: var(--blekk); }
+    main p + p { margin-top: var(--rom-3); }
+    ul { padding-left: 1.3em; margin-top: var(--rom-2); }
+    li + li { margin-top: var(--rom-1); }
+
+    .kontakt {
+      text-align: center;
+      margin-top: var(--rom-5);
+      padding: var(--rom-5) var(--rom-4);
+    }
+
+    footer {
+      text-align: center;
+      padding: var(--rom-4) var(--rom-4) var(--rom-6);
+      color: var(--blekk-dempet);
+      font-size: .8rem;
+    }
+    footer a { color: var(--blekk-dempet); }
+    footer .skille { margin: 0 .6em; }
+  </style>
+</head>
+<body>
+  <div class="side-topp"><a href="./">← Til datahistoriene</a></div>
+
+  <header>
+    <div class="eyebrow">Impromptu Analytics</div>
+    <h1>Tjenester</h1>
+    <p>Impromptu Analytics er et enkeltpersonforetak som hjelper virksomheter
+      med å forstå og formidle data.</p>
+  </header>
+
+  <main>
+    <h2>Dette kan jeg bistå med</h2>
+    <ul>
+      <li><strong>Dataanalyse</strong> — fra rådata til dokumenterte funn: mønstre,
+        trender og avvik, med tydelige forbehold der tallene har det.</li>
+      <li><strong>Datavisualisering</strong> — grafer og dashboards som er
+        etterrettelige og lesbare, bygget for å bli forstått.</li>
+      <li><strong>Datahistorier</strong> — visuelle fortellinger bygget på åpne
+        datakilder, slik som historiene på forsiden.</li>
+    </ul>
+
+    <h2>Arbeidsform</h2>
+    <p>Oppdrag avtales individuelt, som timebasert rådgivning eller avgrensede
+      prosjekter. Ta kontakt med en kort beskrivelse av behovet, så avklarer vi
+      omfang og pris uforpliktende.</p>
+
+    <div class="kontakt kort-flate">
+      <div class="mono-etikett">Kontakt</div>
+      <p style="margin-top: var(--rom-2);"><a href="mailto:kontakt@impromptu.no">kontakt@impromptu.no</a></p>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 Impromptu Analytics
+    <span class="skille">·</span><a href="personvern.html">Personvern</a>
+    <span class="skille">·</span><a href="vilkar.html">Vilkår</a>
+  </footer>
+</body>
+</html>

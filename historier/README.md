@@ -21,8 +21,9 @@ historier/motor/               FRONTEND-LAG (delt av alle historier)
   historie.js                  malen: hero → tekst → grafer → kildekort
 
 historier/                     INNHOLDSLAG
-  index.html                   forside — galleri generert fra manifest.json
   historie.html                universell historie-side (?id=<slug>)
+  (galleriet ligger på forsiden: index.html i repo-roten,
+   generert fra manifest.json; /historier/ videresender dit)
   innhold/<slug>/data.json     ÉN datafil (følger kontrakten)
   innhold/<slug>/tekst.md      ÉN tekstfil (markdown + [[viz:…]]-markører)
 ```
