@@ -1,0 +1,250 @@
+/* Stiler for visualiseringskomponentene (hero, tidslinje, kart, kortgalleri).
+   Bygger på tokens.css — ingen egne farger utenom tokens. */
+
+/* -- Felles figurramme --------------------------------------- */
+.viz-figur {
+  padding: var(--rom-5) var(--rom-4) var(--rom-4);
+  margin: var(--rom-5) auto;
+  max-width: var(--maal-bredde);
+}
+
+.viz-figur figcaption { text-align: center; margin-bottom: var(--rom-4); }
+
+.viz-tittel {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--gran);
+  margin-top: var(--rom-1);
+}
+
+.viz-plott { position: relative; }
+.viz-svg { width: 100%; height: auto; display: block; }
+
+/* -- SVG-detaljer -------------------------------------------- */
+.viz-grid { stroke: var(--linje-svak); stroke-width: 1; }
+.viz-akse {
+  fill: var(--blekk-dempet);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.viz-direkte {
+  fill: var(--blekk-sekundaer);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+}
+.viz-crosshair { stroke: var(--linje); stroke-width: 1; pointer-events: none; }
+.viz-soyle { cursor: default; }
+.viz-soyle:hover, .viz-soyle:focus-visible { filter: brightness(1.15); }
+
+/* -- Tooltip -------------------------------------------------- */
+.viz-tooltip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  background: var(--blekk);
+  color: var(--kort);
+  border-radius: var(--radius);
+  padding: var(--rom-2) var(--rom-3);
+  font-size: .85rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+  max-width: 260px;
+}
+.viz-tooltip-rad { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.viz-tooltip-rad strong { font-variant-numeric: tabular-nums; }
+.viz-tooltip-rad span:last-child { opacity: .75; font-size: .78rem; }
+.viz-tooltip-strek {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  flex: none;
+}
+
+/* -- Legend ---------------------------------------------------- */
+.viz-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--rom-2) var(--rom-4);
+  margin-top: var(--rom-3);
+  font-size: .85rem;
+  color: var(--blekk-sekundaer);
+}
+.viz-legend-rad { display: inline-flex; align-items: center; gap: 7px; }
+
+/* -- Tabelltvilling -------------------------------------------- */
+.viz-tabell { margin-top: var(--rom-4); border-top: 1px solid var(--linje-svak); padding-top: var(--rom-3); }
+.viz-tabell summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--blekk-dempet);
+  text-align: center;
+}
+.viz-tabell[open] summary { margin-bottom: var(--rom-3); }
+.viz-tabell table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: .85rem;
+  max-height: 320px;
+}
+.viz-tabell thead th {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blekk-dempet);
+  border-bottom: 1px solid var(--linje);
+  padding: 4px 14px;
+  text-align: left;
+}
+.viz-tabell td {
+  padding: 3px 14px;
+  border-bottom: 1px solid var(--linje-svak);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- Hero ------------------------------------------------------ */
+.viz-hero {
+  text-align: center;
+  padding: var(--rom-6) var(--rom-4);
+  margin: var(--rom-5) auto;
+  max-width: var(--maal-bredde);
+  border-width: 1px;
+  position: relative;
+}
+.viz-hero::after {
+  /* indre dobbeltramme — Wes Anderson-symmetri */
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--linje);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.viz-hero-sporsmal {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--gran);
+  margin: var(--rom-2) 0 var(--rom-4);
+}
+.viz-hero-kontroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rom-2);
+  margin-bottom: var(--rom-4);
+}
+.viz-hero-kontroll select {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 8px 18px;
+  border: 2px solid var(--gran);
+  border-radius: var(--radius);
+  background: var(--kort);
+  color: var(--blekk);
+  cursor: pointer;
+  min-width: 140px;
+  text-align: center;
+}
+.viz-hero-resultat {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--rom-4) var(--rom-6);
+}
+.viz-hero-boks { min-width: 200px; }
+.viz-hero-verdi {
+  /* hero-figur: samme sans som resten, proporsjonale sifre */
+  font-family: var(--font-sans);
+  font-size: clamp(2.6rem, 7vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--blekk);
+  margin: var(--rom-1) 0;
+}
+.viz-hero-detalj { color: var(--blekk-sekundaer); font-size: .95rem; }
+.viz-hero-fotnote {
+  margin-top: var(--rom-4);
+  font-size: .8rem;
+  color: var(--blekk-dempet);
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* -- Kart ------------------------------------------------------ */
+.viz-kart-ytre { position: relative; display: flex; flex-direction: column; align-items: center; }
+.viz-kart {
+  display: grid;
+  grid-template-columns: repeat(5, 64px);
+  grid-auto-rows: 64px;
+  gap: 6px;
+  justify-content: center;
+}
+.viz-flis {
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .06em;
+  font-weight: 600;
+  cursor: default;
+  transition: transform .12s;
+}
+.viz-flis:hover, .viz-flis:focus-visible { transform: scale(1.06); }
+.viz-flis-tom { background: var(--papir); border: 1px dashed var(--linje); color: var(--blekk-dempet); }
+.viz-kart-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--rom-2);
+  margin-top: var(--rom-4);
+}
+.viz-kart-skala { display: inline-flex; }
+.viz-kart-skala span { width: 26px; height: 10px; }
+.viz-kart-skala span:first-child { border-radius: 2px 0 0 2px; }
+.viz-kart-skala span:last-child { border-radius: 0 2px 2px 0; }
+
+@media (max-width: 480px) {
+  .viz-kart { grid-template-columns: repeat(5, 52px); grid-auto-rows: 52px; gap: 4px; }
+  .viz-flis { font-size: .6rem; }
+}
+
+/* -- Kortgalleri ------------------------------------------------ */
+.viz-kortrute {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--rom-3);
+}
+.viz-kort {
+  background: var(--papir);
+  border: 1px solid var(--linje);
+  border-radius: var(--radius);
+  padding: var(--rom-4) var(--rom-3);
+  text-align: center;
+}
+.viz-kort-verdi {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--gran);
+  margin: var(--rom-1) 0;
+}
+.viz-kort-detalj { font-size: .82rem; color: var(--blekk-sekundaer); }
+
+.viz-feil {
+  max-width: var(--maal-bredde);
+  margin: var(--rom-4) auto;
+  padding: var(--rom-3);
+  border: 1px solid #A63D2F;
+  color: #A63D2F;
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  text-align: center;
+}

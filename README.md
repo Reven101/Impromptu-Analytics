@@ -2,6 +2,11 @@
 
 En komplett SaaS-løsning for AI-drevet dataanalyse, klar til å deployes på impromptu.no.
 
+> **Datahistorier:** motoren for visuelle historier bygget på offentlige data
+> ligger i [`historier/`](historier/README.md) (frontend + innhold) og
+> `pipeline/` (Python-datalag). Se `historier/README.md` for hvordan du legger
+> til en ny historie uten å skrive frontend-kode.
+
 ## 💰 Forretningsmodell
 
 | Plan | Pris | Mål-abonnenter for $1000/mnd |
