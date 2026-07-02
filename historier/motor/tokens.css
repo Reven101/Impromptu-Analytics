@@ -1,0 +1,131 @@
+/* ============================================================
+   IMPROMPTU DATAHISTORIER — DESIGNTOKENS
+   Wes Anderson-estetikk: varmt papir, granittgrønn, sennep, rose.
+   Symmetri, doble linjer, typografisk presisjon (Jost + IBM Plex Mono).
+   Delt av galleri, historie-mal og alle visualiseringskomponenter.
+   ============================================================ */
+
+:root {
+  /* -- Flater ------------------------------------------------ */
+  --papir: #F2EDE0;        /* sidebakgrunn */
+  --kort: #FBF8F0;         /* kort- og diagramflate */
+  --linje: #C9C0AC;        /* hårlinjer, rammer */
+  --linje-svak: #DDD6C4;   /* gridlinjer i diagrammer (recessiv) */
+
+  /* -- Tekst ------------------------------------------------- */
+  --blekk: #27332D;        /* primærtekst */
+  --blekk-sekundaer: #46514A;
+  --blekk-dempet: #5F6A62; /* aksetekst, etiketter (4.5:1 på kort) */
+
+  /* -- Merkevare (kun kromatikk/pynt, aldri dataserier) ------ */
+  --gran: #1F4E45;         /* overskrifter, rammer, lenker */
+  --sennep: #D9A441;       /* fokusring, små aksenter */
+  --rose: #D9A199;         /* dekorative detaljer */
+  --skygge: rgba(31, 78, 69, .12);
+
+  /* -- Dataserier (kategorisk, validert: kroma, CVD, kontrast)
+        Fast rekkefølge — aldri resirkuler, aldri omfarg ved filter. */
+  --serie-1: #0E7D59;      /* gran-grønn */
+  --serie-2: #A9761B;      /* sennep-oker */
+  --serie-3: #B23A28;      /* teglstein */
+  --serie-4: #3E6CB0;      /* støvblå */
+  --serie-5: #C05A6E;      /* gammelrosa */
+  --serie-6: #8A4A82;      /* plomme */
+
+  /* -- Sekvensiell rampe (kart/magnitude, validert ordinal:
+        monoton lyshet, én kulør, lys ende ≥ 2:1 mot kort) ---- */
+  --rampe-1: #8FB6A6;
+  --rampe-2: #699C88;
+  --rampe-3: #47836D;
+  --rampe-4: #2C6752;
+  --rampe-5: #1A4C3B;
+  --rampe-6: #0F3527;
+
+  /* -- Typografi --------------------------------------------- */
+  --font-sans: 'Jost', 'Avenir Next', 'Futura', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Menlo', monospace;
+
+  /* -- Avstand (4px-basert) ---------------------------------- */
+  --rom-1: 4px;
+  --rom-2: 8px;
+  --rom-3: 12px;
+  --rom-4: 20px;
+  --rom-5: 32px;
+  --rom-6: 52px;
+  --rom-7: 84px;
+
+  /* -- Form -------------------------------------------------- */
+  --radius: 3px;
+  --maal-bredde: 900px;    /* felles spaltebredde, alltid sentrert */
+  --tekst-bredde: 62ch;
+}
+
+/* ============================================================
+   BASIS
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+body {
+  background: var(--papir);
+  color: var(--blekk);
+  font-family: var(--font-sans);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--gran); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--sennep);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   FELLES KROM — brukt av galleri og historie-mal
+   ============================================================ */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gran);
+}
+
+.dobbel-linje { border-bottom: 3px double var(--gran); }
+
+.mono-etikett {
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--blekk-dempet);
+}
+
+.kort-flate {
+  background: var(--kort);
+  border: 1px solid var(--linje);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px var(--skygge);
+}
+
+/* Demodata-merke — vises kun når meta.demo = true */
+.demo-merke {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7A4A12;
+  background: rgba(217, 164, 65, .18);
+  border: 1px solid var(--sennep);
+  border-radius: 999px;
+  padding: 3px 12px;
+}
