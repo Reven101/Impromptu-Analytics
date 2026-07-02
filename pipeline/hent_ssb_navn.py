@@ -131,15 +131,40 @@ def _klassifiser_dimensjoner(stat: dict) -> tuple[str, str, str | None, dict]:
             if ("jent" in tekster or "kvinn" in tekster) and ("gutt" in tekster or "menn" in tekster):
                 kjonn_dim = kode
                 continue
-        # ellers: lås til antalls-/fødte-målet, eller første verdi
-        valgt = next((k for k in koder
-                      if any(o in str(etiketter.get(k, "")).lower()
-                             for o in ("fød", "antall", "person"))), koder[0])
+        # ellers: lås til antalls-målet — aldri andeler/prosent/promille
+        valgt = _velg_antallsmaal(koder, etiketter)
+        if len(koder) > 1:
+            print(f"  måltall: «{etiketter.get(valgt, valgt)}»")
         faste[kode] = valgt
 
     if not navn_dim or not tid_dim:
         raise ValueError(f"uventet tabellform — fant dimensjonene {stat['id']}")
     return navn_dim, tid_dim, kjonn_dim, faste
+
+
+def _velg_antallsmaal(koder: list, etiketter: dict) -> str:
+    """Velger antalls-målet blant tabellens måltall.
+
+    Tabell 10467 har både antall og «andel av fødte» — og andels-etiketten
+    inneholder ordet «fødte», så et naivt tekstsøk kan låse feil mål og gi
+    trunkerte prosenter (1–5) i stedet for antall. Andel/prosent/promille
+    utelukkes derfor eksplisitt.
+    """
+    def poeng(kode) -> int:
+        t = str(etiketter.get(kode, kode)).lower()
+        if any(o in t for o in ("andel", "prosent", "promille", "per 1", "%")):
+            return -1
+        if any(o in t for o in ("antall", "person")):
+            return 2
+        return 1 if "fød" in t else 0
+
+    beste = max(koder, key=poeng)
+    if poeng(beste) < 0:
+        raise SystemExit(
+            "Fant bare andels-/prosentmål i tabellen — ingen antallsmål å bruke. "
+            f"Måltall: {[str(etiketter.get(k, k)) for k in koder]}"
+        )
+    return beste
 
 
 def _kjonn_gruppe(etikett: str) -> str | None:
@@ -268,6 +293,27 @@ def parse_navnedata(stat: dict) -> dict[str, dict[str, dict[int, int]]]:
 
 # ------------------------------------------------------- snapshot ----
 
+def kontroller_realisme(topp_j: dict, topp_g: dict) -> None:
+    """Stopper hvis toppnavn-tallene er urealistisk lave.
+
+    Det mest brukte navnet et gitt år skal aldri være under ~20 nyfødte
+    de siste 50 årene. Lavere tall betyr feil måltall eller feil
+    indeksering (f.eks. trunkerte prosenter) — da skal ingen snapshot
+    skrives.
+    """
+    for gruppe, topp in (("jenter", topp_j), ("gutter", topp_g)):
+        if not topp:
+            raise SystemExit(f"Ingen data for {gruppe} — skriver ikke snapshot.")
+        siste = max(topp)
+        for aar in range(siste - 49, siste + 1):
+            if aar in topp and topp[aar][1] < 20:
+                raise SystemExit(
+                    f"Urealistisk lavt toppnavn for {gruppe} i {aar}: "
+                    f"{topp[aar][0]} = {topp[aar][1]}. Dette er ikke antall "
+                    "personer — sjekk måltall/indeksering. Skriver ikke snapshot."
+                )
+
+
 def topp_per_aar(data: dict[str, dict[int, int]]) -> dict[int, tuple[str, int]]:
     per_aar: dict[int, tuple[str, int]] = {}
     for navn, serie in data.items():
@@ -375,6 +421,17 @@ def main() -> int:
 
     data = parse_navnedata(stat)
     print(f"  {len(data['jenter'])} jentenavn, {len(data['gutter'])} guttenavn")
+
+    topp_j, topp_g = topp_per_aar(data["jenter"]), topp_per_aar(data["gutter"])
+    kontroller_realisme(topp_j, topp_g)
+
+    print("  Kontrollår — sjekk mot kjente tall før du committer:")
+    for aar in (1958, 1990, max(topp_j)):
+        j, g = topp_j.get(aar), topp_g.get(aar)
+        if j and g:
+            print(f"    {aar}: jenter {j[0]} ({j[1]}) · gutter {g[0]} ({g[1]})")
+        else:
+            print(f"    {aar}: mangler data")
 
     snapshot = bygg_snapshot(data["jenter"], data["gutter"])
     feil = valider_snapshot(snapshot, "navn")
