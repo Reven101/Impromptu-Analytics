@@ -11,6 +11,15 @@
       "demo": false
     },
     {
+      "id": "kulturgap",
+      "tittel": "Kino for alle, opera for de få",
+      "kilde": "Statistisk sentralbyrå",
+      "dato_hentet": "2026-07-03",
+      "geografi": "Norge",
+      "beskrivelse": "Utdanning deler kulturlivet i to: kinosalen og tribunen fyller seg uansett, mens galleriet og teatret hører de lengst utdannede til.",
+      "demo": true
+    },
+    {
       "id": "befolkning",
       "tittel": "Fem og en halv million",
       "kilde": "Statistisk sentralbyrå",
