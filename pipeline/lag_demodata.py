@@ -6,11 +6,15 @@ på sidene. Bytt til ekte tall med:
 
     python3 pipeline/hent_ssb_navn.py
     python3 pipeline/hent_ssb_befolkning.py
+    python3 pipeline/hent_ssb_kultur.py
     python3 pipeline/bygg_manifest.py
 
 Navnene som ligger inne (Anne, Jan, Nora, Jakob …) følger de godt kjente
 hovedtrekkene i SSBs navnestatistikk, men årstall og antall er glattede
 demoverdier — ikke sitérbare.
+
+NB: uten argumenter overskrives ALLE snapshots — også de som er hentet med
+ekte tall. Oppgi slugs for å begrense: python3 pipeline/lag_demodata.py kultur
 """
 
 from __future__ import annotations
@@ -202,8 +206,52 @@ def lag_befolkningsdata() -> dict:
     }
 
 
+# -------------------------------------------------------------- kultur ----
+
+# Kulturbruksundersøkelsens år og omtrentlige andeler (prosent, 9–79 år)
+# som har brukt tilbudet siste 12 måneder. Hovedtrekkene stemmer med
+# kulturbarometeret — kino størst, krateret i pandemiåret 2021, tros- og
+# livssynsmøter i langsom nedgang — men verdiene er glattede demoverdier.
+KULTUR_AAR = [1991, 1994, 1997, 2000, 2004, 2008, 2012, 2016, 2021, 2023]
+
+KULTURSERIER = {
+    "Kino":               [58, 61, 62, 65, 68, 70, 67, 72, 29, 62],
+    "Idrettsarrangement": [54, 55, 57, 55, 55, 57, 55, 55, 25, 53],
+    "Konsert":            [48, 50, 53, 55, 58, 62, 61, 62, 22, 55],
+    "Folkebibliotek":     [46, 48, 52, 54, 54, 51, 49, 47, 32, 45],
+    "Museum":             [41, 44, 45, 45, 46, 43, 45, 44, 28, 45],
+    "Teater og revy":     [44, 45, 46, 50, 49, 53, 45, 50, 18, 45],
+    "Kunstutstilling":    [44, 45, 44, 42, 42, 42, 36, 36, 23, 33],
+    "Tros-/livssynsmøte": [43, 44, 43, 42, 41, 38, 36, 34, 21, 30],
+    "Kulturfestival":     [None, None, None, None, 27, 29, 31, 32, 12, 29],
+    "Ballett og dans":    [10, 11, 11, 12, 12, 13, 13, 13, 6, 13],
+    "Opera":              [5, 6, 6, 6, 7, 8, 8, 8, 3, 7],
+}
+
+
+def lag_kulturdata() -> dict:
+    from hent_ssb_kultur import bygg_snapshot
+
+    serier = {navn: {aar: v for aar, v in zip(KULTUR_AAR, verdier) if v is not None}
+              for navn, verdier in KULTURSERIER.items()}
+    snapshot = bygg_snapshot(serier)
+    snapshot["meta"]["demo"] = True
+    return snapshot
+
+
 def main() -> int:
-    for slug, data in [("navn", lag_navnedata()), ("befolkning", lag_befolkningsdata())]:
+    alle = [("navn", lag_navnedata), ("befolkning", lag_befolkningsdata),
+            ("kultur", lag_kulturdata)]
+    valgte = set(sys.argv[1:])
+    ukjente = valgte - {slug for slug, _ in alle}
+    if ukjente:
+        print(f"Ukjente slugs: {sorted(ukjente)} — kjenner {[s for s, _ in alle]}")
+        return 1
+
+    for slug, lag in alle:
+        if valgte and slug not in valgte:
+            continue
+        data = lag()
         feil = valider_snapshot(data, slug)
         if feil:
             for f in feil:
