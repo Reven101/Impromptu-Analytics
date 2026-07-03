@@ -239,9 +239,56 @@ def lag_kulturdata() -> dict:
     return snapshot
 
 
+# ----------------------------------------------------------- kulturgap ----
+
+# Kulturbruk etter utdanningsnivå (tabell 13504): glattede demoverdier med
+# de reelle hovedtrekkene — kino-gapet var stort i 1991 og har krympet,
+# kunstutstillingens etasjer synker uten å bytte plass. Kun de to tilbudene
+# som bærer tidslinjene har full historikk; resten trenger bare siste
+# måling (til kortgalleriet).
+KULTURGAP_AAR = KULTUR_AAR + [2025]
+
+KULTURGAP_HISTORIKK = {
+    "Kino": {
+        "Grunnskole":                  [36, 39, 40, 45, 44, 53, 52, 66, 33, 60, 54],
+        "Videregående":                [56, 58, 55, 58, 62, 63, 62, 64, 34, 55, 52],
+        "Universitet/høgskole, kort":  [72, 71, 70, 71, 78, 76, 72, 78, 42, 70, 68],
+        "Universitet/høgskole, lang":  [74, 78, 77, 77, 87, 89, 75, 81, 41, 76, 72],
+    },
+    "Kunstutstilling": {
+        "Grunnskole":                  [25, 24, 25, 29, 26, 23, 24, 22, 10, 16, 17],
+        "Videregående":                [39, 40, 40, 37, 36, 35, 30, 30, 15, 20, 21],
+        "Universitet/høgskole, kort":  [55, 60, 60, 60, 62, 56, 46, 46, 25, 34, 35],
+        "Universitet/høgskole, lang":  [69, 75, 69, 67, 69, 67, 60, 57, 28, 42, 39],
+    },
+}
+
+# (grunnskole, lang universitetsutdanning) i siste demoår, til kortgalleriet.
+KULTURGAP_SISTE = {
+    "Museum": (34, 65), "Folkebibliotek": (39, 66), "Konsert": (47, 70),
+    "Teater og revy": (28, 49), "Kulturfestival": (27, 35),
+    "Idrettsarrangement": (45, 51), "Tros-/livssynsmøte": (23, 31),
+    "Ballett og dans": (10, 16), "Opera": (6, 16),
+}
+
+
+def lag_kulturgapdata() -> dict:
+    from hent_ssb_kulturgap import GRUNN, LANG, bygg_snapshot
+
+    serier = {tilbud: {nivaa: dict(zip(KULTURGAP_AAR, verdier))
+                       for nivaa, verdier in nivaaer.items()}
+              for tilbud, nivaaer in KULTURGAP_HISTORIKK.items()}
+    siste = KULTURGAP_AAR[-1]
+    for tilbud, (grunn, lang) in KULTURGAP_SISTE.items():
+        serier[tilbud] = {GRUNN: {siste: grunn}, LANG: {siste: lang}}
+    snapshot = bygg_snapshot(serier)
+    snapshot["meta"]["demo"] = True
+    return snapshot
+
+
 def main() -> int:
     alle = [("navn", lag_navnedata), ("befolkning", lag_befolkningsdata),
-            ("kultur", lag_kulturdata)]
+            ("kultur", lag_kulturdata), ("kulturgap", lag_kulturgapdata)]
     valgte = set(sys.argv[1:])
     ukjente = valgte - {slug for slug, _ in alle}
     if ukjente:

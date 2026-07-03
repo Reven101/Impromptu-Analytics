@@ -1,0 +1,501 @@
+{
+ "meta": {
+  "tittel": "Kino for alle, opera for de få",
+  "kilde": "Statistisk sentralbyrå",
+  "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
+  "dato_hentet": "2026-07-04",
+  "geografi": "Norge",
+  "enhet": "prosent, etter utdanningsnivå",
+  "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
+  "beskrivelse": "Jo lengre utdanning, desto mer kulturbruk — men gapet varierer: størst i museet og galleriet, minst på tribunen. Og kinoen har nesten klart å lukke det."
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Kulturgapet",
+   "rader": [
+    {
+     "etikett": "Med lang universitetsutdanning",
+     "verdi": "39 %",
+     "detalj": "var på kunstutstilling i 2025"
+    },
+    {
+     "etikett": "Med grunnskoleutdanning",
+     "verdi": "17 %",
+     "detalj": "samme spørsmål, samme år"
+    }
+   ],
+   "fotnote": "Andel som har brukt tilbudet siste 12 måneder, etter høyeste fullførte utdanning. Kilde: Norsk kulturbarometer (SSB)."
+  },
+  "folkelig": {
+   "type": "tidslinje",
+   "tittel": "Kino: gapet som krymper",
+   "undertekst": "andel som har brukt tilbudet siste 12 måneder",
+   "enhet": "%",
+   "serier": [
+    {
+     "navn": "Grunnskole",
+     "punkter": [
+      [
+       1991,
+       36
+      ],
+      [
+       1994,
+       39
+      ],
+      [
+       1997,
+       40
+      ],
+      [
+       2000,
+       45
+      ],
+      [
+       2004,
+       44
+      ],
+      [
+       2008,
+       53
+      ],
+      [
+       2012,
+       52
+      ],
+      [
+       2016,
+       67
+      ],
+      [
+       2021,
+       33
+      ],
+      [
+       2023,
+       60
+      ],
+      [
+       2025,
+       54
+      ]
+     ]
+    },
+    {
+     "navn": "Videregående",
+     "punkter": [
+      [
+       1991,
+       56
+      ],
+      [
+       1994,
+       58
+      ],
+      [
+       1997,
+       54
+      ],
+      [
+       2000,
+       58
+      ],
+      [
+       2004,
+       63
+      ],
+      [
+       2008,
+       63
+      ],
+      [
+       2012,
+       62
+      ],
+      [
+       2016,
+       64
+      ],
+      [
+       2021,
+       34
+      ],
+      [
+       2023,
+       55
+      ],
+      [
+       2025,
+       52
+      ]
+     ]
+    },
+    {
+     "navn": "Universitet/høgskole, kort",
+     "punkter": [
+      [
+       1991,
+       73
+      ],
+      [
+       1994,
+       71
+      ],
+      [
+       1997,
+       70
+      ],
+      [
+       2000,
+       71
+      ],
+      [
+       2004,
+       79
+      ],
+      [
+       2008,
+       76
+      ],
+      [
+       2012,
+       72
+      ],
+      [
+       2016,
+       78
+      ],
+      [
+       2021,
+       42
+      ],
+      [
+       2023,
+       70
+      ],
+      [
+       2025,
+       68
+      ]
+     ]
+    },
+    {
+     "navn": "Universitet/høgskole, lang",
+     "punkter": [
+      [
+       1991,
+       73
+      ],
+      [
+       1994,
+       78
+      ],
+      [
+       1997,
+       77
+      ],
+      [
+       2000,
+       77
+      ],
+      [
+       2004,
+       88
+      ],
+      [
+       2008,
+       90
+      ],
+      [
+       2012,
+       74
+      ],
+      [
+       2016,
+       81
+      ],
+      [
+       2021,
+       41
+      ],
+      [
+       2023,
+       76
+      ],
+      [
+       2025,
+       72
+      ]
+     ]
+    }
+   ]
+  },
+  "delt": {
+   "type": "tidslinje",
+   "tittel": "Kunstutstilling: gapet som består",
+   "undertekst": "andel som har brukt tilbudet siste 12 måneder",
+   "enhet": "%",
+   "serier": [
+    {
+     "navn": "Grunnskole",
+     "punkter": [
+      [
+       1991,
+       25
+      ],
+      [
+       1994,
+       24
+      ],
+      [
+       1997,
+       25
+      ],
+      [
+       2000,
+       29
+      ],
+      [
+       2004,
+       26
+      ],
+      [
+       2008,
+       23
+      ],
+      [
+       2012,
+       24
+      ],
+      [
+       2016,
+       22
+      ],
+      [
+       2021,
+       10
+      ],
+      [
+       2023,
+       16
+      ],
+      [
+       2025,
+       17
+      ]
+     ]
+    },
+    {
+     "navn": "Videregående",
+     "punkter": [
+      [
+       1991,
+       39
+      ],
+      [
+       1994,
+       40
+      ],
+      [
+       1997,
+       40
+      ],
+      [
+       2000,
+       37
+      ],
+      [
+       2004,
+       36
+      ],
+      [
+       2008,
+       35
+      ],
+      [
+       2012,
+       30
+      ],
+      [
+       2016,
+       30
+      ],
+      [
+       2021,
+       15
+      ],
+      [
+       2023,
+       20
+      ],
+      [
+       2025,
+       21
+      ]
+     ]
+    },
+    {
+     "navn": "Universitet/høgskole, kort",
+     "punkter": [
+      [
+       1991,
+       55
+      ],
+      [
+       1994,
+       60
+      ],
+      [
+       1997,
+       60
+      ],
+      [
+       2000,
+       60
+      ],
+      [
+       2004,
+       62
+      ],
+      [
+       2008,
+       56
+      ],
+      [
+       2012,
+       46
+      ],
+      [
+       2016,
+       46
+      ],
+      [
+       2021,
+       25
+      ],
+      [
+       2023,
+       34
+      ],
+      [
+       2025,
+       35
+      ]
+     ]
+    },
+    {
+     "navn": "Universitet/høgskole, lang",
+     "punkter": [
+      [
+       1991,
+       69
+      ],
+      [
+       1994,
+       76
+      ],
+      [
+       1997,
+       69
+      ],
+      [
+       2000,
+       67
+      ],
+      [
+       2004,
+       69
+      ],
+      [
+       2008,
+       67
+      ],
+      [
+       2012,
+       60
+      ],
+      [
+       2016,
+       57
+      ],
+      [
+       2021,
+       28
+      ],
+      [
+       2023,
+       42
+      ],
+      [
+       2025,
+       39
+      ]
+     ]
+    }
+   ]
+  },
+  "gap": {
+   "type": "kortgalleri",
+   "tittel": "Gapet, tilbud for tilbud (2025)",
+   "undertekst": "forsprang i prosentpoeng: lang universitets-/høgskoleutdanning mot grunnskole",
+   "kort": [
+    {
+     "overtittel": "Museum",
+     "verdi": "+31 pp",
+     "detalj": "65 % mot 34 %"
+    },
+    {
+     "overtittel": "Folkebibliotek",
+     "verdi": "+27 pp",
+     "detalj": "66 % mot 39 %"
+    },
+    {
+     "overtittel": "Konsert",
+     "verdi": "+23 pp",
+     "detalj": "70 % mot 47 %"
+    },
+    {
+     "overtittel": "Kunstutstilling",
+     "verdi": "+22 pp",
+     "detalj": "39 % mot 17 %"
+    },
+    {
+     "overtittel": "Teater og revy",
+     "verdi": "+21 pp",
+     "detalj": "49 % mot 28 %"
+    },
+    {
+     "overtittel": "Kino",
+     "verdi": "+18 pp",
+     "detalj": "72 % mot 54 %"
+    },
+    {
+     "overtittel": "Opera",
+     "verdi": "+10 pp",
+     "detalj": "16 % mot 6 %"
+    },
+    {
+     "overtittel": "Kulturfestival",
+     "verdi": "+8 pp",
+     "detalj": "35 % mot 27 %"
+    },
+    {
+     "overtittel": "Tros-/livssynsmøte",
+     "verdi": "+8 pp",
+     "detalj": "31 % mot 23 %"
+    },
+    {
+     "overtittel": "Ballett og dans",
+     "verdi": "+6 pp",
+     "detalj": "16 % mot 10 %"
+    },
+    {
+     "overtittel": "Idrettsarrangement",
+     "verdi": "+6 pp",
+     "detalj": "51 % mot 45 %"
+    }
+   ]
+  }
+ }
+}
