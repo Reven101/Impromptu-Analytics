@@ -3,12 +3,11 @@
   "tittel": "Kino for alle, opera for de få",
   "kilde": "Statistisk sentralbyrå",
   "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
-  "dato_hentet": "2026-07-03",
+  "dato_hentet": "2026-07-04",
   "geografi": "Norge",
   "enhet": "prosent, etter utdanningsnivå",
   "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
-  "beskrivelse": "Utdanning deler kulturlivet i to: kinosalen og tribunen fyller seg uansett, mens galleriet og teatret hører de lengst utdannede til.",
-  "demo": true
+  "beskrivelse": "Jo lengre utdanning, desto mer kulturbruk — men gapet varierer: størst i museet og galleriet, minst på tribunen. Og kinoen har nesten klart å lukke det."
  },
  "visninger": {
   "hero": {
@@ -17,12 +16,12 @@
    "rader": [
     {
      "etikett": "Med lang universitetsutdanning",
-     "verdi": "44 %",
+     "verdi": "39 %",
      "detalj": "var på kunstutstilling i 2025"
     },
     {
      "etikett": "Med grunnskoleutdanning",
-     "verdi": "12 %",
+     "verdi": "17 %",
      "detalj": "samme spørsmål, samme år"
     }
    ],
@@ -30,7 +29,7 @@
   },
   "folkelig": {
    "type": "tidslinje",
-   "tittel": "Kino: kurver som følger hverandre",
+   "tittel": "Kino: gapet som krymper",
    "undertekst": "andel som har brukt tilbudet siste 12 måneder",
    "enhet": "%",
    "serier": [
@@ -39,47 +38,47 @@
      "punkter": [
       [
        1991,
-       52
+       36
       ],
       [
        1994,
-       55
+       39
       ],
       [
        1997,
-       55
+       40
       ],
       [
        2000,
-       58
+       45
       ],
       [
        2004,
-       60
+       44
       ],
       [
        2008,
-       62
+       53
       ],
       [
        2012,
-       58
+       52
       ],
       [
        2016,
-       63
+       67
       ],
       [
        2021,
-       32
+       33
       ],
       [
        2023,
-       55
+       60
       ],
       [
        2025,
-       52
+       54
       ]
      ]
     },
@@ -88,47 +87,47 @@
      "punkter": [
       [
        1991,
-       57
+       56
       ],
       [
        1994,
-       60
+       58
       ],
       [
        1997,
-       60
+       54
       ],
       [
        2000,
-       64
+       58
       ],
       [
        2004,
-       66
-      ],
-      [
-       2008,
-       68
-      ],
-      [
-       2012,
-       65
-      ],
-      [
-       2016,
-       70
-      ],
-      [
-       2021,
-       38
-      ],
-      [
-       2023,
        63
       ],
       [
+       2008,
+       63
+      ],
+      [
+       2012,
+       62
+      ],
+      [
+       2016,
+       64
+      ],
+      [
+       2021,
+       34
+      ],
+      [
+       2023,
+       55
+      ],
+      [
        2025,
-       60
+       52
       ]
      ]
     },
@@ -137,27 +136,27 @@
      "punkter": [
       [
        1991,
-       64
+       73
       ],
       [
        1994,
-       66
+       71
       ],
       [
        1997,
-       66
-      ],
-      [
-       2000,
        70
       ],
       [
+       2000,
+       71
+      ],
+      [
        2004,
-       72
+       79
       ],
       [
        2008,
-       74
+       76
       ],
       [
        2012,
@@ -165,11 +164,11 @@
       ],
       [
        2016,
-       77
+       78
       ],
       [
        2021,
-       46
+       42
       ],
       [
        2023,
@@ -186,27 +185,27 @@
      "punkter": [
       [
        1991,
-       66
+       73
       ],
       [
        1994,
-       68
+       78
       ],
       [
        1997,
-       68
+       77
       ],
       [
        2000,
-       72
+       77
       ],
       [
        2004,
-       74
+       88
       ],
       [
        2008,
-       76
+       90
       ],
       [
        2012,
@@ -214,19 +213,19 @@
       ],
       [
        2016,
-       79
+       81
       ],
       [
        2021,
-       48
+       41
       ],
       [
        2023,
-       72
+       76
       ],
       [
        2025,
-       70
+       72
       ]
      ]
     }
@@ -234,7 +233,7 @@
   },
   "delt": {
    "type": "tidslinje",
-   "tittel": "Kunstutstilling: kurver som skiller lag",
+   "tittel": "Kunstutstilling: gapet som består",
    "undertekst": "andel som har brukt tilbudet siste 12 måneder",
    "enhet": "%",
    "serier": [
@@ -243,47 +242,47 @@
      "punkter": [
       [
        1991,
-       28
-      ],
-      [
-       1994,
-       28
-      ],
-      [
-       1997,
-       26
-      ],
-      [
-       2000,
        25
       ],
       [
+       1994,
+       24
+      ],
+      [
+       1997,
+       25
+      ],
+      [
+       2000,
+       29
+      ],
+      [
        2004,
-       22
+       26
       ],
       [
        2008,
-       22
+       23
       ],
       [
        2012,
-       18
+       24
       ],
       [
        2016,
-       16
+       22
       ],
       [
        2021,
-       8
+       10
       ],
       [
        2023,
-       11
+       16
       ],
       [
        2025,
-       12
+       17
       ]
      ]
     },
@@ -292,19 +291,19 @@
      "punkter": [
       [
        1991,
-       38
-      ],
-      [
-       1994,
        39
       ],
       [
+       1994,
+       40
+      ],
+      [
        1997,
-       38
+       40
       ],
       [
        2000,
-       38
+       37
       ],
       [
        2004,
@@ -316,15 +315,15 @@
       ],
       [
        2012,
-       31
+       30
       ],
       [
        2016,
-       29
+       30
       ],
       [
        2021,
-       14
+       15
       ],
       [
        2023,
@@ -341,31 +340,31 @@
      "punkter": [
       [
        1991,
-       58
+       55
       ],
       [
        1994,
-       58
+       60
       ],
       [
        1997,
-       56
+       60
       ],
       [
        2000,
-       56
+       60
       ],
       [
        2004,
-       54
+       62
       ],
       [
        2008,
-       53
+       56
       ],
       [
        2012,
-       48
+       46
       ],
       [
        2016,
@@ -373,15 +372,15 @@
       ],
       [
        2021,
-       26
+       25
       ],
       [
        2023,
-       36
+       34
       ],
       [
        2025,
-       36
+       35
       ]
      ]
     },
@@ -390,47 +389,47 @@
      "punkter": [
       [
        1991,
-       66
+       69
       ],
       [
        1994,
-       66
+       76
       ],
       [
        1997,
-       64
+       69
       ],
       [
        2000,
-       63
+       67
       ],
       [
        2004,
-       61
+       69
       ],
       [
        2008,
-       60
+       67
       ],
       [
        2012,
-       55
+       60
       ],
       [
        2016,
-       53
+       57
       ],
       [
        2021,
-       32
+       28
       ],
       [
        2023,
-       44
+       42
       ],
       [
        2025,
-       44
+       39
       ]
      ]
     }
@@ -442,59 +441,59 @@
    "undertekst": "forsprang i prosentpoeng: lang universitets-/høgskoleutdanning mot grunnskole",
    "kort": [
     {
-     "overtittel": "Kunstutstilling",
-     "verdi": "+32 pp",
-     "detalj": "44 % mot 12 %"
-    },
-    {
      "overtittel": "Museum",
-     "verdi": "+32 pp",
-     "detalj": "62 % mot 30 %"
-    },
-    {
-     "overtittel": "Teater og revy",
-     "verdi": "+28 pp",
-     "detalj": "52 % mot 24 %"
-    },
-    {
-     "overtittel": "Konsert",
-     "verdi": "+25 pp",
-     "detalj": "70 % mot 45 %"
+     "verdi": "+31 pp",
+     "detalj": "65 % mot 34 %"
     },
     {
      "overtittel": "Folkebibliotek",
+     "verdi": "+27 pp",
+     "detalj": "66 % mot 39 %"
+    },
+    {
+     "overtittel": "Konsert",
+     "verdi": "+23 pp",
+     "detalj": "70 % mot 47 %"
+    },
+    {
+     "overtittel": "Kunstutstilling",
      "verdi": "+22 pp",
-     "detalj": "60 % mot 38 %"
+     "detalj": "39 % mot 17 %"
+    },
+    {
+     "overtittel": "Teater og revy",
+     "verdi": "+21 pp",
+     "detalj": "49 % mot 28 %"
     },
     {
      "overtittel": "Kino",
      "verdi": "+18 pp",
-     "detalj": "70 % mot 52 %"
-    },
-    {
-     "overtittel": "Kulturfestival",
-     "verdi": "+18 pp",
-     "detalj": "40 % mot 22 %"
-    },
-    {
-     "overtittel": "Ballett og dans",
-     "verdi": "+12 pp",
-     "detalj": "20 % mot 8 %"
+     "detalj": "72 % mot 54 %"
     },
     {
      "overtittel": "Opera",
-     "verdi": "+12 pp",
-     "detalj": "15 % mot 3 %"
+     "verdi": "+10 pp",
+     "detalj": "16 % mot 6 %"
     },
     {
-     "overtittel": "Idrettsarrangement",
+     "overtittel": "Kulturfestival",
      "verdi": "+8 pp",
-     "detalj": "52 % mot 44 %"
+     "detalj": "35 % mot 27 %"
     },
     {
      "overtittel": "Tros-/livssynsmøte",
-     "verdi": "+4 pp",
-     "detalj": "30 % mot 26 %"
+     "verdi": "+8 pp",
+     "detalj": "31 % mot 23 %"
+    },
+    {
+     "overtittel": "Ballett og dans",
+     "verdi": "+6 pp",
+     "detalj": "16 % mot 10 %"
+    },
+    {
+     "overtittel": "Idrettsarrangement",
+     "verdi": "+6 pp",
+     "detalj": "51 % mot 45 %"
     }
    ]
   }

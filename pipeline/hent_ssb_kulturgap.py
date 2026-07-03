@@ -183,9 +183,9 @@ def bygg_snapshot(serier: dict[str, dict[str, dict[int, int]]]) -> dict:
             "geografi": "Norge",
             "enhet": "prosent, etter utdanningsnivå",
             "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
-            "beskrivelse": ("Utdanning deler kulturlivet i to: kinosalen og tribunen "
-                            "fyller seg uansett, mens galleriet og teatret hører de "
-                            "lengst utdannede til."),
+            "beskrivelse": ("Jo lengre utdanning, desto mer kulturbruk — men gapet "
+                            "varierer: størst i museet og galleriet, minst på tribunen. "
+                            "Og kinoen har nesten klart å lukke det."),
         },
         "visninger": {
             "hero": {
@@ -203,8 +203,8 @@ def bygg_snapshot(serier: dict[str, dict[str, dict[int, int]]]) -> dict:
                             "høyeste fullførte utdanning. "
                             "Kilde: Norsk kulturbarometer (SSB)."),
             },
-            "folkelig": tidslinje(FOLKELIG, "Kino: kurver som følger hverandre"),
-            "delt": tidslinje(DELT, "Kunstutstilling: kurver som skiller lag"),
+            "folkelig": tidslinje(FOLKELIG, "Kino: gapet som krymper"),
+            "delt": tidslinje(DELT, "Kunstutstilling: gapet som består"),
             "gap": {
                 "type": "kortgalleri",
                 "tittel": f"Gapet, tilbud for tilbud ({siste})",

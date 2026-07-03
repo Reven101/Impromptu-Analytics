@@ -14,10 +14,10 @@
       "id": "kulturgap",
       "tittel": "Kino for alle, opera for de få",
       "kilde": "Statistisk sentralbyrå",
-      "dato_hentet": "2026-07-03",
+      "dato_hentet": "2026-07-04",
       "geografi": "Norge",
-      "beskrivelse": "Utdanning deler kulturlivet i to: kinosalen og tribunen fyller seg uansett, mens galleriet og teatret hører de lengst utdannede til.",
-      "demo": true
+      "beskrivelse": "Jo lengre utdanning, desto mer kulturbruk — men gapet varierer: størst i museet og galleriet, minst på tribunen. Og kinoen har nesten klart å lukke det.",
+      "demo": false
     },
     {
       "id": "befolkning",

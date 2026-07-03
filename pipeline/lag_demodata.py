@@ -242,32 +242,33 @@ def lag_kulturdata() -> dict:
 # ----------------------------------------------------------- kulturgap ----
 
 # Kulturbruk etter utdanningsnivå (tabell 13504): glattede demoverdier med
-# de kjente hovedtrekkene — små forskjeller for kino/idrett, store for
-# kunstutstilling/teater. Kun de to tilbudene som bærer tidslinjene har
-# full historikk; resten trenger bare siste måling (til kortgalleriet).
+# de reelle hovedtrekkene — kino-gapet var stort i 1991 og har krympet,
+# kunstutstillingens etasjer synker uten å bytte plass. Kun de to tilbudene
+# som bærer tidslinjene har full historikk; resten trenger bare siste
+# måling (til kortgalleriet).
 KULTURGAP_AAR = KULTUR_AAR + [2025]
 
 KULTURGAP_HISTORIKK = {
     "Kino": {
-        "Grunnskole":                  [52, 55, 55, 58, 60, 62, 58, 63, 32, 55, 52],
-        "Videregående":                [57, 60, 60, 64, 66, 68, 65, 70, 38, 63, 60],
-        "Universitet/høgskole, kort":  [64, 66, 66, 70, 72, 74, 72, 77, 46, 70, 68],
-        "Universitet/høgskole, lang":  [66, 68, 68, 72, 74, 76, 74, 79, 48, 72, 70],
+        "Grunnskole":                  [36, 39, 40, 45, 44, 53, 52, 66, 33, 60, 54],
+        "Videregående":                [56, 58, 55, 58, 62, 63, 62, 64, 34, 55, 52],
+        "Universitet/høgskole, kort":  [72, 71, 70, 71, 78, 76, 72, 78, 42, 70, 68],
+        "Universitet/høgskole, lang":  [74, 78, 77, 77, 87, 89, 75, 81, 41, 76, 72],
     },
     "Kunstutstilling": {
-        "Grunnskole":                  [28, 28, 26, 25, 22, 22, 18, 16, 8, 11, 12],
-        "Videregående":                [38, 39, 38, 38, 36, 35, 31, 29, 14, 20, 21],
-        "Universitet/høgskole, kort":  [58, 58, 56, 56, 54, 53, 48, 46, 26, 36, 36],
-        "Universitet/høgskole, lang":  [66, 66, 64, 63, 61, 60, 55, 53, 32, 44, 44],
+        "Grunnskole":                  [25, 24, 25, 29, 26, 23, 24, 22, 10, 16, 17],
+        "Videregående":                [39, 40, 40, 37, 36, 35, 30, 30, 15, 20, 21],
+        "Universitet/høgskole, kort":  [55, 60, 60, 60, 62, 56, 46, 46, 25, 34, 35],
+        "Universitet/høgskole, lang":  [69, 75, 69, 67, 69, 67, 60, 57, 28, 42, 39],
     },
 }
 
 # (grunnskole, lang universitetsutdanning) i siste demoår, til kortgalleriet.
 KULTURGAP_SISTE = {
-    "Museum": (30, 62), "Teater og revy": (24, 52), "Konsert": (45, 70),
-    "Folkebibliotek": (38, 60), "Kulturfestival": (22, 40),
-    "Idrettsarrangement": (44, 52), "Tros-/livssynsmøte": (26, 30),
-    "Ballett og dans": (8, 20), "Opera": (3, 15),
+    "Museum": (34, 65), "Folkebibliotek": (39, 66), "Konsert": (47, 70),
+    "Teater og revy": (28, 49), "Kulturfestival": (27, 35),
+    "Idrettsarrangement": (45, 51), "Tros-/livssynsmøte": (23, 31),
+    "Ballett og dans": (10, 16), "Opera": (6, 16),
 }
 
 
