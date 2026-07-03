@@ -39,6 +39,8 @@ KORTNAVN = [
     ("teater", "Teater og revy"),
     ("kunstutst", "Kunstutstilling"),
     ("tros", "Tros-/livssynsmøte"),
+    ("livssyn", "Tros-/livssynsmøte"),
+    ("livsyn", "Tros-/livssynsmøte"),
     ("gudstjenest", "Tros-/livssynsmøte"),
     ("ballett", "Ballett og dans"),
     ("dans", "Ballett og dans"),
@@ -223,7 +225,7 @@ def bygg_snapshot(serier: dict[str, dict[int, int]]) -> dict:
             "dato_hentet": date.today().isoformat(),
             "geografi": "Norge",
             "enhet": "prosent av befolkningen 9–79 år",
-            "oppdateringsfrekvens": "ca. hvert fjerde år (kulturbruksundersøkelsen)",
+            "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
             "beskrivelse": ("Kulturbarometeret har målt hva vi går ut for å oppleve "
                             "siden 1991. Kinoen topper fortsatt — men pandemien viste "
                             "hvor fort alt kan stenge."),

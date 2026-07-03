@@ -3,12 +3,11 @@
   "tittel": "Seks av ti går på kino",
   "kilde": "Statistisk sentralbyrå",
   "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
-  "dato_hentet": "2026-07-03",
+  "dato_hentet": "2026-07-04",
   "geografi": "Norge",
   "enhet": "prosent av befolkningen 9–79 år",
-  "oppdateringsfrekvens": "ca. hvert fjerde år (kulturbruksundersøkelsen)",
-  "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge.",
-  "demo": true
+  "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
+  "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge."
  },
  "visninger": {
   "hero": {
@@ -16,9 +15,9 @@
    "eyebrow": "Kulturbruken",
    "rader": [
     {
-     "etikett": "Var på kino i løpet av 2023",
+     "etikett": "Var på kino i løpet av 2025",
      "verdi": "62 %",
-     "detalj": "opp fra 29 % i pandemiåret 2021"
+     "detalj": "ned fra 65 % i 2023"
     }
    ],
    "fotnote": "Andel av befolkningen 9–79 år som har brukt tilbudet siste 12 måneder. Kilde: Norsk kulturbarometer (SSB)."
@@ -42,7 +41,7 @@
       ],
       [
        1997,
-       62
+       60
       ],
       [
        2000,
@@ -66,10 +65,14 @@
       ],
       [
        2021,
-       29
+       40
       ],
       [
        2023,
+       65
+      ],
+      [
+       2025,
        62
       ]
      ]
@@ -79,19 +82,19 @@
      "punkter": [
       [
        1991,
-       54
-      ],
-      [
-       1994,
-       55
-      ],
-      [
-       1997,
        57
       ],
       [
+       1994,
+       59
+      ],
+      [
+       1997,
+       54
+      ],
+      [
        2000,
-       55
+       57
       ],
       [
        2004,
@@ -99,7 +102,7 @@
       ],
       [
        2008,
-       57
+       56
       ],
       [
        2012,
@@ -111,11 +114,15 @@
       ],
       [
        2021,
-       25
+       29
       ],
       [
        2023,
-       53
+       48
+      ],
+      [
+       2025,
+       49
       ]
      ]
     },
@@ -128,19 +135,19 @@
       ],
       [
        1994,
-       50
-      ],
-      [
-       1997,
-       53
-      ],
-      [
-       2000,
        55
       ],
       [
-       2004,
+       1997,
+       57
+      ],
+      [
+       2000,
        58
+      ],
+      [
+       2004,
+       61
       ],
       [
        2008,
@@ -156,11 +163,15 @@
       ],
       [
        2021,
-       22
+       23
       ],
       [
        2023,
-       55
+       58
+      ],
+      [
+       2025,
+       60
       ]
      ]
     },
@@ -169,11 +180,11 @@
      "punkter": [
       [
        1991,
-       46
+       49
       ],
       [
        1994,
-       48
+       51
       ],
       [
        1997,
@@ -181,7 +192,7 @@
       ],
       [
        2000,
-       54
+       52
       ],
       [
        2004,
@@ -197,15 +208,19 @@
       ],
       [
        2016,
-       47
+       46
       ],
       [
        2021,
-       32
+       37
       ],
       [
        2023,
-       45
+       44
+      ],
+      [
+       2025,
+       49
       ]
      ]
     },
@@ -218,11 +233,11 @@
       ],
       [
        1994,
-       44
+       45
       ],
       [
        1997,
-       45
+       44
       ],
       [
        2000,
@@ -230,7 +245,7 @@
       ],
       [
        2004,
-       46
+       42
       ],
       [
        2008,
@@ -238,7 +253,7 @@
       ],
       [
        2012,
-       45
+       41
       ],
       [
        2016,
@@ -246,11 +261,15 @@
       ],
       [
        2021,
-       28
+       29
       ],
       [
        2023,
        45
+      ],
+      [
+       2025,
+       46
       ]
      ]
     }
@@ -275,7 +294,7 @@
       ],
       [
        1997,
-       46
+       44
       ],
       [
        2000,
@@ -299,11 +318,15 @@
       ],
       [
        2021,
-       18
+       16
       ],
       [
        2023,
-       45
+       38
+      ],
+      [
+       2025,
+       37
       ]
      ]
     },
@@ -312,88 +335,47 @@
      "punkter": [
       [
        1991,
-       44
-      ],
-      [
-       1994,
-       45
-      ],
-      [
-       1997,
-       44
-      ],
-      [
-       2000,
-       42
-      ],
-      [
-       2004,
-       42
-      ],
-      [
-       2008,
-       42
-      ],
-      [
-       2012,
-       36
-      ],
-      [
-       2016,
-       36
-      ],
-      [
-       2021,
-       23
-      ],
-      [
-       2023,
-       33
-      ]
-     ]
-    },
-    {
-     "navn": "Tros-/livssynsmøte",
-     "punkter": [
-      [
-       1991,
-       43
-      ],
-      [
-       1994,
-       44
-      ],
-      [
-       1997,
-       43
-      ],
-      [
-       2000,
-       42
-      ],
-      [
-       2004,
        41
       ],
       [
+       1994,
+       44
+      ],
+      [
+       1997,
+       43
+      ],
+      [
+       2000,
+       44
+      ],
+      [
+       2004,
+       42
+      ],
+      [
        2008,
-       38
+       42
       ],
       [
        2012,
-       36
+       38
       ],
       [
        2016,
-       34
+       36
       ],
       [
        2021,
-       21
+       18
       ],
       [
        2023,
-       30
+       25
+      ],
+      [
+       2025,
+       26
       ]
      ]
     },
@@ -402,19 +384,19 @@
      "punkter": [
       [
        1991,
-       10
+       8
       ],
       [
        1994,
-       11
+       9
       ],
       [
        1997,
-       11
+       8
       ],
       [
        2000,
-       12
+       11
       ],
       [
        2004,
@@ -426,19 +408,23 @@
       ],
       [
        2012,
-       13
+       14
       ],
       [
        2016,
-       13
+       14
       ],
       [
        2021,
-       6
+       5
       ],
       [
        2023,
        13
+      ],
+      [
+       2025,
+       14
       ]
      ]
     },
@@ -451,7 +437,7 @@
       ],
       [
        1994,
-       6
+       5
       ],
       [
        1997,
@@ -463,11 +449,11 @@
       ],
       [
        2004,
-       7
+       5
       ],
       [
        2008,
-       8
+       7
       ],
       [
        2012,
@@ -484,6 +470,10 @@
       [
        2023,
        7
+      ],
+      [
+       2025,
+       8
       ]
      ]
     }
@@ -491,7 +481,7 @@
   },
   "status": {
    "type": "kortgalleri",
-   "tittel": "Kulturåret 2023",
+   "tittel": "Kulturåret 2025",
    "undertekst": "andel som brukte tilbudet siste 12 måneder",
    "kort": [
     {
@@ -501,52 +491,52 @@
     },
     {
      "overtittel": "Konsert",
-     "verdi": "55 %",
+     "verdi": "60 %",
      "detalj": "mot 48 % i 1991"
     },
     {
-     "overtittel": "Idrettsarrangement",
-     "verdi": "53 %",
-     "detalj": "mot 54 % i 1991"
+     "overtittel": "Folkebibliotek",
+     "verdi": "49 %",
+     "detalj": "mot 49 % i 1991"
     },
     {
-     "overtittel": "Folkebibliotek",
-     "verdi": "45 %",
-     "detalj": "mot 46 % i 1991"
+     "overtittel": "Idrettsarrangement",
+     "verdi": "49 %",
+     "detalj": "mot 57 % i 1991"
     },
     {
      "overtittel": "Museum",
-     "verdi": "45 %",
+     "verdi": "46 %",
      "detalj": "mot 41 % i 1991"
     },
     {
      "overtittel": "Teater og revy",
-     "verdi": "45 %",
+     "verdi": "37 %",
      "detalj": "mot 44 % i 1991"
-    },
-    {
-     "overtittel": "Kunstutstilling",
-     "verdi": "33 %",
-     "detalj": "mot 44 % i 1991"
-    },
-    {
-     "overtittel": "Tros-/livssynsmøte",
-     "verdi": "30 %",
-     "detalj": "mot 43 % i 1991"
     },
     {
      "overtittel": "Kulturfestival",
-     "verdi": "29 %",
-     "detalj": "mot 27 % i 2004"
+     "verdi": "32 %",
+     "detalj": "mot 28 % i 2004"
+    },
+    {
+     "overtittel": "Tros-/livssynsmøte",
+     "verdi": "28 %",
+     "detalj": "mot 39 % i 1994"
+    },
+    {
+     "overtittel": "Kunstutstilling",
+     "verdi": "26 %",
+     "detalj": "mot 41 % i 1991"
     },
     {
      "overtittel": "Ballett og dans",
-     "verdi": "13 %",
-     "detalj": "mot 10 % i 1991"
+     "verdi": "14 %",
+     "detalj": "mot 8 % i 1991"
     },
     {
      "overtittel": "Opera",
-     "verdi": "7 %",
+     "verdi": "8 %",
      "detalj": "mot 5 % i 1991"
     }
    ]

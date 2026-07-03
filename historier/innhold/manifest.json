@@ -5,10 +5,10 @@
       "id": "kultur",
       "tittel": "Seks av ti går på kino",
       "kilde": "Statistisk sentralbyrå",
-      "dato_hentet": "2026-07-03",
+      "dato_hentet": "2026-07-04",
       "geografi": "Norge",
       "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge.",
-      "demo": true
+      "demo": false
     },
     {
       "id": "befolkning",
