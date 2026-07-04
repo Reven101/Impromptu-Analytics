@@ -184,6 +184,11 @@ def hent_stortinget() -> list[dict]:
         saker = _hent(f"https://data.stortinget.no/eksport/saker?{params}").get(
             "saker_liste", []
         )
+        if not saker:
+            # fremtidige sesjoner ligger i registeret uten saker — hopp over
+            print(f"  {sesjon}: tom (ikke påbegynt) — utelates")
+            time.sleep(PAUSE)
+            continue
         kultursaker = sum(1 for sak in saker if _er_kultursak(sak))
         ut.append({"sesjon": sesjon, "aar": int(sesjon[:4]),
                    "kultursaker": kultursaker, "alle_saker": len(saker)})
