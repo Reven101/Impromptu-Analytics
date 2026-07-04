@@ -33,6 +33,7 @@ scriptet — API-er flytter seg, og scriptet sier hvor du skal lete.
 | **Brreg Frivillighetsregisteret** | frivillige org. med ICNPO-kategori | nei | `hent_brreg_frivillighet.py` |
 | **tilskudd.no** (Lottstift) | statlige tildelinger til frivilligheten | nei | `hent_tilskudd_lottstift.py` |
 | **Felles datakatalog** (Digdir) | kartet over alle åpne datasett | nei | `hent_datakatalog.py` |
+| **Kudos** (DFØ) | evalueringer, årsrapporter, tildelingsbrev | nei | `hent_kudos.py` |
 | **Kartverket adresser** | geokoding av offisielle adresser | nei | `hent_kartverket_adresser.py` |
 | **Kartverket stedsnavn** | 1M+ stedsnavn med historikk og språk | nei | `hent_kartverket_stedsnavn.py` |
 | **MET Locationforecast** | værvarsel (yr-dataene) | nei¹ | `hent_met_vaervarsel.py` |
