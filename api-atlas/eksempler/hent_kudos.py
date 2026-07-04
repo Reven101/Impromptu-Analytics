@@ -3,29 +3,37 @@
 Evalueringer, utredninger, årsrapporter, tildelingsbrev, NOU-er og
 proposisjoner fra hele forvaltningen, samlet av DFØ og Nasjonalbiblioteket.
 For alle som analyserer offentlig sektor er dette selve gullkammeret:
-~44 000 dokumenter (juli 2026) med strukturert metadata.
+~44 000 dokumenter (juli 2026), derav ~7 000 evalueringer, med
+strukturert metadata.
 
 Kjøring:  python3 api-atlas/eksempler/hent_kudos.py
 Nøkkel:   ingen
 Lisens:   åpne data — oppgi «Kilde: Kudos (DFØ)»
-Dok:      https://kudos.dfo.no/apne-data (og API-roten /api svarer med
-          versjon og dok-peker)
+Dok:      https://kudos.dfo.no/apne-data (API-roten /api oppgir versjon)
 
 Endepunkt (verifisert med live-test 2026-07-04):
-  GET https://kudos.dfo.no/api/v0/documents?page=<n>
+  GET https://kudos.dfo.no/api/v0/documents
       Laravel-paginert: {"meta": {current_page, last_page, per_page,
-      total}, "data": [{uuid, type, title, ...}]}. 50 per side.
-      NB: «query» som parameter gir 422 — søkesyntaksen er ikke
-      kartlagt ennå; hent heller alt og filtrer lokalt (44k dokumenter
-      = ~880 kall = en kaffekopp), eller sjekk /apne-data for
-      bulk-nedlasting av hele basen.
+      total}, "data": [{uuid, type, title, ...}]}.
+
+  Ingen fritekst-søk i v0, men strukturerte filtre (listen kom fra
+  API-ets egen 422-feilmelding — send en ugyldig parameter, så røper
+  «allowed_parameters» fasiten):
+      type                    f.eks. Evaluering, Årsrapport, Tildelingsbrev
+      actor_name              virksomhetsnavn
+      actor_org_number        org.nr — kobler rett mot Brreg/tilskudd.no!
+      actor_role              virksomhetens rolle i dokumentet
+      published_year_from/to  publiseringsår
+      concerned_year_from/to  året dokumentet gjelder
+      sort, page, per_page
 
 Gull å grave i:
-  - Alle evalueringer på kulturfeltet siden 2005 — hvem evalueres,
-    av hvem, og hva skjer etterpå?
-  - Tildelingsbrevene som tidsserie: hvordan endres styringssignalene
-    til kulturvirksomhetene år for år?
-  - Dokumentproduksjon per virksomhet — hvem skriver mest, om hva?
+  - Alle evalueringer på kulturfeltet: type=Evaluering + actor_org_number
+    fra Brreg-oppslag av kultursektorens virksomheter
+  - Tildelingsbrevene som tidsserie: styringssignalene til kultur-
+    virksomhetene, år for år
+  - Kryss med tilskuddsdata: får virksomheter som evalueres oftere,
+    mer eller mindre penger etterpå?
 """
 
 from __future__ import annotations
@@ -49,20 +57,23 @@ def hent_json(url: str, timeout: int = 60):
         return json.loads(svar.read().decode("utf-8"))
 
 
-def hent_side(side: int = 1) -> dict:
-    """Én side med dokumenter: {"meta": {...}, "data": [...]}."""
-    return hent_json(f"{API}?{urllib.parse.urlencode({'page': side})}")
+def hent_side(side: int = 1, **filtre) -> dict:
+    """Én side dokumenter. Filtre: type, actor_name, actor_org_number,
+    actor_role, published_year_from/to, concerned_year_from/to, sort,
+    per_page. Ukjente parametre gir 422 med gyldig-liste i feilkroppen."""
+    params = {"page": side, **filtre}
+    return hent_json(f"{API}?{urllib.parse.urlencode(params)}")
 
 
-def hent_alle(maks_sider: int | None = None):
-    """Generator over alle dokumenter, side for side, med høflig pause.
+def hent_alle(maks_sider: int | None = None, **filtre):
+    """Generator over alle dokumenter som treffer filtrene, med pause.
 
-    Full høsting (~880 sider) tar noen minutter — snapshot resultatet
-    til fil og filtrer lokalt i stedet for å spørre API-et på nytt.
+    Uten filtre er basen ~880 sider — snapshot resultatet til fil og
+    analyser lokalt i stedet for å spørre API-et på nytt.
     """
     side = 1
     while True:
-        svar = hent_side(side)
+        svar = hent_side(side, **filtre)
         yield from svar.get("data", [])
         meta = svar.get("meta", {})
         if side >= meta.get("last_page", side) or (maks_sider and side >= maks_sider):
@@ -72,23 +83,24 @@ def hent_alle(maks_sider: int | None = None):
 
 
 def smoke() -> str:
-    svar = hent_side(1)
-    meta, dokumenter = svar.get("meta", {}), svar.get("data", [])
-    total = meta.get("total", 0)
-    if total < 10_000 or not dokumenter:
-        raise ValueError(f"bare {total} dokumenter — har API-et endret seg?")
-    d = dokumenter[0]
-    return (f"{total:,} dokumenter i basen; første på side 1: "
-            f"{d.get('type', '?')}: {str(d.get('title', '?'))[:60]}").replace(",", " ")
+    alt = hent_side(1).get("meta", {}).get("total", 0)
+    evalueringer = hent_side(1, type="Evaluering").get("meta", {}).get("total", 0)
+    if alt < 10_000 or evalueringer < 1_000:
+        raise ValueError(
+            f"{alt} dokumenter / {evalueringer} evalueringer — har API-et endret seg?"
+        )
+    return (f"{alt:,} dokumenter, {evalueringer:,} evalueringer".replace(",", " ")
+            + " — type-filteret virker")
 
 
 def main() -> int:
     print(f"{KILDE} — {DOK}")
-    print("Henter side 1 av dokumentbasen …")
     print(f"✓ {smoke()}")
-    print("Dokumenttyper på første side:")
-    for d in hent_side(1).get("data", [])[:8]:
-        print(f"  {d.get('type', '?'):<25} {str(d.get('title', ''))[:55]}")
+    print("Ferskeste evalueringer:")
+    svar = hent_side(1, type="Evaluering", per_page=5,
+                     published_year_from=2024)
+    for d in svar.get("data", [])[:5]:
+        print(f"  {str(d.get('title', '?'))[:70]}")
     return 0
 
 
