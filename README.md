@@ -15,6 +15,7 @@ pipeline/                      1. DATALAG (Python, kjøres manuelt)
   kontrakt.py                  felles metadata-kontrakt + validering
   hent_ssb_navn.py             SSB-tabell 10467 (navn) → snapshot
   hent_ssb_befolkning.py       SSB-tabell 06913 (befolkning) → snapshot
+  hent_kulturordet.py          NB n-gram + Stortinget (to kilder) → snapshot
   lag_demodata.py              merkede plassholderdata (for utvikling)
   bygg_manifest.py             skanner innhold/ → manifest.json
 
@@ -58,6 +59,21 @@ python3 -m http.server 8000    # fra repo-roten, åpne http://localhost:8000/
 En ny historie er én datafil + én tekstfil — ingen ny frontend-kode.
 Oppskriften (fem steg) står i [historier/README.md](historier/README.md),
 sammen med dokumentasjon av visualiseringstypene og designtokens.
+
+## API-atlas — kartlagte norske datakilder
+
+[api-atlas/](api-atlas/README.md) er et kjørbart oppslagsverk over 15
+offentlige norske API-er (SSB, Brreg, tilskudd.no, Kartverket, MET,
+Entur, Nasjonalbiblioteket, Stortinget m.fl.): ett frittstående
+eksempelscript per kilde, med lisensnotat og prosjektidéer. Sjekk at
+kildene fortsatt svarer med:
+
+```bash
+python3 api-atlas/test_atlas.py
+```
+
+Nye datahistorier starter her: finn kilden i atlaset, kopier scriptet,
+bygg pipeline etter mønsteret i `pipeline/`.
 
 ## Deploy
 
