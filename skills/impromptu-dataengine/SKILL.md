@@ -1,6 +1,6 @@
 ---
 name: impromptu-dataengine
-description: Arbeid med tre-lags datafortellingsmotoren på impromptu.no (repo Reven101/Impromptu-Analytics) — lage nye datahistorier, nye hentescripts mot SSB PxWeb, nye visualiseringstyper, eller feilsøke kontraktsbrudd. Brukes når oppgaven gjelder impromptu.no, historier/-mappen, pipeline/-scriptene, data.json/tekst.md-filer, manifest.json eller motor-komponentene (hero, tidslinje, kart, kortgalleri).
+description: Arbeid med tre-lags datafortellingsmotoren på impromptu.no (repo Reven101/Impromptu-Analytics) — lage nye datahistorier, nye hentescripts mot SSB PxWeb, nye visualiseringstyper, eller feilsøke kontraktsbrudd. Bruk denne skillen alltid når Simen jobber med impromptu.no, historier/-mappen, pipeline/-scriptene, data.json/tekst.md-filer, manifest.json eller motor-komponentene (hero, tidslinje, kart, kortgalleri) — også når han bare sier «lag en ny historie om X» eller «hent SSB-tabell Y». Gjelder produksjon/kode; for visuell profil og skrivestil, se impromptu-designsystem.
 ---
 
 # Impromptu datamotor — tre-lags datafortellingsmotor

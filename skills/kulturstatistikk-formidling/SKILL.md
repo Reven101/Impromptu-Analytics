@@ -1,6 +1,6 @@
 ---
 name: kulturstatistikk-formidling
-description: Analyse og formidling av statlig kulturfinansiering — statsregnskapet, kulturbudsjettandeler, bevilgning vs. regnskap og artskonto-feller — kombinert med Impromptu-metodikken for å gjøre tallene til etterprøvbare datahistorier. Brukes ved spørsmål om kulturbudsjettet, statsregnskapet.no-data, KUDs budsjettkapitler, «hvor stor andel av statsbudsjettet går til kultur», eller når kulturøkonomi-tall skal formidles offentlig.
+description: Analyse og formidling av statlig kulturfinansiering — statsregnskapet, kulturbudsjettandeler, bevilgning vs. regnskap og artskonto-feller — kombinert med Impromptu-metodikken for å gjøre tallene til etterprøvbare datahistorier. Bruk denne skillen alltid når Simen jobber med kulturbudsjettet, statsregnskapet.no-data, KUDs budsjettkapitler, «hvor stor andel av statsbudsjettet går til kultur», eller skal formidle kulturøkonomi-tall offentlig. Gjelder PENGENE (kroner/andeler av budsjett); for deltakelse og kulturvaner i befolkningen, bruk norsk-monitor-kulturdata i stedet.
 ---
 
 # Kulturstatistikk: statsregnskap-analyse og formidling
@@ -73,7 +73,8 @@ Slik gjøres tallene til publiserbare historier på impromptu.no (jf. kultur/kul
 
 1. Steg 0: innhent og verifiser mot tidligere analyser; fest konkrete kapitler/kontoer.
 2. Definér teller/nevner skriftlig FØR uttrekk (hva er «kultur», hvilket regnskapsbegrep).
-3. Uttrekk → profilering (se `nytt-datasett-onboarding`) → dobbelttellingskontroll:
+3. Uttrekk → profilering (se `nytt-datasett-onboarding` + `data-analyse-metodikk`)
+   → dobbelttellingskontroll:
    summer både per kapittel/post og per artskonto; avvik skal kunne forklares.
 4. Tidsserie: KPI-juster eller bruk andeler; dokumenter kapittel-overgangsnøkkel.
 5. Formidling etter metodikken over; bruk `impromptu-dataengine` for selve produksjonen.

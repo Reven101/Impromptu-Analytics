@@ -1,6 +1,6 @@
 ---
 name: tilskuddskompasset
-description: Vedlikehold og videreutvikling av Tilskuddskompasset (tilskuddskompasset.impromptu.no, repo Reven101/tilskuddskompasset) — grant-navigasjonsverktøy for frivillige organisasjoner med data fra tilskudd.no, Kulturdirektoratet og NFI. Brukes ved dataoppdatering (lag_v4_data.py-pipelinen), endringer i index.html/ordninger_v4.js, nye datakilder, eller spørsmål om filtre, innvilgelsesgrad-måleren og transparensfunksjonene.
+description: Vedlikehold og videreutvikling av Tilskuddskompasset (tilskuddskompasset.impromptu.no, repo Reven101/tilskuddskompasset) — grant-navigasjonsverktøy for frivillige organisasjoner med data fra tilskudd.no, Kulturdirektoratet og NFI. Bruk denne skillen alltid når Simen jobber med tilskuddskompasset: dataoppdatering (lag_v4_data.py-pipelinen), endringer i index.html/ordninger_v4.js, nye datakilder, eller spørsmål om filtre, innvilgelsesgrad-måleren (kompassnålen) og transparensfunksjonene. Aktiveres også ved omtale av tilskudd.no-data, NKF/FLB-vedtaksdata, NFI-tildelinger eller innvilgelsesgrad.
 ---
 
 # Tilskuddskompasset — grant-navigasjon på åpne data

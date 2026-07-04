@@ -1,6 +1,6 @@
 ---
 name: habilitet-klagesaker
-description: Strukturering av habilitetsvurderinger og klagesaker fra WebSak-eksporter og møtereferater i Kulturdirektoratet — konsistent felt-/saksstruktur, forvaltningslovens habilitetsregler og personvernhensyn. Brukes når oppgaven gjelder habilitetsvurderinger, klagesaksbehandling, WebSak-data, rådsmøte-/utvalgsreferater eller inhabilitetsregistrering hos Kulturdirektoratet.
+description: Strukturering av habilitetsvurderinger og klagesaker fra WebSak-eksporter og møtereferater i Kulturdirektoratet — konsistent felt-/saksstruktur, forvaltningslovens habilitetsregler og personvernhensyn. Bruk denne skillen alltid når Simen jobber med habilitetsvurderinger, klagesaksbehandling, WebSak-data, rådsmøte-/utvalgsreferater eller inhabilitetsregistrering hos Kulturdirektoratet. Aktiveres også ved omtale av forvaltningsloven § 6, inhabilitet, fratredelse i utvalgsmøter eller klager på vedtak i Norsk kulturfond.
 ---
 
 # Habilitet og klagesaker — strukturering av saksdata (Kulturdirektoratet)

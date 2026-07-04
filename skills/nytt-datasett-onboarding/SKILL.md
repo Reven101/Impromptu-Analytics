@@ -1,18 +1,23 @@
 ---
 name: nytt-datasett-onboarding
-description: Standardprosedyre for å profilere, rense og dokumentere et nytt kultursektor-datasett — fra rå fil/API til datasettprofil, verifiserte lærdommer og et forslag til ny dedikert skill for datasettet. Brukes hver gang brukeren introduserer et nytt datasett eller en ny datakilde (CSV/Excel/API/skraping) som skal analyseres eller inn i et av verktøyene, eller sier «her er et nytt datasett».
+description: Operasjonell standardprosedyre for å profilere, rense og dokumentere et nytt kultursektor-datasett — fra rå fil/API til datasettprofil, renseregnskap og et forslag til ny dedikert skill for datasettet. Bruk denne skillen hver gang Simen introduserer et nytt datasett eller en ny datakilde (CSV/Excel/API/skraping) som skal analyseres eller inn i et av verktøyene hans, eller sier «her er et nytt datasett» eller «kan du se på denne filen». Brukes SAMMEN med data-analyse-metodikk-skillen: den gir det generelle analyserammeverket, denne gir den kultursektor-spesifikke innhentings- og renseprosedyren.
 ---
 
 # Nytt datasett — onboarding (metaskill)
 
 ## Verifiseringsstatus
 
-Brukerens navngitte «data-analyse-metodikk-rammeverk» ble **ikke funnet som dokument** i
-tilgjengelige repoer (Google Drive utilgjengelig i økten som laget skillen). Prosedyren
-under er i stedet **rekonstruert fra brukerens faktiske, verifiserte praksis** slik den er
-nedfelt i kode i Impromptu-Analytics og tilskuddskompasset (lest 2026-07-04) — hvert
-prinsipp har en kildehenvisning. Hvis rammeverk-dokumentet finnes: hent det i steg 0 og
-harmoniser denne skillen med det.
+**Kobling til rammeverket:** Simens generelle rammeverk finnes som egen skill i profilen —
+`data-analyse-metodikk` (Prof. Frenzels metodikk og pensum fra Strategic Analytics:
+VanderPlas, McKinney, Grus, Crickard). **Aktiver alltid den skillen sammen med denne**;
+denne skillen dekker det rammeverket ikke gjør: kultursektor-spesifikk innhenting, rensing
+med regnskap, og skill-produksjon som sluttprodukt. Ved motstrid vinner rammeverket for
+analysemetode, denne for innhentings-/rensepraksis.
+
+Prosedyren under er **verifisert mot Simens faktiske praksis** slik den er nedfelt i kode
+i Impromptu-Analytics og tilskuddskompasset (lest 2026-07-04) — hvert prinsipp har en
+kildehenvisning. Innholdet i data-analyse-metodikk-skillen er ikke lest av den som skrev
+dette (kun beskrivelsen var synlig); harmoniser ved første felles bruk.
 
 ## Prinsipper (utledet av verifisert praksis)
 
@@ -33,10 +38,11 @@ harmoniser denne skillen med det.
 ## Prosedyre
 
 ### Steg 0 — kontekst
-Spør/avklar: Hva er kilden (eier, URL, lisens/åpenhet)? Hvilket produkt skal det inn i
-(impromptu.no-historie, tilskuddskompasset, egen analyse)? Finnes kodebok/dokumentasjon?
-Inneholder det personopplysninger (→ da gjelder strengere regler: ikke inn i offentlige
-repoer, aggregering før deling)?
+Aktiver `data-analyse-metodikk`-skillen. Spør/avklar: Hva er kilden (eier, URL,
+lisens/åpenhet)? Hvilket produkt skal det inn i (impromptu.no-historie,
+tilskuddskompasset, egen analyse)? Finnes kodebok/dokumentasjon? Inneholder det
+personopplysninger (→ da gjelder strengere regler: ikke inn i offentlige repoer,
+aggregering før deling)?
 
 ### Steg 1 — skaff og frys rådata
 Hent med høflig-innhenting-mønsteret; legg råfil i datamappe med dato i navnet; noter

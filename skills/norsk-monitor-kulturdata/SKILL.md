@@ -1,6 +1,6 @@
 ---
 name: norsk-monitor-kulturdata
-description: Analyse av kulturdeltakelsesdata fra Norsk Monitor (Ipsos) og SSBs kulturbruksundersøkelser (Norsk kulturbarometer) — variabelvalg, metodefeller og sammenligning mellom kildene. Brukes ved analyse av kulturbruk/kulturdeltakelse i befolkningen, spørsmål om Norsk Monitor-variabler eller kodebok, SSB-tabellene 13503/13504, eller når kulturvaner skal brytes ned på utdanning, alder eller tid.
+description: Analyse av kulturdeltakelsesdata fra Norsk Monitor (Ipsos) og SSBs kulturbruksundersøkelser (Norsk kulturbarometer) — variabelvalg, metodefeller og sammenligning mellom kildene. Bruk denne skillen alltid når Simen analyserer kulturbruk/kulturdeltakelse i befolkningen, spør om Norsk Monitor-variabler eller kodebok, SSB-tabellene 13503/13504, eller bryter kulturvaner ned på utdanning, alder eller tid. Gjelder HVEM som deltar (personer/andeler); for pengestrømmer og budsjettandeler, bruk kulturstatistikk-formidling i stedet.
 ---
 
 # Norsk Monitor og SSB-kulturdata — deltakelsesanalyse
@@ -73,7 +73,8 @@ si det eksplisitt i formidlingen.
 ## Arbeidsflyt
 
 1. Steg 0 for Norsk Monitor-data: innhent kodebok, verifiser variabler, oppdater skillen.
-2. Profiler datasettet (se `nytt-datasett-onboarding`).
+2. Profiler datasettet (se `nytt-datasett-onboarding`; generell analysemetode:
+   `data-analyse-metodikk`-skillen).
 3. Analyser med fallgruvene over som sjekkliste; 2021-pandemiflagg og komposisjonsforbehold
    er obligatoriske i alt som publiseres.
 4. Formidling: bruk impromptu-dataengine-skillen (snapshot + metadata-kontrakt) hvis
