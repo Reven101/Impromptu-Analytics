@@ -178,22 +178,21 @@ def hent_kulturbruk() -> dict[str, dict[int, int]]:
         if serie:
             serier.setdefault(navn, {}).update(serie)
 
-    kino = serier.get("Kino")
-    if not kino or len(kino) < 5 or max(kino.values()) < 40:
-        raise SystemExit(
-            "Kino-serien mangler eller ser urimelig ut — det er ikke "
-            f"kulturbruksandeler. Fant serier: {sorted(serier)}"
-        )
+    for krav in ("Kino", "Konsert"):
+        serie = serier.get(krav)
+        if not serie or len(serie) < 5 or max(serie.values()) < 40:
+            raise SystemExit(
+                f"{krav}-serien mangler eller ser urimelig ut — det er ikke "
+                f"kulturbruksandeler. Fant serier: {sorted(serier)}"
+            )
     return serier
 
 
 def bygg_snapshot(serier: dict[str, dict[int, int]]) -> dict:
-    kino = serier["Kino"]
+    konsert = serier["Konsert"]
     siste_aar = max(max(s) for s in serier.values())
-    kino_aar = sorted(kino)
-    forrige = kino_aar[-2]
-    retning = "opp fra" if kino[forrige] < kino[kino_aar[-1]] else "ned fra"
-    aarstekst = f"pandemiåret {forrige}" if forrige == PANDEMIAAR else str(forrige)
+    siste, forste = max(konsert), min(konsert)
+    retning = "opp fra" if konsert[forste] < konsert[siste] else "ned fra"
 
     def punkter(navn: str):
         return [[a, v] for a, v in sorted(serier[navn].items())]
@@ -219,24 +218,24 @@ def bygg_snapshot(serier: dict[str, dict[int, int]]) -> dict:
 
     return {
         "meta": {
-            "tittel": "Seks av ti går på kino",
+            "tittel": "Konserten tar innpå",
             "kilde": "Statistisk sentralbyrå",
             "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
             "dato_hentet": date.today().isoformat(),
             "geografi": "Norge",
             "enhet": "prosent av befolkningen 9–79 år",
             "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
-            "beskrivelse": ("Kulturbarometeret har målt hva vi går ut for å oppleve "
-                            "siden 1991. Kinoen topper fortsatt — men pandemien viste "
-                            "hvor fort alt kan stenge."),
+            "beskrivelse": ("Seks av ti hører livemusikk i året nå — bare kinoen "
+                            "samler flere. Tretti år med norske kulturvaner, fra "
+                            "bibliotekets stille år til konsertens lange opptur."),
         },
         "visninger": {
             "hero": {
                 "type": "hero",
                 "eyebrow": "Kulturbruken",
-                "rader": [{"etikett": f"Var på kino i løpet av {kino_aar[-1]}",
-                           "verdi": f"{kino[kino_aar[-1]]} %",
-                           "detalj": f"{retning} {kino[forrige]} % i {aarstekst}"}],
+                "rader": [{"etikett": f"Var på konsert i løpet av {siste}",
+                           "verdi": f"{konsert[siste]} %",
+                           "detalj": f"{retning} {konsert[forste]} % i {forste}"}],
                 "fotnote": ("Andel av befolkningen 9–79 år som har brukt tilbudet "
                             "siste 12 måneder. Kilde: Norsk kulturbarometer (SSB)."),
             },

@@ -1,13 +1,13 @@
 {
  "meta": {
-  "tittel": "Seks av ti går på kino",
+  "tittel": "Konserten tar innpå",
   "kilde": "Statistisk sentralbyrå",
   "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
   "dato_hentet": "2026-07-04",
   "geografi": "Norge",
   "enhet": "prosent av befolkningen 9–79 år",
   "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
-  "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge."
+  "beskrivelse": "Seks av ti hører livemusikk i året nå — bare kinoen samler flere. Tretti år med norske kulturvaner, fra bibliotekets stille år til konsertens lange opptur."
  },
  "visninger": {
   "hero": {
@@ -15,9 +15,9 @@
    "eyebrow": "Kulturbruken",
    "rader": [
     {
-     "etikett": "Var på kino i løpet av 2025",
-     "verdi": "62 %",
-     "detalj": "ned fra 65 % i 2023"
+     "etikett": "Var på konsert i løpet av 2025",
+     "verdi": "60 %",
+     "detalj": "opp fra 48 % i 1991"
     }
    ],
    "fotnote": "Andel av befolkningen 9–79 år som har brukt tilbudet siste 12 måneder. Kilde: Norsk kulturbarometer (SSB)."

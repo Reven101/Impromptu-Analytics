@@ -4,7 +4,7 @@ Med noen års mellomrom siden 1991 har Statistisk sentralbyrå stilt et represen
 
 ## De store kulturvanene
 
-Noen vaner er så stabile at kurvene nesten kjeder seg: rundt halvparten av oss har vært på idrettsarrangement, uansett tiår og uansett regjering. Kinoen har toppet hver eneste måling siden 1991 — pandemiåret inkludert. Konserten er den stille klatreren, fra under halvparten på starten av nittitallet til over seks av ti på det meste.
+Konserten er tretti års stille vinner: fra under halvparten av oss i 1991 til seks av ti i dag — ingen av de store kulturvanene har vokst mer. Kinoen topper riktignok fortsatt, og har gjort det i hver eneste måling siden 1991, pandemiåret inkludert. Men forspranget som var ti prosentpoeng, er skrumpet til to. Idrettsarrangementene er kontrasten: rundt halvparten av oss, uansett tiår og uansett regjering.
 
 [[viz:storefem]]
 
