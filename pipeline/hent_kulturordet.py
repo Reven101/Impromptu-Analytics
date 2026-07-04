@@ -57,11 +57,14 @@ def _hent(url: str, body: dict | None = None, timeout: int = 120):
 def _ngram_dhlab() -> dict[int, float]:
     """DH-labens n-gram-API — endepunktet dhlab-biblioteket selv bruker.
 
-    Verifisert mot NationalLibraryOfNorway/DHLAB (dhlab/constants.py):
+    Verifisert mot NationalLibraryOfNorway/DHLAB (dhlab/constants.py) og
+    live-testet 2026-07-04:
     NGRAM_API = https://api.nb.no/dhlab/nb_ngram/ngram/query
-    Årlige frekvenser 1800–2021, både rå og relative.
+    Årlige frekvenser fra 1800; «y» er PROSENT av korpuset, «f» råtall.
+    NB: corpus=avis kombinert med lang=nob gir HTTP 500 (aviskorpuset er
+    ikke språkdelt) — derfor sendes lang ikke med.
     """
-    params = urllib.parse.urlencode({"terms": ORD, "corpus": "avis", "lang": "nob"})
+    params = urllib.parse.urlencode({"terms": ORD, "corpus": "avis"})
     return _normaliser_ngram(_hent(f"https://api.nb.no/dhlab/nb_ngram/ngram/query?{params}"))
 
 
@@ -201,17 +204,19 @@ def _er_kultursak(sak: dict) -> bool:
 
 # ------------------------------------------------------- snapshot ----
 
-PER_ORD = 10_000  # avisverdier vises som forekomster per 10 000 ord
+# API-ets «y» er prosent; ganget med 10 000 blir det forekomster per
+# million ord — tall i spennet ~5–80, som både grafmotor og leser trives
+# med. Skalaen er verifisert empirisk 2026-07-04: implisert korpus
+# (f delt på y som prosent) gir ~1,2 mrd. avisord for 2015, som stemmer.
+FRA_PROSENT_TIL_PER_MILLION = 10_000
 
 
 def bygg_snapshot(ngram: dict[int, float], storting: list[dict], demo: bool) -> dict:
-    # skaler fra andel (0–1) til per 10 000 ord — grafmotoren og leseren
-    # håndterer 1–10 langt bedre enn 0,0001
-    ngram = {a: round(v * PER_ORD, 3) for a, v in ngram.items()}
-    if not 0.05 <= max(ngram.values()) <= 500:
+    ngram = {a: round(v * FRA_PROSENT_TIL_PER_MILLION, 3) for a, v in ngram.items()}
+    if not 0.5 <= max(ngram.values()) <= 5000:
         raise SystemExit(
-            f"skalert maksverdi {max(ngram.values())} per {PER_ORD} ord er utenfor "
-            "rimelig bånd — leverer API-et andeler (0–1) slik scriptet antar?"
+            f"skalert maksverdi {max(ngram.values())} per million ord er utenfor "
+            "rimelig bånd — har API-et endret enhet (prosent ↔ andel)?"
         )
     forste_tiaar = [v for a, v in ngram.items() if a < min(ngram) + 10]
     siste_tiaar = [v for a, v in ngram.items() if a > max(ngram) - 10]
@@ -245,7 +250,7 @@ def bygg_snapshot(ngram: dict[int, float], storting: list[dict], demo: bool) -> 
                 "sporsmal": "Hvor stort ble ordet «kultur»?",
                 "rader": [
                     {"etikett": "I avisene", "verdi": f"~{ganger}× oftere",
-                     "detalj": f"enn på {min(ngram)}-tallet, målt per 10 000 avisord"},
+                     "detalj": f"enn på {min(ngram)}-tallet, målt per million avisord"},
                     {"etikett": "På Stortinget", "verdi": f"{toppsesjon['kultursaker']} saker",
                      "detalj": f"i toppsesjonen {toppsesjon['sesjon']}"},
                 ],
@@ -255,7 +260,7 @@ def bygg_snapshot(ngram: dict[int, float], storting: list[dict], demo: bool) -> 
             "aviser": {
                 "type": "tidslinje",
                 "tittel": "«Kultur» i norske aviser",
-                "enhet": "forekomster per 10 000 avisord",
+                "enhet": "forekomster per million avisord",
                 "serier": [{
                     "navn": "kultur",
                     "punkter": [[a, v] for a, v in sorted(ngram.items())],
@@ -295,7 +300,7 @@ def bygg_snapshot(ngram: dict[int, float], storting: list[dict], demo: bool) -> 
 def demodata() -> tuple[dict[int, float], list[dict]]:
     """Glatte plassholderkurver med riktig form — merkes «demo» i meta."""
     ngram = {
-        aar: round(1e-4 * (1 + 9 / (1 + math.exp(-(aar - 1960) / 18))), 7)
+        aar: round(7e-4 * (1 + 9 / (1 + math.exp(-(aar - 1960) / 18))), 7)
         for aar in range(NGRAM_FRA, NGRAM_TIL + 1)
     }
     storting = [
