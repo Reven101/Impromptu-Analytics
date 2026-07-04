@@ -15,6 +15,7 @@ pipeline/                      1. DATALAG (Python, kjøres manuelt)
   kontrakt.py                  felles metadata-kontrakt + validering
   hent_ssb_navn.py             SSB-tabell 10467 (navn) → snapshot
   hent_ssb_befolkning.py       SSB-tabell 06913 (befolkning) → snapshot
+  hent_kulturordet.py          NB n-gram + Stortinget (to kilder) → snapshot
   lag_demodata.py              merkede plassholderdata (for utvikling)
   bygg_manifest.py             skanner innhold/ → manifest.json
 

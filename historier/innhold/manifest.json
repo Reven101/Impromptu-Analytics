@@ -1,9 +1,9 @@
 {
-  "generert": "2026-07-03",
+  "generert": "2026-07-04",
   "historier": [
     {
       "id": "kultur",
-      "tittel": "Store forskjeller i kulturbruk",
+      "tittel": "Folk går helst på kino eller konsert",
       "kilde": "Statistisk sentralbyrå",
       "dato_hentet": "2026-07-04",
       "geografi": "Norge",
@@ -18,6 +18,15 @@
       "geografi": "Norge",
       "beskrivelse": "Jo lengre utdanning, desto mer kulturbruk — men gapet varierer: størst i museet og galleriet, minst på tribunen. Og kinoen har nesten klart å lukke det.",
       "demo": false
+    },
+    {
+      "id": "kulturordet",
+      "tittel": "Ordet som erobret Norge",
+      "kilde": "Nasjonalbiblioteket og Stortinget",
+      "dato_hentet": "2026-07-04",
+      "geografi": "Norge",
+      "beskrivelse": "«Kultur» var et sjeldent ord i norske aviser. Så begynte det å vokse — og i Stortinget fulgte sakene etter. To kilder, én ordhistorie.",
+      "demo": true
     },
     {
       "id": "befolkning",
