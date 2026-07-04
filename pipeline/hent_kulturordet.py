@@ -54,45 +54,67 @@ def _hent(url: str, body: dict | None = None, timeout: int = 120):
 
 # ------------------------------------------------- NB n-gram (aviser) ----
 
+def _ngram_dhlab() -> dict[int, float]:
+    """DH-labens n-gram-API — endepunktet dhlab-biblioteket selv bruker.
+
+    Verifisert mot NationalLibraryOfNorway/DHLAB (dhlab/constants.py):
+    NGRAM_API = https://api.nb.no/dhlab/nb_ngram/ngram/query
+    Årlige frekvenser 1800–2021, både rå og relative.
+    """
+    params = urllib.parse.urlencode({"terms": ORD, "corpus": "avis", "lang": "nob"})
+    return _normaliser_ngram(_hent(f"https://api.nb.no/dhlab/nb_ngram/ngram/query?{params}"))
+
+
 def _ngram_viewer() -> dict[int, float]:
-    """Eldre viewer-API (samme som nb.no/ngram bruker)."""
+    """Eldre viewer-API — beholdt som reserve."""
     params = urllib.parse.urlencode(
         {"terms": ORD, "corpus": "avis", "lang": "nob", "case_sens": 0, "freq": "rel"}
     )
     return _normaliser_ngram(_hent(f"https://api.nb.no/ngram/ngram?{params}"))
 
 
-def _ngram_dhlab() -> dict[int, float]:
-    """DH-labens API (POST, per korpus)."""
-    svar = _hent(
-        "https://api.nb.no/dhlab/ngram_avis",
-        {"word": [ORD], "period": [NGRAM_FRA, NGRAM_TIL]},
-    )
-    return _normaliser_ngram(svar)
-
-
 def _normaliser_ngram(svar) -> dict[int, float]:
     """Tåler de kjente svarformene og gir {år: relativ frekvens}.
 
     Kjente former:
-      - [{"key"/"name": ord, "values": [{"x": år, "y": verdi}, ...]}, ...]
-      - {"kultur": {"1975": 0.0012, ...}}  (dhlab, ord → år → verdi)
+      - [{"key"/"name": ord, "values": [{punkt}, ...]}, ...] der hvert
+        punkt har år som "x"/"year" (evt. epoch-millisekunder) og verdi
+        som "y"/"relfreq"/"f" — relativ frekvens foretrekkes over råtall
+      - {"kultur": {"1975": 0.0012, ...}}  (ord → år → verdi)
       - {"1975": 0.0012, ...}
     """
     serie: dict[int, float] = {}
 
-    def ta_med(aar, verdi):
+    def til_aar(x) -> int | None:
         try:
-            a, v = int(str(aar)[:4]), float(verdi)
+            tall = float(x)
+        except (TypeError, ValueError):
+            return None
+        if 1800 <= tall <= 2030:
+            return int(tall)
+        # epoch-millisekunder (slik grafbiblioteker gjerne vil ha dem)
+        if abs(tall) > 1e10:
+            from datetime import datetime, timezone
+            return datetime.fromtimestamp(tall / 1000, tz=timezone.utc).year
+        return None
+
+    def ta_med(aar, verdi):
+        a = til_aar(aar)
+        try:
+            v = float(verdi)
         except (TypeError, ValueError):
             return
-        if 1800 <= a <= 2030 and v >= 0:
+        if a is not None and v >= 0:
             serie[a] = v
 
     if isinstance(svar, list):
         for element in svar:
             for punkt in element.get("values", []):
-                ta_med(punkt.get("x"), punkt.get("y"))
+                if not isinstance(punkt, dict):
+                    continue
+                aar = punkt.get("x", punkt.get("year"))
+                verdi = punkt.get("y", punkt.get("relfreq", punkt.get("f")))
+                ta_med(aar, verdi)
     elif isinstance(svar, dict):
         verdier = svar.get(ORD, svar)
         if isinstance(verdier, dict):
@@ -103,8 +125,8 @@ def _normaliser_ngram(svar) -> dict[int, float]:
 
 
 def hent_ngram() -> dict[int, float]:
-    kandidater = [("viewer-API (api.nb.no/ngram)", _ngram_viewer),
-                  ("DH-lab-API (api.nb.no/dhlab)", _ngram_dhlab)]
+    kandidater = [("DH-lab-API (nb_ngram/ngram/query)", _ngram_dhlab),
+                  ("eldre viewer-API (api.nb.no/ngram)", _ngram_viewer)]
     feil = []
     for navn, hent in kandidater:
         try:
