@@ -59,6 +59,21 @@ En ny historie er én datafil + én tekstfil — ingen ny frontend-kode.
 Oppskriften (fem steg) står i [historier/README.md](historier/README.md),
 sammen med dokumentasjon av visualiseringstypene og designtokens.
 
+## API-atlas — kartlagte norske datakilder
+
+[api-atlas/](api-atlas/README.md) er et kjørbart oppslagsverk over 15
+offentlige norske API-er (SSB, Brreg, tilskudd.no, Kartverket, MET,
+Entur, Nasjonalbiblioteket, Stortinget m.fl.): ett frittstående
+eksempelscript per kilde, med lisensnotat og prosjektidéer. Sjekk at
+kildene fortsatt svarer med:
+
+```bash
+python3 api-atlas/test_atlas.py
+```
+
+Nye datahistorier starter her: finn kilden i atlaset, kopier scriptet,
+bygg pipeline etter mønsteret i `pipeline/`.
+
 ## Deploy
 
 Repoet deployes som statiske filer via GitHub → Vercel: push til main,
