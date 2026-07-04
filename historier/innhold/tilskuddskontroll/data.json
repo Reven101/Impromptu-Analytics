@@ -1,0 +1,157 @@
+{
+ "meta": {
+  "tittel": "21 milliarder, to evalueringer",
+  "kilde": "Kudos (DFØ) og tilskudd.no (Lotteri- og stiftelsestilsynet)",
+  "kilde_url": "https://kudos.dfo.no/",
+  "dato_hentet": "2026-07-05",
+  "geografi": "Norge",
+  "enhet": "kroner tildelt 2021–2026; antall evalueringer i Kudos",
+  "oppdateringsfrekvens": "årlig",
+  "beskrivelse": "Lotteri- og stiftelsestilsynet fordelte 21,2 mrd kr i tilskudd på fem år — og er evaluert 2 ganger noensinne. 25 % av alle tilskuddskroner går gjennom forvaltere som aldri har vært gjenstand for én eneste evaluering i Kudos."
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Tilskudd og kontroll",
+   "rader": [
+    {
+     "etikett": "Tildelt av Lotteri- og stiftelsestilsynet, 2021–2026",
+     "verdi": "21,2 mrd kr",
+     "detalj": "landets største tilskuddsforvalter i kroner — men 2 evalueringer i Kudos noensinne, 1 de siste fem årene"
+    },
+    {
+     "etikett": "Går gjennom forvaltere uten en eneste evaluering i Kudos",
+     "verdi": "25 %",
+     "detalj": "16,2 mrd kr av 64,6 mrd kr tildelt 2021–2026"
+    }
+   ],
+   "fotnote": "Sum tildelt 2021–2026 fra tilskudd.no koblet mot antall evalueringer registrert i Kudos (DFØ), på normalisert forvalternavn. 52 forvaltere med treff i begge registre."
+  },
+  "storst": {
+   "type": "kortgalleri",
+   "tittel": "De ti største i kroner — og hvor ofte de evalueres",
+   "undertekst": "sum tildelt 2021–2026, mot antall Kudos-evalueringer noensinne",
+   "kort": [
+    {
+     "overtittel": "Lotteri- og stiftelsestilsynet",
+     "verdi": "21,2 mrd kr",
+     "detalj": "2 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Helsedirektoratet",
+     "verdi": "7,0 mrd kr",
+     "detalj": "270 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Barne-, ungdoms- og familiedirektoratet",
+     "verdi": "5,3 mrd kr",
+     "detalj": "ingen evaluering registrert i Kudos"
+    },
+    {
+     "overtittel": "Barne- og familiedepartementet",
+     "verdi": "5,0 mrd kr",
+     "detalj": "135 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Norsk Tipping AS",
+     "verdi": "4,3 mrd kr",
+     "detalj": "ingen evaluering registrert i Kudos"
+    },
+    {
+     "overtittel": "Utenriksdepartementet",
+     "verdi": "4,2 mrd kr",
+     "detalj": "44 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Kultur - og likestillingsdepartementet",
+     "verdi": "3,0 mrd kr",
+     "detalj": "137 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Norges idrettsforbund",
+     "verdi": "2,8 mrd kr",
+     "detalj": "ingen evaluering registrert i Kudos"
+    },
+    {
+     "overtittel": "Kommunal- og distriktsdepartementet",
+     "verdi": "2,2 mrd kr",
+     "detalj": "377 evalueringer i Kudos"
+    },
+    {
+     "overtittel": "Stiftelsen Dam",
+     "verdi": "1,9 mrd kr",
+     "detalj": "ingen evaluering registrert i Kudos"
+    }
+   ]
+  },
+  "uten_kontroll": {
+   "type": "kortgalleri",
+   "tittel": "Størst blant dem uten en eneste evaluering",
+   "undertekst": "18 av 52 forvaltere har aldri vært evaluert i Kudos — her er de som forvalter mest",
+   "kort": [
+    {
+     "overtittel": "Barne-, ungdoms- og familiedirektoratet",
+     "verdi": "5,3 mrd kr",
+     "detalj": "8 307 tildelinger, 2021–2026"
+    },
+    {
+     "overtittel": "Norsk Tipping AS",
+     "verdi": "4,3 mrd kr",
+     "detalj": "372 774 tildelinger, 2021–2026"
+    },
+    {
+     "overtittel": "Norges idrettsforbund",
+     "verdi": "2,8 mrd kr",
+     "detalj": "38 648 tildelinger, 2021–2026"
+    },
+    {
+     "overtittel": "Stiftelsen Dam",
+     "verdi": "1,9 mrd kr",
+     "detalj": "5 060 tildelinger, 2021–2025"
+    },
+    {
+     "overtittel": "Landsrådet for Norges barne- og ungdomsorganisasjoner",
+     "verdi": "803,5 mill. kr",
+     "detalj": "3 024 tildelinger, 2021–2026"
+    },
+    {
+     "overtittel": "Statens sivilrettsforvaltning",
+     "verdi": "329,8 mill. kr",
+     "detalj": "196 tildelinger, 2021–2026"
+    }
+   ]
+  },
+  "motsatt": {
+   "type": "kortgalleri",
+   "tittel": "Mange evalueringer, lite penger",
+   "undertekst": "forvalterne med desidert flest Kudos-evalueringer blant dem med under 1 mrd kr i tildelinger",
+   "kort": [
+    {
+     "overtittel": "Utdanningsdirektoratet",
+     "verdi": "515 evalueringer",
+     "detalj": "113,7 mill. kr tildelt, 2021–2025"
+    },
+    {
+     "overtittel": "Arbeids- og velferdsetaten",
+     "verdi": "301 evalueringer",
+     "detalj": "651,6 mill. kr tildelt, 2021–2026"
+    },
+    {
+     "overtittel": "Miljødirektoratet",
+     "verdi": "232 evalueringer",
+     "detalj": "325,2 mill. kr tildelt, 2021–2025"
+    },
+    {
+     "overtittel": "Husbanken",
+     "verdi": "168 evalueringer",
+     "detalj": "23,2 mill. kr tildelt, 2021–2025"
+    },
+    {
+     "overtittel": "Justis- og beredskapsdepartementet",
+     "verdi": "154 evalueringer",
+     "detalj": "463,1 mill. kr tildelt, 2021–2026"
+    }
+   ]
+  }
+ }
+}
