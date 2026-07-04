@@ -14,6 +14,7 @@ her oppdaterer ikke opplastede skills automatisk — last opp ny zip ved endring
 | `habilitet-klagesaker` | IKKE verifisert — pipeline ikke funnet i repoene; skillen krever steg 0 |
 | `nytt-datasett-onboarding` | Prosedyre verifisert mot praksis i kodebasene; kobles til profilskillen `data-analyse-metodikk` |
 | `kultursektor-datakilder` | Kilderegister; 5 av 6 kilder verifisert mot kjørende hentescripts (statsregnskapet.no gjenstår) |
+| `arkitektur-husregler` | Fullt verifisert mot alle seks repoer; per-repo detaljer ligger i CLAUDE.md i hvert repo |
 
 Skillene forutsetter/refererer disse profilskillene (ligger ikke her):
 `data-analyse-metodikk` (generelt analyserammeverk — Frenzel/Strategic Analytics),
