@@ -24,6 +24,20 @@ under et minutt. Kjør den månedlig, og alltid før du starter et nytt
 prosjekt på en av kildene. Feiler en kilde: åpne `DOK`-lenken øverst i
 scriptet — API-er flytter seg, og scriptet sier hvor du skal lete.
 
+## Kartlegg hvilke datasett som faktisk finnes
+
+`hent_datakatalog.py` viser at søket i Felles datakatalog virker.
+`analyser_datakatalog.py` bygger videre på den for å svare på selve
+spørsmålet «hvilke datasett finnes?»: den søker på tvers av flere emner
+(standard: kultur, bibliotek, museum, idrett, frivillighet, kunst) og
+skriver en rapport med antall treff, topp-utgivere og filformater per
+emne til `api-atlas/analyser/datakatalog_oversikt.json`.
+
+```bash
+python3 api-atlas/eksempler/analyser_datakatalog.py
+python3 api-atlas/eksempler/analyser_datakatalog.py bibliotek museum idrett  # egne emner
+```
+
 ## Kildene
 
 | Kilde | Hva | Nøkkel | Script |
