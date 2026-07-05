@@ -2,9 +2,9 @@
 innhold/tilskuddskontroll/data.json.
 
 Kildedata: tilskudd_data/evalueringer_vs_tilskudd.csv i det lokale
-tilskuddskompasset-repoet — bygget der av analyse/evalueringer_vs_tilskudd.py,
-som kobler tilskudd.no (Lotteri- og stiftelsestilsynets bulk-tildelinger) mot
-Kudos-evalueringsdatabasen (DFØ) på normalisert forvalternavn.
+tilskuddskompasset-repoet — bygget der av analyse/evalueringer_vs_tilskudd.py
+(v2), som for hver forvalter i tilskudd.no-tildelingene spør Kudos'
+aktørsøk (actor_name) direkte om antall evalueringer.
 
 Kjøring (krever at tilskuddskompasset ligger som søsken-mappe under samme
 github-katalog):
@@ -19,8 +19,9 @@ Mangler kildefilen, regenerer den i tilskuddskompasset-repoet:
 VIKTIG METODENOTAT (arvet fra kildescriptet): dette er utforskende
 statistikk, ikke kausalanalyse. Tildelingsdataene dekker bare 2021–2026 —
 altfor kort vindu til å si at evalueringer *fører til* budsjettendringer.
-Navnematchen mellom registrene er dessuten ikke perfekt. Tallene peker på
-mønstre verdt å undersøke, ikke konklusjoner.
+Kudos' aktørsøk er dessuten tekstbasert — stikkprøv forvaltere du kjenner
+på kudos.dfo.no før tall siteres videre. Tallene peker på mønstre verdt
+å undersøke, ikke konklusjoner.
 """
 
 from __future__ import annotations
@@ -106,7 +107,8 @@ def bygg_snapshot(rader: list[dict]) -> dict:
 
     return {
         "meta": {
-            "tittel": "21 milliarder, to evalueringer",
+            "tittel": (f"{round(storst['sum_tildelt_2021_2026'] / 1_000_000_000)} milliarder, "
+                       f"{storst['evalueringer_totalt']} evalueringer"),
             "kilde": "Kudos (DFØ) og tilskudd.no (Lotteri- og stiftelsestilsynet)",
             "kilde_url": "https://kudos.dfo.no/",
             "dato_hentet": date.today().isoformat(),
@@ -140,8 +142,9 @@ def bygg_snapshot(rader: list[dict]) -> dict:
                     },
                 ],
                 "fotnote": ("Sum tildelt 2021–2026 fra tilskudd.no koblet mot antall "
-                            "evalueringer registrert i Kudos (DFØ), på normalisert "
-                            f"forvalternavn. {len(rader)} forvaltere med treff i begge registre."),
+                            "evalueringer i Kudos (DFØ), hentet via Kudos' eget "
+                            f"tekstbaserte aktørsøk per forvalter. {len(rader)} forvaltere "
+                            "med tildelinger i perioden."),
             },
             "storst": {
                 "type": "kortgalleri",
