@@ -1,6 +1,6 @@
 # API-atlas — norske åpne datakilder
 
-Et kartlagt og kjørbart atlas over offentlige norske API-er, bygget som
+Et kartlagt og kjørbart atlas over 17 offentlige norske datakilder, bygget som
 grunnmur for datahistorier og analyseprosjekter. Hver kilde har ett
 frittstående Python-script i `eksempler/` som
 
@@ -34,6 +34,7 @@ scriptet — API-er flytter seg, og scriptet sier hvor du skal lete.
 | **tilskudd.no** (Lottstift) | statlige tildelinger til frivilligheten | nei | `hent_tilskudd_lottstift.py` |
 | **Felles datakatalog** (Digdir) | kartet over alle åpne datasett | nei | `hent_datakatalog.py` |
 | **Kudos** (DFØ) | evalueringer, årsrapporter, tildelingsbrev | nei | `hent_kudos.py` |
+| **statsregnskapet.no** (DFØ) | statens utgifter/inntekter per kapittel, post og virksomhet siden 2014 | nei | `hent_statsregnskapet.py` |
 | **Kartverket adresser** | geokoding av offisielle adresser | nei | `hent_kartverket_adresser.py` |
 | **Kartverket stedsnavn** | 1M+ stedsnavn med historikk og språk | nei | `hent_kartverket_stedsnavn.py` |
 | **MET Locationforecast** | værvarsel (yr-dataene) | nei¹ | `hent_met_vaervarsel.py` |

@@ -62,9 +62,10 @@ sammen med dokumentasjon av visualiseringstypene og designtokens.
 
 ## API-atlas — kartlagte norske datakilder
 
-[api-atlas/](api-atlas/README.md) er et kjørbart oppslagsverk over 16
-offentlige norske API-er (SSB, Brreg, tilskudd.no, Kudos, Kartverket,
-MET, Entur, Nasjonalbiblioteket, Stortinget m.fl.): ett frittstående
+[api-atlas/](api-atlas/README.md) er et kjørbart oppslagsverk over 17
+offentlige norske datakilder (SSB, Brreg, tilskudd.no, statsregnskapet.no,
+Kudos, Kartverket, MET, Entur, Nasjonalbiblioteket, Stortinget m.fl.):
+ett frittstående
 eksempelscript per kilde, med lisensnotat og prosjektidéer. Sjekk at
 kildene fortsatt svarer med:
 

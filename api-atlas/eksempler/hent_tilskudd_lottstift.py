@@ -12,8 +12,12 @@ Dok:      https://tilskudd.lottstift.no (ingen formell API-dok — endepunktet
 
 Endepunkt:
   GET /api/download/allocation-to-volunteers?year=<budsjettår>
-      Excel-fil med alle tildelinger for ett budsjettår. Arkene heter
-      «Tilskuddsordninger» og «Enkeltstående tilskudd».
+      Svarer (per juli 2026) med 307 til
+      tilskudd-service.lottstift.no/file/download/<uuid>, som leverer
+      Excel-filen for budsjettåret. Peker-URL-en ligger også som ren
+      tekst i svarkroppen. Arkene heter «Tilskuddsordninger» og
+      «Enkeltstående tilskudd». NB: filen har ødelagte dimensjoner —
+      openpyxl i read_only-modus trenger ws.reset_dimensions().
 
 Full pipeline med parsing, normalisering og statistikk finnes i
 tilskuddskompasset/hent_bulk_tildelinger.py (krever requests + openpyxl).
@@ -43,19 +47,27 @@ def sjekk_aar(aar: int) -> tuple[str, int]:
     """Åpner nedlastingen for ett år og leser bare starten av filen.
 
     Returnerer (content-type, antall bytes lest). Excel-filer (xlsx) er
-    zip-arkiver og starter alltid med magibytene «PK».
+    zip-arkiver og starter alltid med magibytene «PK». Endepunktet svarer
+    med en peker (307 og/eller URL i kroppen) til selve filen; urllib
+    følger redirecten selv, men en peker i kroppen følges her eksplisitt.
     """
     url = f"{API}?{urllib.parse.urlencode({'year': aar})}"
-    req = urllib.request.Request(url, headers={"User-Agent": BRUKERAGENT})
-    with urllib.request.urlopen(req, timeout=120) as svar:
-        start = svar.read(4)
-        ctype = svar.headers.get("Content-Type", "?")
-    if not start.startswith(b"PK"):
+    for hopp in range(2):
+        req = urllib.request.Request(url, headers={"User-Agent": BRUKERAGENT})
+        with urllib.request.urlopen(req, timeout=120) as svar:
+            start = svar.read(256)
+            ctype = svar.headers.get("Content-Type", "?")
+        if start.startswith(b"PK"):
+            return ctype, len(start)
+        peker = start.decode("utf-8", "replace").strip()
+        if hopp == 0 and peker.startswith("https://tilskudd-service.lottstift.no/"):
+            url = peker
+            continue
         raise ValueError(
-            f"svaret for {aar} er ikke en Excel-fil (starter med {start!r}) — "
-            "har endepunktet endret format?"
+            f"svaret for {aar} er verken Excel-fil eller kjent peker "
+            f"(starter med {start[:40]!r}) — har endepunktet endret format?"
         )
-    return ctype, len(start)
+    raise AssertionError("uoppnåelig")
 
 
 def smoke() -> str:
