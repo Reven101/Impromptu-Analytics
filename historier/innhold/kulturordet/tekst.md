@@ -1,6 +1,6 @@
 [[viz:hero]]
 
-Ord har karrierer, akkurat som mennesker. Noen holder seg i jobben livet ut — «brød» betyr omtrent det samme i dag som på Wergelands tid. Andre begynner i det små og ender med å styre departementer. «Kultur» er et slikt ord. Denne historien følger det gjennom to arkiver som knapt kunne vært mer ulike: Nasjonalbibliotekets digitaliserte aviser, der hvert ord i over hundre år med norsk presse er talt opp, og Stortingets saksregister, der politikkens oppmerksomhet ligger sortert sesjon for sesjon.
+Ord har karrierer, akkurat som mennesker. Noen holder seg i jobben livet ut; «brød» betyr omtrent det samme i dag som på Wergelands tid. Andre begynner i det små og ender med å styre departementer. «Kultur» er et slikt ord. Denne historien følger det gjennom to arkiver som knapt kunne vært mer ulike: Nasjonalbibliotekets digitaliserte aviser, der hvert ord i over hundre år med norsk presse er talt opp, og Stortingets saksregister, der politikkens oppmerksomhet ligger sortert sesjon for sesjon.
 
 ## Ordet i avisene
 
