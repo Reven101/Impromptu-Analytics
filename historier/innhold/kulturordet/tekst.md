@@ -8,7 +8,7 @@ På 1800-tallet var «kultur» et fremmedord i ordets egentlige forstand. Det va
 
 [[viz:aviser]]
 
-Det er verdt å stoppe ved *hva* som vokser. Ordet «kultur» er en språklig paraply: det rommer både Ibsen og idrettslag, både symfoniorkester og «ukultur» i arbeidslivet. Veksten i kurven er derfor ikke bare mer teater og flere konserter — det er selve begrepet som utvider seg, og tar stadig større deler av samfunnslivet inn under paraplyen. Språkforskere kaller det betydningsutvidelse. Avisene kaller det hverdag.
+Det er verdt å stoppe ved *hva* som vokser. Ordet «kultur» er en språklig paraply: det rommer både Ibsen og idrettslag, både symfoniorkester og «ukultur» i arbeidslivet. Veksten i kurven er derfor ikke bare mer teater og flere konserter. Det er selve begrepet som utvider seg, og tar stadig større deler av samfunnslivet inn under paraplyen. Språkforskere kaller det betydningsutvidelse. Avisene kaller det hverdag.
 
 ## Ordet på Stortinget
 
