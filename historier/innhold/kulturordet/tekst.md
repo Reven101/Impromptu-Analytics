@@ -4,7 +4,7 @@ Ord har karrierer, akkurat som mennesker. Noen holder seg i jobben livet ut — 
 
 ## Ordet i avisene
 
-På 1800-tallet var «kultur» et fremmedord i ordets egentlige forstand — noe dannede mennesker skrev i tidsskrifter, gjerne med tysk aksent. I avisene forekom det knapt. Så begynner kurven å krype, og den kryper i takt med landet: folkeopplysning, radio, velstand. Målt som andel av all avistekst — slik at avisenes egen vekst ikke lurer oss — brukes ordet mange ganger oftere i dag enn den gang.
+På 1800-tallet var «kultur» et fremmedord i ordets egentlige forstand — noe dannede mennesker skrev i tidsskrifter, gjerne med tysk aksent. I avisene forekom det knapt. Så begynner kurven å krype, og den kryper i takt med landet: folkeopplysning, radio, velstand. Målt som andel av all avistekst, slik at avisenes egen vekst ikke lurer oss, brukes ordet mange ganger oftere i dag enn den gang.
 
 [[viz:aviser]]
 
@@ -12,7 +12,7 @@ Det er verdt å stoppe ved *hva* som vokser. Ordet «kultur» er en språklig pa
 
 ## Ordet på Stortinget
 
-Politikken fulgte etter språket. I Stortingets saksregister kan vi telle sakene som bærer kultur i tittelen eller emnefeltet — kulturmeldinger, budsjettdebatter, spørsmål om alt fra bibliotekfilialer til dataspill.
+Politikken fulgte etter språket. I Stortingets saksregister kan vi telle sakene som bærer kultur i tittelen eller emnefeltet; kulturmeldinger, budsjettdebatter, spørsmål om alt fra bibliotekfilialer til dataspill.
 
 [[viz:storting]]
 
@@ -20,7 +20,7 @@ Kurvene er ujevnere her, for politikk går i rykk og napp: en stortingsmelding u
 
 ## Milepælene
 
-Noen årstall stikker seg ut i begge arkivene — øyeblikk der ordet rykket frem, i spaltene og i salen samtidig.
+Noen årstall stikker seg ut i begge arkivene: øyeblikk der ordet rykket frem, i spaltene og i salen samtidig.
 
 [[viz:milepaeler]]
 
