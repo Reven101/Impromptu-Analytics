@@ -4,7 +4,7 @@ Ord har karrierer, akkurat som mennesker. Noen holder seg i jobben livet ut — 
 
 ## Ordet i avisene
 
-På 1800-tallet var «kultur» et fremmedord i ordets egentlige forstand — noe dannede mennesker skrev i tidsskrifter, gjerne med tysk aksent. I avisene forekom det knapt. Så begynner kurven å krype, og den kryper i takt med landet: folkeopplysning, radio, velstand. Målt som andel av all avistekst, slik at avisenes egen vekst ikke lurer oss, brukes ordet mange ganger oftere i dag enn den gang.
+På 1800-tallet var «kultur» et fremmedord i ordets egentlige forstand. Det var noe dannede mennesker skrev i tidsskrifter, gjerne med tysk aksent. I avisene forekom det knapt. Så begynner kurven å krype, og den kryper i takt med landet: folkeopplysning, radio, velstand. Målt som andel av all avistekst, slik at avisenes egen vekst ikke lurer oss, brukes ordet mange ganger oftere i dag enn den gang.
 
 [[viz:aviser]]
 
