@@ -1,0 +1,2252 @@
+<!doctype html><html><head><meta charset=utf8><title>Kulturfondets geografi 2024–2026</title><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+<style id="print-css">
+@page { size: 297mm 420mm; margin: 16mm 14mm 18mm; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { padding: 0 !important; font-size: 15.5px; }
+.wrap { max-width: 1000px; }
+figure.wide { margin-left: 0 !important; margin-right: 0 !important; }
+header { padding-top: 8px; }
+section { padding: 34px 0; }
+figure, .keys, .finds, .note { break-inside: avoid; page-break-inside: avoid; }
+h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+#tip { display: none !important; }
+/* Tabellene er bredere enn siden. overflow-x:auto klipper i PDF, så innholdet
+   må i stedet få bryte: vi slår av nowrap og strammer inn typografien. */
+.scroller { overflow: visible !important; }
+table { font-size: .68rem; table-layout: auto; }
+th, td { padding: 4px 5px; white-space: normal !important; }
+td:first-child, th:first-child { min-width: 0; }
+#t-fylke { font-size: .58rem; }
+#t-fylke th, #t-fylke td { padding: 3px 3px; }
+#t-fylke td.n { font-size: .565rem; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+
+/* Fylkestabellen har 18 kolonner og får ikke plass i stående format.
+   Den legges derfor på en egen liggende side. */
+@page liggende { size: 420mm 297mm; margin: 16mm 14mm 18mm; }
+#fig-fylke { page: liggende; break-before: page; break-after: page;
+  /* bryt ut av tekstspalten og bruk hele den liggende sidens satsflate (392mm) */
+  width: 392mm; max-width: none; margin-left: calc((100% - 392mm) / 2); }
+#fig-fylke #t-fylke { font-size: .76rem; }
+#fig-fylke #t-fylke th, #fig-fylke #t-fylke td { padding: 5px 6px; }
+#fig-fylke #t-fylke td.n { font-size: .745rem; }
+#fig-fylke #t-fylke td { white-space: nowrap !important; }
+</style>
+</head><body>
+<style>
+:root{
+  --paper:#F5F4F1; --card:#FCFCFA; --ink:#191D21; --ink-2:#4A545C; --ink-3:#6E7880;
+  --rule:#DCDBD4; --rule-2:#EAE9E3;
+  --over:#006A92; --under:#B8551F; --mid:#B4B1A8;
+  --c1:#0072A3; --c2:#CC6633; --c3:#8A5DA8; --c4:#4E8C4A;
+  --grid:#E4E3DC; --chip:#EDECE6;
+  --sans:ui-sans-serif,"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,"SFMono-Regular",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#15181C; --card:#1C2027; --ink:#E8E7E2; --ink-2:#A9B2B9; --ink-3:#8A939B;
+    --rule:#2C323A; --rule-2:#232830;
+    --over:#2E9EC4; --under:#D2793F; --mid:#5A6068;
+    --c1:#2E93BC; --c2:#D2793F; --c3:#9E78C0; --c4:#679E58;
+    --grid:#272D35; --chip:#232830;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15181C; --card:#1C2027; --ink:#E8E7E2; --ink-2:#A9B2B9; --ink-3:#8A939B;
+  --rule:#2C323A; --rule-2:#232830;
+  --over:#2E9EC4; --under:#D2793F; --mid:#5A6068;
+  --c1:#2E93BC; --c2:#D2793F; --c3:#9E78C0; --c4:#679E58;
+  --grid:#272D35; --chip:#232830;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.65;
+  margin:0; padding:0 20px 100px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1100px;margin:0 auto}
+.col{max-width:66ch}
+h1,h2,h3,.eyebrow,.num,table,.chip,figcaption,.tag{font-family:var(--sans)}
+h1{font-size:clamp(2.1rem,5.2vw,3.4rem);line-height:1.03;letter-spacing:-.033em;font-weight:700;margin:0 0 .4em;text-wrap:balance;max-width:16ch}
+h2{font-size:clamp(1.35rem,2.7vw,1.85rem);line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:0 0 .1em;text-wrap:balance}
+h3{font-size:1.02rem;letter-spacing:-.008em;font-weight:650;margin:0 0 .3em}
+p{margin:0 0 1.1em}
+a{color:var(--over)}
+.eyebrow{
+  font-size:.685rem;font-weight:650;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 .55em;display:block;
+}
+header{padding:76px 0 30px;border-bottom:1px solid var(--rule)}
+.standfirst{font-size:1.22rem;line-height:1.5;color:var(--ink-2);max-width:52ch;margin:0}
+.byline{font-family:var(--sans);font-size:.78rem;color:var(--ink-3);margin-top:26px;letter-spacing:.01em}
+section{padding:52px 0;border-bottom:1px solid var(--rule-2)}
+section:last-of-type{border-bottom:0}
+.lede{font-size:1.08rem;color:var(--ink-2);margin:.5em 0 1.6em;max-width:58ch}
+
+/* nøkkeltall */
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin:34px 0 0}
+.key{background:var(--card);padding:17px 18px 15px}
+.key .num{display:block;font-size:1.72rem;font-weight:680;letter-spacing:-.028em;
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.key .lab{font-family:var(--sans);font-size:.735rem;color:var(--ink-3);line-height:1.35;
+  display:block;margin-top:5px}
+
+/* figurer */
+figure{margin:34px 0 0;background:var(--card);border:1px solid var(--rule);padding:24px 22px 18px}
+figure.wide{margin-left:calc(-1 * min(4vw,40px));margin-right:calc(-1 * min(4vw,40px))}
+figcaption{font-size:.795rem;color:var(--ink-3);line-height:1.5;margin-top:14px;
+  padding-top:12px;border-top:1px solid var(--rule-2)}
+.figtitle{font-family:var(--sans);font-weight:650;font-size:.985rem;letter-spacing:-.008em;margin:0 0 3px}
+.figsub{font-family:var(--sans);font-size:.79rem;color:var(--ink-3);margin:0 0 16px}
+.scroller{overflow-x:auto}
+svg{display:block;max-width:100%;height:auto}
+.gridline{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--ink-3);stroke-width:1}
+.tick{font-family:var(--sans);font-size:10.5px;fill:var(--ink-3)}
+.flab{font-family:var(--sans);font-size:11.5px;fill:var(--ink-2)}
+.flab.hi{fill:var(--ink);font-weight:640}
+.val{font-family:var(--mono);font-size:10.8px;fill:var(--ink-2);font-variant-numeric:tabular-nums}
+.mark{transition:opacity .12s}
+g.hoverable:hover .mark{opacity:.72}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:7px 18px;font-family:var(--sans);font-size:.775rem;
+  color:var(--ink-2);margin:0 0 14px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:11px;height:11px;border-radius:2px;flex:none}
+
+/* tabell */
+table{border-collapse:collapse;width:100%;font-size:.8rem;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--rule-2);white-space:nowrap}
+th{font-weight:640;font-size:.7rem;letter-spacing:.045em;text-transform:uppercase;
+  color:var(--ink-3);border-bottom:1px solid var(--rule);vertical-align:bottom}
+td:first-child,th:first-child{text-align:left;white-space:normal;min-width:120px}
+tbody tr:hover{background:var(--chip)}
+td.n{font-family:var(--mono);font-size:.775rem}
+.tag{font-size:.66rem;font-weight:650;letter-spacing:.03em;padding:1.5px 6px;border-radius:3px;
+  background:var(--chip);color:var(--ink-2);white-space:nowrap}
+.tag.up{color:var(--over);background:color-mix(in srgb,var(--over) 13%,transparent)}
+.tag.down{color:var(--under);background:color-mix(in srgb,var(--under) 13%,transparent)}
+.minibar{display:inline-block;height:8px;border-radius:2px;background:var(--c1);vertical-align:middle}
+
+/* funn-blokker */
+.finds{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:30px 0 0}
+.find{background:var(--card);padding:19px 21px}
+.find h3{margin-bottom:.25em}
+.find p{font-size:.925rem;color:var(--ink-2);margin:0}
+.note{border-left:3px solid var(--under);padding:3px 0 3px 17px;margin:30px 0;
+  font-size:.93rem;color:var(--ink-2);max-width:60ch}
+.note strong{color:var(--ink)}
+
+/* tooltip */
+#tip{position:fixed;pointer-events:none;opacity:0;transition:opacity .1s;z-index:99;
+  background:var(--card);border:1px solid var(--rule);padding:9px 12px;font-family:var(--sans);
+  font-size:.775rem;line-height:1.5;color:var(--ink);box-shadow:0 4px 18px rgba(0,0,0,.14);
+  max-width:250px}
+#tip b{font-weight:650}
+#tip .r{display:flex;justify-content:space-between;gap:16px;color:var(--ink-2)}
+#tip .r span:last-child{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--over);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:640px){
+  body{font-size:16px;padding:0 15px 70px}
+  figure{padding:18px 14px 14px}
+  figure.wide{margin-left:0;margin-right:0}
+}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Norsk kulturfond · geografisk analyse</span>
+  <h1>Hvem søker, og hvem får</h1>
+  <p class="standfirst">8 372 kunstnere, selskaper, festivaler og institusjoner sendte
+  19 566 søknader til Kulturfondet på tre år. 1,86 milliarder kroner ble delt ut.
+  Vinnerne og taperne er ikke dem sentrum–periferi-fortellingen peker på.</p>
+  <p class="byline">Søknadsfrister 30.11.2023 – 18.06.2026 · Kilde: Kulturdirektoratets
+  vedtakseksport pr. 13.08.2026 · Befolkningstall: SSB tabell 06913, 1.1.2026</p>
+  <div class="note" style="border-color:var(--over);margin-top:30px">
+    <strong>Om «fylke» i denne analysen.</strong> Et fylke søker ikke om noe. Alle tall
+    her gjelder <strong>søkerens registrerte adresse</strong> — hvor kunstneren bor eller
+    virksomheten er registrert. Når det står at Akershus får lite, betyr det at søkere med
+    adresse i Akershus får lite. Det sier ingenting om hvor aktiviteten foregår: en turné
+    i Nordland finansiert av et Oslo-basert kompani teller her som Oslo.
+  </div>
+</header>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Hovedbildet</span>
+    <h2>Én av åtte nordmenn bor i Oslo. Nesten halvparten av kronene går til søkere der.</h2>
+    <p class="lede">Kulturfondet er ikke et fordelingspolitisk virkemiddel, og skal det
+    heller ikke være. Men skjevheten er så stor, og så ulikt fordelt mellom ordningene,
+    at den er verdt å kjenne presist.</p>
+  </div>
+  <div class="keys">
+    <div class="key"><span class="num" id="k1">43,8 %</span><span class="lab">av kronene går til søkere med Oslo-adresse</span></div>
+    <div class="key"><span class="num">12,9 %</span><span class="lab">av befolkningen bor i Oslo</span></div>
+    <div class="key"><span class="num">3 200</span><span class="lab">av de 8 372 søkerne er registrert i Oslo</span></div>
+    <div class="key"><span class="num">35,5 %</span><span class="lab">av søknadene innvilges nasjonalt</span></div>
+    <div class="key"><span class="num">10,8×</span><span class="lab">forskjell i kroner per innbygger, Oslo mot Buskerud</span></div>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Kroneandel målt mot befolkningsandel</p>
+    <p class="figsub">Indeks der 100 = fylket får nøyaktig sin befolkningsandel av kronene</p>
+    <div class="scroller"><div id="c-indeks"></div></div>
+    <figcaption>Søkere i fire fylker henter inn mer enn fylkets befolkningsandel. I elleve
+    fylker henter de inn mindre. Oslo-søkerne får 3,4 ganger befolkningsandelen;
+    Buskerud-søkerne under en tredel. Hold musepekeren over en søyle for detaljer.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Det ventede mønsteret ville vært et sentrum som vinner og en periferi som taper.
+    Det er ikke det tallene viser. <strong>Kunstnere og virksomheter i Finnmark og Troms
+    henter begge inn klart mer enn befolkningsandelen tilsier</strong> — søkerne i
+    Finnmark får dobbelt så mye per innbygger som folketallet skulle tilsi. Taperne er i
+    stedet søkerne i et sammenhengende belte på det sentrale Østlandet: Akershus, Østfold,
+    Buskerud og Vestfold, med Agder like ved i bunnsjiktet.</p>
+    <p>Akershus er det tydeligste utslaget. Fylket er landets største med 749 000
+    innbyggere — flere enn Oslo — men de 749 søkerne derfra mottar 5,5 prosent av
+    kronene, mot en befolkningsandel på 13,3 prosent. Til sammenlikning står de 3 200
+    søkerne i Oslo for 41 prosent av alle søknader som sendes inn.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Søkerne</span>
+    <h2>Enkeltkunstnere og virksomheter er to ulike søkergrupper — og de fordeler seg ulikt</h2>
+    <p class="lede">Om lag 3 500 av de 8 372 søkerne er enkeltpersoner — kunstnere som
+    søker i eget navn — og om lag 5 100 er organisasjoner: selskaper, stiftelser,
+    festivaler, visningssteder og kommuner. De to gruppene har svært ulik uttelling, og
+    svært ulik geografi.</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Hvor tett sitter søkerne?</p>
+    <p class="figsub">Unike søkere per 10 000 innbyggere, fordelt på enkeltpersoner og organisasjoner</p>
+    <div class="scroller"><div id="c-sokere"></div></div>
+    <figcaption>Samme søker teller én gang uansett hvor mange søknader vedkommende sendte
+    i perioden. Tallet måler bredden i den profesjonelle søkerbasen, ikke søknadsmengden.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Forskjellen i tetthet av <strong>enkeltkunstnere</strong> er den mest dramatiske
+    størrelsen i hele materialet. Oslo har 22,0 kunstnere som søker per 10 000 innbyggere.
+    Møre og Romsdal har 2,1 — en forskjell på over ti ganger. I absolutte tall: 1 602
+    enkeltkunstnere i Oslo søkte i perioden, mot 57 i Møre og Romsdal og 29 i Finnmark.</p>
+    <p>For <strong>organisasjoner</strong> er bildet et helt annet. Her ligger Oslo på 23,3
+    per 10 000, men <strong>Finnmark følger rett bak med 15,7 og Troms med 12,3</strong>.
+    Nederst ligger ikke distriktene, men Møre og Romsdal (5,1), Østfold (5,2), Vestfold
+    (5,3) og Rogaland (5,4) — og Akershus på 5,6.</p>
+    <p>Dette forklarer Nord-Norge-resultatet. <strong>Finnmark vinner ikke gjennom
+    enkeltkunstnere, men gjennom et uvanlig tett lag av institusjoner, festivaler og
+    arrangører</strong> — og organisasjonssøknader fra Finnmark innvilges i 56,0 prosent av
+    tilfellene, den høyeste raten i landet. Bare 10,7 prosent av søknadene derfra kommer
+    fra enkeltpersoner, mot 36,9 prosent i Oslo.</p>
+    <p>Skillet betyr noe fordi de to gruppene ikke lykkes likt. <strong>Organisasjoner får
+    innvilget 39,5 prosent av søknadene sine, enkeltpersoner 26,9 prosent</strong> — og
+    når de først får ja, får enkeltpersoner 109 000 kroner i snitt mot organisasjonenes
+    320 000. Samlet går bare 9,8 prosent av Kulturfondets kroner til enkeltpersoner.
+    I Oslo står enkeltkunstnere for 36,9 prosent av søknadene, men 11,4 prosent av kronene
+    søkerne der mottar. Bildet av Oslo som kunstnerbyen stemmer i antall søkere — men
+    pengene går i hovedsak til virksomheter.</p>
+    <p>Det finnes ett unntak verdt å merke seg: <strong>i Buskerud går 31,1 prosent av
+    kronene til enkeltpersoner</strong>, den klart høyeste andelen i landet. Ikke fordi
+    kunstnerne der gjør det bra, men fordi fylket nesten ikke har store institusjonelle
+    søkere — den største mottakeren i Buskerud gjennom tre år fikk 2,0 millioner kroner.
+    I Oslo fikk den største 17,6 millioner.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Diagnose</span>
+    <h2>To helt ulike måter å tape på</h2>
+    <p class="lede">Et fylke kan få lite av to grunner: få søker, eller de som søker får
+    nei. Skillet avgjør hva slags tiltak som virker, og de to gruppene krever motsatt
+    medisin.</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Søkerbase mot ordningsjustert innvilgelsesgrad</p>
+    <p class="figsub">Boblestørrelse = tildelte millioner kroner. Stiplede linjer = landssnitt</p>
+    <div class="scroller"><div id="c-scatter"></div></div>
+    <figcaption>Vannrett akse: unike søkere per 10 000 innbyggere — hvor bred den
+    profesjonelle søkerbasen er. Loddrett akse: innvilgelsesgrad justert for hvilke
+    ordninger søkerne faktisk søker på (se metodenote). Søkerne nede til venstre har
+    begge problemene samtidig.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Nede til venstre finner vi søkerne i <strong>Akershus, Østfold, Vestfold og
+    Agder</strong>: få av dem søker, og de som gjør det får sjeldnere ja enn andre. Det er
+    den alvorlige kombinasjonen, fordi ingen av delene lar seg løse med tiltak mot den
+    andre.</p>
+    <p><strong>Søkerne i Rogaland og Møre og Romsdal</strong> ligger derimot lavt bare på
+    den ene aksen: de treffer helt normalt når de først sender inn, men de er svært få.
+    Rogaland har 2,5 enkeltkunstnere og 5,4 organisasjoner som søker per 10 000
+    innbyggere, mot Oslos 22,0 og 23,3. Utfordringen er å få flere til å søke, ikke å
+    heve kvaliteten på dem som gjør det.</p>
+    <p>Øverst finner vi <strong>søkerne i Finnmark og Troms</strong>, med høy uttelling
+    tross et lite folketall. Etter justering for ordningsmiks får søkere i Finnmark
+    innvilget 49,4 prosent av søknadene sine, mot 35,5 prosent nasjonalt.</p>
+  </div>
+
+  <figure>
+    <p class="figtitle">Hva forklarer avviket fra landssnittet i kroner per innbygger?</p>
+    <p class="figsub">Logaritmisk dekomponering i tre faktorer som summerer til totalavviket</p>
+    <div class="scroller"><div id="c-dekomp"></div></div>
+    <figcaption>Kroner per innbygger er produktet av tre ting: hvor mange som søker,
+    hvor ofte de får ja, og hvor store tildelingene er. Søylene viser hvor mye hver
+    faktor trekker fylket over eller under landssnittet.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Dekomponeringen viser at <strong>søkeaktivitet er den dominerende faktoren nesten
+    overalt</strong>. Etterslepet på 63 poeng for søkerne i Rogaland består av 86 poeng
+    svak søkeaktivitet, delvis motvirket av at de søker om større prosjekter enn snittet.
+    Søkerne i Buskerud kommer dårligst ut totalt, men de får ja like ofte som andre —
+    problemet der er at få søker, og at prosjektene de søker om er små.</p>
+    <p>Søkerne i Akershus skiller seg ut ved å ligge under på <em>alle tre</em> faktorene
+    samtidig. Det er det eneste fylket der ingen av delene kompenserer for de andre.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Signifikans</span>
+    <h2>Skjevheten forsvinner ikke når man justerer for hva fylkene søker på</h2>
+    <p class="lede">Søkerne i ulike deler av landet søker på ulike ordninger, og ordningene har svært ulik
+    innvilgelsesgrad — fra 15,6 prosent på scenekunst forprosjekt til 69,4 prosent på
+    litteraturproduksjon. En rå sammenlikning blander sammen «hvor godt gikk det» med
+    «hva søkte de på».</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Rå og ordningsjustert innvilgelsesgrad per fylke</p>
+    <p class="figsub">Justert med indirekte standardisering over 36 ordninger × 3 årganger</p>
+    <div class="scroller"><div id="c-just"></div></div>
+    <figcaption>Justeringen flytter lite. Sju fylker avviker statistisk signifikant fra
+    landssnittet (Mantel-Haenszel-test, p &lt; 0,05): Finnmark, Troms og Oslo over,
+    Akershus, Vestfold, Østfold og Agder under.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Dette er det viktigste enkeltfunnet for direktoratet. Hvis skjevheten hadde vært et
+    sammensetningsfenomen — at søkerne i Akershus tilfeldigvis søker på de vanskeligste
+    ordningene — ville justeringen løftet dem. Det gjør den ikke. <strong>Søkere i
+    Akershus får innvilget 31,0 prosent justert, mot 35,5 prosent nasjonalt, og avviket er
+    klart signifikant</strong> (z = −3,9). Søkerne i Vestfold ligger lavest av alle med
+    28,8 prosent.</p>
+    <p>Motsatt: for søkerne i Oslo er den justerte graden på 36,6 prosent bare marginalt
+    over landssnittet. <strong>Oslo-søkerne vinner ikke fordi søknadene deres vurderes
+    mildere — de vinner fordi de er mange og sender mye.</strong> De 3 200 søkerne der står
+    for 41 prosent av alle søknader. Det er en helt annen problemstilling enn
+    forskjellsbehandling i vurderingen, og krever helt andre tiltak.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Ordningsstruktur</span>
+    <h2>Kulturfondet har to geografier, ikke én</h2>
+    <p class="lede">Skillet går ikke mellom kunstarter, men mellom hva ordningen
+    finansierer: et arrangement eller et bygg, eller en produksjon og et kunstnerskap.</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Samme fylke, to ordningstyper</p>
+    <p class="figsub">Indeks der 100 = fylkets befolkningsandel. Logaritmisk akse</p>
+    <div class="scroller"><div id="c-dumbbell"></div></div>
+    <figcaption>Hvert fylke har to punkter forbundet med en strek. Jo lengre strek, jo mer
+    avhenger fylkets uttelling av hvilken type ordning det er snakk om.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>De 11 ordningene for <strong>arrangører, visningssteder, infrastruktur og
+    formidling</strong> fordeler 708 millioner kroner. Søkere med Oslo-adresse tar 27,7
+    prosent, og ved siden av dem henter søkerne i fem fylker inn mer enn
+    befolkningsandelen: Finnmark, Vestland, Troms, Nordland og Møre og Romsdal.
+    Innvilgelsesgraden er 42,0 prosent. Dette er ordninger der søkerne nesten uten unntak
+    er organisasjoner — festivaler, visningssteder, arrangører og kommuner.</p>
+    <p>De 25 ordningene for <strong>produksjon, kunstnerskap og publisering</strong>
+    fordeler 1 156 millioner. Her tar Oslo-søkerne 53,7 prosent, innvilgelsesgraden er
+    32,8 prosent, og utenom Oslo er det bare søkerne i Finnmark og Troms som holder seg
+    over befolkningsandelen. Det er her enkeltkunstnerne søker — og der Oslos tette lag av
+    kunstnere og produksjonsselskaper slår ut.</p>
+    <p>Dette er ikke nødvendigvis en feil. Produksjonsmidler følger dit det profesjonelle
+    feltet faktisk holder til, og feltet er konsentrert. Men det betyr at
+    <strong>direktoratets geografiske profil i praksis avgjøres av hvordan rammen
+    fordeles mellom disse to ordningstypene</strong> — ikke av vurderingene i den enkelte
+    ordning. Vrir man en krone fra produksjon til arrangør, flytter den seg også på kartet.</p>
+    <p>Akershus er det skarpeste eksemplet på hva som kan gå galt. Søkerne der ligger på
+    indeks 52 for produksjonsordninger, men bare <strong>24 for arrangør- og
+    infrastrukturordninger — lavest i landet</strong>. Norges mest folkerike fylke har bare
+    5,6 organisasjoner per 10 000 innbyggere som søker Kulturfondet, og mottar 30 kroner per
+    innbygger til arrangement, visningssteder og kulturbygg. I Oslo er tallet 270 kroner,
+    i Finnmark 370.</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">De 24 største ordningene</p>
+    <p class="figsub">Rangert etter tildelte millioner kroner</p>
+    <div class="scroller"><table id="t-ordning"></table></div>
+    <figcaption>«Oslos kroneandel» er andelen av ordningens tildelte kroner som går til
+    søkere med Oslo-adresse. «Største fylke utenom Oslo» viser hvem som tar nest størst
+    andel. Ordninger med under 150 søknader i perioden er utelatt.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Ytterpunktene er verdt å merke seg. <strong>Litteraturproduksjon</strong> gir 90,4
+    prosent av kronene til Oslo — en forlagsgeografi mer enn en forfattergeografi.
+    <strong>Musikk – andre musikkprosjekter</strong> ligger på 79,1 prosent. I andre enden
+    gir <strong>Litteraturformidling</strong> bare 12,3 prosent til Oslo, og
+    <strong>Utviklingstiltak for kulturaktører</strong> 19,7 prosent.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Utvikling</span>
+    <h2>Fordelingen er stabil. Det som ser ut som bevegelse, er enkelttilsagn.</h2>
+    <p class="lede">Antall søknadsrunder varierer kraftig mellom årene — 10 runder i 2024,
+    11 i 2025, 7 så langt i 2026. Rå årstall måler derfor mest hvor mange runder som lå i
+    uttrekket. Tallene under er sammensetningsjustert.</p>
+  </div>
+
+  <figure class="wide">
+    <p class="figtitle">Søkernes kroneandel etter bostedsfylke, sammensetningsjustert</p>
+    <p class="figsub">Andelen søkerne i fylket henter innenfor hver ordning, vektet med faste ordningsvekter</p>
+    <div class="scroller"><div id="c-trend"></div></div>
+    <figcaption>Justeringen nøytraliserer hvilke ordninger og runder som tilfeldigvis
+    falt i et gitt år. 27 ordninger med frist alle tre år, 18 484 søknader.</figcaption>
+  </figure>
+
+  <div class="note">
+    <strong>Les ikke enkeltår som trend.</strong> Hoppet for Akershus-søkerne fra 3,6 til
+    9,7 prosent ser dramatisk ut, men 25 av de 40 millionene i 2026 gikk til <em>to</em>
+    søkere: De Utvalgte og Nie Teater fikk hvert sitt seksårige kunstnerskapstilsagn. For
+    søkerne i Vestfold står de fem største tilsagnene for 53 prosent av alle kronene, i
+    Østfold 50 prosent. Når så få søkere står for så mye, er årsvariasjonen støy, ikke
+    utvikling. Oslo-serien, som hviler på 1 346 mottakere, er den eneste som er stabil nok
+    til å tolkes direkte — og den ligger mellom 41 og 49 prosent alle tre årene, uten
+    retning.
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Samlet oversikt</span>
+    <h2>Søkerne fylke for fylke</h2>
+  </div>
+  <figure class="wide" id="fig-fylke">
+    <div class="scroller"><table id="t-fylke"></table></div>
+    <figcaption>Alle rader gjelder søkere med registrert adresse i fylket. «Personer» og
+    «organisasjoner» summerer seg litt høyere enn «søkere», fordi noen navn opptrer under
+    begge typer. Indeks 100 =
+    kroneandel lik befolkningsandel. Justert innvilgelsesgrad er korrigert for ordningsmiks;
+    ★ markerer statistisk signifikant avvik fra landssnittet på 35,5 prosent (p &lt; 0,05).
+    «Topp 5-andel» viser hvor stor del av kronene som kommer fra de fem største
+    tilsagnene.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Hva funnene betyr</span>
+    <h2>Fire spørsmål til direktoratet</h2>
+  </div>
+  <div class="finds">
+    <div class="find">
+      <h3>Er søkerne i Akershus en blind flekk?</h3>
+      <p>De 749 søkerne i landets mest folkerike fylke kommer nest lavest ut på kroner per
+      innbygger, lavest i landet på arrangør- og infrastrukturordninger, og signifikant
+      under landssnittet på innvilgelsesgrad selv etter justering for ordningsmiks. Ingen av
+      de tre faktorene i dekomponeringen peker i deres favør. Dette er ikke et
+      distriktsspørsmål, og fanges derfor ikke opp av tiltak innrettet mot distriktene.</p>
+    </div>
+    <div class="find">
+      <h3>Skal bredden i søkermassen måles som et eget mål?</h3>
+      <p>Hvor mange som søker forklarer mer av den geografiske skjevheten enn
+      innvilgelsesgraden gjør. Søkerne i Rogaland, Møre og Romsdal og Buskerud treffer helt
+      normalt når de sender inn — de er bare svært få. Uten et mål på hvor mange kunstnere
+      og virksomheter som faktisk søker per fylke, vil tiltak rettes mot vurderingspraksis,
+      der problemet stort sett ikke ligger.</p>
+    </div>
+    <div class="find">
+      <h3>Er balansen mellom ordningstypene et bevisst valg?</h3>
+      <p>Ordninger der søkerne er arrangører og visningssteder fordeler seg langt jevnere
+      enn ordninger der søkerne er kunstnere og produsenter, og forholdet mellom de to
+      pottene er i praksis direktoratets viktigste geografiske virkemiddel. Spørsmålet er om
+      dagens fordeling er et resultat av en vurdering, eller av historikk.</p>
+    </div>
+    <div class="find">
+      <h3>Hva gjør søkerne i Nord-Norge annerledes?</h3>
+      <p>Søkere i Finnmark og Troms oppnår den høyeste justerte innvilgelsesgraden i landet,
+      på ordninger over hele bredden — og Finnmark har landets nest tetteste lag av
+      organisasjoner som søker, med bare 29 enkeltkunstnere bak seg. Om dette skyldes
+      tettere veiledning, sterkere regionale kompetansemiljøer eller egne prioriteringer, er
+      det i så fall den eneste dokumenterte suksessoppskriften i materialet — og den er
+      ikke undersøkt.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <span class="eyebrow">Metode og forbehold</span>
+    <h2>Slik er tallene regnet ut</h2>
+    <p><strong>Enhet.</strong> Kildefila har én rad per vedtak per bevilgningsår. Flerårige
+    tilsagn gir 3–6 rader for samme søknad, og rådata overteller derfor flerårige ordninger
+    kraftig. De 32 633 radene er aggregert til 19 829 søknader på nøkkelen ordning + frist
+    + søker + tiltakstittel. En søknad regnes som innvilget hvis minst ett bevilgningsår er
+    innvilget. Beløp er summert over alle år i tilsagnet.</p>
+    <p><strong>Søkerne.</strong> 8 372 unike søkere i de 15 fylkene, identifisert ved
+    søkernavn. Om lag 3 500 er registrert som enkeltpersoner og 5 100 som organisasjoner;
+    summen overstiger 8 372 fordi noen navn opptrer i flere fylker eller under begge
+    typer, og 40 søknader mangler søkertype. Tellingene per fylke i tabellen er unike
+    innenfor fylket. En søker som sendte fem søknader teller som én søker, men fem
+    søknader.</p>
+    <p><strong>Geografi.</strong> Søkers fylke, ikke tiltakets sted. En turné i Nordland
+    finansiert av et Oslo-basert kompani teller som Oslo. Dette er en reell begrensning:
+    analysen måler hvor pengene <em>mottas</em>, ikke hvor aktiviteten <em>skjer</em>.
+    Fylkesnummer følger SSBs koder og 2024-inndelingen. 263 søknader (1,3 prosent) fra
+    utenlandske, ukjente eller gammel fylkesinndeling er holdt utenfor
+    fylkessammenlikningen; de mottok 9,9 millioner kroner.</p>
+    <p><strong>Ordningsjustering.</strong> Indirekte standardisering: forventet antall
+    innvilgninger for et fylke er summen over alle strata (ordning × søknadsår) av fylkets
+    antall søknader i strataet ganget med strataets nasjonale innvilgelsesgrad. Observert
+    delt på forventet, ganget med nasjonal grad, gir justert rate. Testet med
+    Mantel-Haenszel over de samme strataene, hypergeometrisk varians.</p>
+    <p><strong>Periodedekning.</strong> Uttrekket dekker søknadsfrister fra 30.11.2023 til
+    18.06.2026, altså i praksis de siste tre årene. Men 2026 er ufullstendig: sju
+    søknadsrunder mot ti–elleve de foregående årene, og seks ordninger mangler helt.
+    Nivåtall per år er derfor <em>ikke</em> sammenlignbare, og trendanalysen bruker
+    sammensetningsjusterte andeler innenfor et balansert panel på 27 ordninger.</p>
+    <p><strong>Avgrensning.</strong> Bare Norsk kulturfond. Statens kunstnerstipend, Fond
+    for lyd og bilde og øvrige ordninger direktoratet forvalter er ikke med, og
+    konklusjonene gjelder ikke for dem. Befolkningstall er per 1.1.2026 og holdes konstant
+    gjennom perioden.</p>
+  </div>
+</section>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script id="data" type="application/json">{
+ "meta": {
+  "periode": "30.11.2023–18.06.2026",
+  "soknader": 19566,
+  "rader_kilde": 32633,
+  "utenfor": 263,
+  "ordninger": 36,
+  "sokt_mrd": 7.83,
+  "tildelt_mrd": 1.86,
+  "nasjonal_grad": 35.5,
+  "uttelling": 23.8,
+  "folketall": 5627400
+ },
+ "fylker": [
+  {
+   "fylke": "Oslo",
+   "soknader": 8015,
+   "innvilget": 2868,
+   "avslag": 5147,
+   "grad": 35.8,
+   "justert": 36.6,
+   "oe": 1.032,
+   "p": 0.0037825751554588782,
+   "sig": true,
+   "sokt_mkr": 3360.0,
+   "tildelt_mkr": 816.6,
+   "uttelling": 24.3,
+   "kr_per_innb": 1121.0,
+   "soknadsandel": 41.0,
+   "kroneandel": 43.8,
+   "befandel": 12.9,
+   "indeks": 338.0,
+   "sokn_per_10k": 110.0,
+   "sokere_per_10k": 43.9,
+   "folketall": 728714,
+   "snitt_tildeling": 285.0,
+   "arrangor_indeks": 214.2,
+   "produksjon_indeks": 414.4,
+   "topp5": 9.4,
+   "mottakere": 1346,
+   "unike_sokere": 3200,
+   "person_soknader": 2955,
+   "org_soknader": 5039,
+   "person_andel": 36.9,
+   "person_grad": 28.1,
+   "org_grad": 40.3,
+   "person_mkr": 92.8,
+   "org_mkr": 723.8,
+   "person_kroneandel": 11.4,
+   "unike_personer": 1602,
+   "unike_org": 1698,
+   "personer_per_10k": 22.0,
+   "org_per_10k": 23.3,
+   "storste_mottaker": "Stiftelsen Oslo World Music Festival",
+   "storste_mkr": 17.6,
+   "gjengangere": 48.2,
+   "Søkeaktivitet": 115.0,
+   "Treffprosent": 1.0,
+   "Prosjektstørrelse": 6.0,
+   "Samlet avvik": 122.0
+  },
+  {
+   "fylke": "Finnmark",
+   "soknader": 318,
+   "innvilget": 166,
+   "avslag": 152,
+   "grad": 52.2,
+   "justert": 49.4,
+   "oe": 1.393,
+   "p": 6.858590140268461e-09,
+   "sig": true,
+   "sokt_mkr": 173.5,
+   "tildelt_mkr": 51.4,
+   "uttelling": 29.6,
+   "kr_per_innb": 683.0,
+   "soknadsandel": 1.6,
+   "kroneandel": 2.8,
+   "befandel": 1.3,
+   "indeks": 206.0,
+   "sokn_per_10k": 42.2,
+   "sokere_per_10k": 19.5,
+   "folketall": 75288,
+   "snitt_tildeling": 310.0,
+   "arrangor_indeks": 294.3,
+   "produksjon_indeks": 152.4,
+   "topp5": 39.7,
+   "mottakere": 90,
+   "unike_sokere": 147,
+   "person_soknader": 34,
+   "org_soknader": 282,
+   "person_andel": 10.7,
+   "person_grad": 17.6,
+   "org_grad": 56.0,
+   "person_mkr": 0.8,
+   "org_mkr": 50.6,
+   "person_kroneandel": 1.6,
+   "unike_personer": 29,
+   "unike_org": 118,
+   "personer_per_10k": 3.9,
+   "org_per_10k": 15.7,
+   "storste_mottaker": "Elle Sofe Company As",
+   "storste_mkr": 16.8,
+   "gjengangere": 40.8,
+   "Søkeaktivitet": 19.0,
+   "Treffprosent": 39.0,
+   "Prosjektstørrelse": 14.0,
+   "Samlet avvik": 72.0
+  },
+  {
+   "fylke": "Troms",
+   "soknader": 630,
+   "innvilget": 260,
+   "avslag": 370,
+   "grad": 41.3,
+   "justert": 43.2,
+   "oe": 1.217,
+   "p": 3.7920074894337574e-05,
+   "sig": true,
+   "sokt_mkr": 326.2,
+   "tildelt_mkr": 75.5,
+   "uttelling": 23.2,
+   "kr_per_innb": 441.0,
+   "soknadsandel": 3.2,
+   "kroneandel": 4.1,
+   "befandel": 3.0,
+   "indeks": 133.0,
+   "sokn_per_10k": 36.8,
+   "sokere_per_10k": 17.6,
+   "folketall": 171218,
+   "snitt_tildeling": 290.0,
+   "arrangor_indeks": 150.5,
+   "produksjon_indeks": 122.5,
+   "topp5": 33.7,
+   "mottakere": 154,
+   "unike_sokere": 301,
+   "person_soknader": 157,
+   "org_soknader": 472,
+   "person_andel": 24.9,
+   "person_grad": 33.8,
+   "org_grad": 43.6,
+   "person_mkr": 5.7,
+   "org_mkr": 69.8,
+   "person_kroneandel": 7.6,
+   "unike_personer": 98,
+   "unike_org": 210,
+   "personer_per_10k": 5.7,
+   "org_per_10k": 12.3,
+   "storste_mottaker": "Stiftelsen Ferske Scener",
+   "storste_mkr": 10.5,
+   "gjengangere": 43.5,
+   "Søkeaktivitet": 6.0,
+   "Treffprosent": 15.0,
+   "Prosjektstørrelse": 8.0,
+   "Samlet avvik": 29.0
+  },
+  {
+   "fylke": "Vestland",
+   "soknader": 2382,
+   "innvilget": 841,
+   "avslag": 1541,
+   "grad": 35.3,
+   "justert": 34.1,
+   "oe": 0.962,
+   "p": 0.11726926356751566,
+   "sig": false,
+   "sokt_mkr": 866.7,
+   "tildelt_mkr": 234.0,
+   "uttelling": 27.0,
+   "kr_per_innb": 355.0,
+   "soknadsandel": 12.2,
+   "kroneandel": 12.6,
+   "befandel": 11.7,
+   "indeks": 107.0,
+   "sokn_per_10k": 36.2,
+   "sokere_per_10k": 14.8,
+   "folketall": 658342,
+   "snitt_tildeling": 278.0,
+   "arrangor_indeks": 150.6,
+   "produksjon_indeks": 80.8,
+   "topp5": 21.3,
+   "mottakere": 425,
+   "unike_sokere": 977,
+   "person_soknader": 621,
+   "org_soknader": 1755,
+   "person_andel": 26.1,
+   "person_grad": 26.6,
+   "org_grad": 38.3,
+   "person_mkr": 12.6,
+   "org_mkr": 221.5,
+   "person_kroneandel": 5.4,
+   "unike_personer": 366,
+   "unike_org": 636,
+   "personer_per_10k": 5.6,
+   "org_per_10k": 9.7,
+   "storste_mottaker": "Bergenstriennalen As",
+   "storste_mkr": 16.5,
+   "gjengangere": 48.9,
+   "Søkeaktivitet": 4.0,
+   "Treffprosent": -1.0,
+   "Prosjektstørrelse": 4.0,
+   "Samlet avvik": 7.0
+  },
+  {
+   "fylke": "Trøndelag",
+   "soknader": 1464,
+   "innvilget": 522,
+   "avslag": 942,
+   "grad": 35.7,
+   "justert": 35.8,
+   "oe": 1.008,
+   "p": 0.7979210849979125,
+   "sig": false,
+   "sokt_mkr": 558.2,
+   "tildelt_mkr": 127.2,
+   "uttelling": 22.8,
+   "kr_per_innb": 260.0,
+   "soknadsandel": 7.5,
+   "kroneandel": 6.8,
+   "befandel": 8.7,
+   "indeks": 79.0,
+   "sokn_per_10k": 29.9,
+   "sokere_per_10k": 13.1,
+   "folketall": 489166,
+   "snitt_tildeling": 244.0,
+   "arrangor_indeks": 77.2,
+   "produksjon_indeks": 79.3,
+   "topp5": 22.3,
+   "mottakere": 256,
+   "unike_sokere": 640,
+   "person_soknader": 409,
+   "org_soknader": 1050,
+   "person_andel": 27.9,
+   "person_grad": 24.7,
+   "org_grad": 39.9,
+   "person_mkr": 9.5,
+   "org_mkr": 117.8,
+   "person_kroneandel": 7.4,
+   "unike_personer": 251,
+   "unike_org": 405,
+   "personer_per_10k": 5.1,
+   "org_per_10k": 8.3,
+   "storste_mottaker": "Stiftelsen Midtnorsk Jazzsenter",
+   "storste_mkr": 13.2,
+   "gjengangere": 44.5,
+   "Søkeaktivitet": -15.0,
+   "Treffprosent": 0.0,
+   "Prosjektstørrelse": -10.0,
+   "Samlet avvik": -24.0
+  },
+  {
+   "fylke": "Nordland",
+   "soknader": 586,
+   "innvilget": 215,
+   "avslag": 371,
+   "grad": 36.7,
+   "justert": 35.3,
+   "oe": 0.994,
+   "p": 0.9021544315495305,
+   "sig": false,
+   "sokt_mkr": 250.9,
+   "tildelt_mkr": 55.4,
+   "uttelling": 22.1,
+   "kr_per_innb": 228.0,
+   "soknadsandel": 3.0,
+   "kroneandel": 3.0,
+   "befandel": 4.3,
+   "indeks": 69.0,
+   "sokn_per_10k": 24.1,
+   "sokere_per_10k": 11.6,
+   "folketall": 243272,
+   "snitt_tildeling": 258.0,
+   "arrangor_indeks": 130.4,
+   "produksjon_indeks": 31.0,
+   "topp5": 38.3,
+   "mottakere": 124,
+   "unike_sokere": 282,
+   "person_soknader": 112,
+   "org_soknader": 471,
+   "person_andel": 19.1,
+   "person_grad": 19.6,
+   "org_grad": 40.6,
+   "person_mkr": 1.6,
+   "org_mkr": 53.8,
+   "person_kroneandel": 2.9,
+   "unike_personer": 78,
+   "unike_org": 208,
+   "personer_per_10k": 3.2,
+   "org_per_10k": 8.6,
+   "storste_mottaker": "Nordnorsk Kunstnersenter",
+   "storste_mkr": 9.0,
+   "gjengangere": 46.8,
+   "Søkeaktivitet": -37.0,
+   "Treffprosent": 3.0,
+   "Prosjektstørrelse": -4.0,
+   "Samlet avvik": -37.0
+  },
+  {
+   "fylke": "Innlandet",
+   "soknader": 938,
+   "innvilget": 327,
+   "avslag": 611,
+   "grad": 34.9,
+   "justert": 33.9,
+   "oe": 0.955,
+   "p": 0.26280289139448487,
+   "sig": false,
+   "sokt_mkr": 365.7,
+   "tildelt_mkr": 72.5,
+   "uttelling": 19.8,
+   "kr_per_innb": 191.0,
+   "soknadsandel": 4.8,
+   "kroneandel": 3.9,
+   "befandel": 6.7,
+   "indeks": 58.0,
+   "sokn_per_10k": 24.7,
+   "sokere_per_10k": 10.3,
+   "folketall": 379488,
+   "snitt_tildeling": 222.0,
+   "arrangor_indeks": 97.8,
+   "produksjon_indeks": 33.1,
+   "topp5": 25.5,
+   "mottakere": 157,
+   "unike_sokere": 391,
+   "person_soknader": 265,
+   "org_soknader": 673,
+   "person_andel": 28.3,
+   "person_grad": 30.2,
+   "org_grad": 36.7,
+   "person_mkr": 6.3,
+   "org_mkr": 66.3,
+   "person_kroneandel": 8.6,
+   "unike_personer": 162,
+   "unike_org": 236,
+   "personer_per_10k": 4.3,
+   "org_per_10k": 6.2,
+   "storste_mottaker": "Norsk Litteraturfestival Sigrid Undset-Dagene Sti",
+   "storste_mkr": 7.7,
+   "gjengangere": 44.2,
+   "Søkeaktivitet": -34.0,
+   "Treffprosent": -2.0,
+   "Prosjektstørrelse": -19.0,
+   "Samlet avvik": -55.0
+  },
+  {
+   "fylke": "Telemark",
+   "soknader": 449,
+   "innvilget": 181,
+   "avslag": 268,
+   "grad": 40.3,
+   "justert": 38.4,
+   "oe": 1.082,
+   "p": 0.16072202193723528,
+   "sig": false,
+   "sokt_mkr": 123.9,
+   "tildelt_mkr": 33.2,
+   "uttelling": 26.8,
+   "kr_per_innb": 187.0,
+   "soknadsandel": 2.3,
+   "kroneandel": 1.8,
+   "befandel": 3.2,
+   "indeks": 56.0,
+   "sokn_per_10k": 25.2,
+   "sokere_per_10k": 10.2,
+   "folketall": 177923,
+   "snitt_tildeling": 184.0,
+   "arrangor_indeks": 63.2,
+   "produksjon_indeks": 52.3,
+   "topp5": 23.4,
+   "mottakere": 82,
+   "unike_sokere": 181,
+   "person_soknader": 119,
+   "org_soknader": 330,
+   "person_andel": 26.5,
+   "person_grad": 24.4,
+   "org_grad": 46.1,
+   "person_mkr": 4.1,
+   "org_mkr": 29.1,
+   "person_kroneandel": 12.5,
+   "unike_personer": 61,
+   "unike_org": 123,
+   "personer_per_10k": 3.4,
+   "org_per_10k": 6.9,
+   "storste_mottaker": "Scheen Jazzorkester",
+   "storste_mkr": 4.8,
+   "gjengangere": 45.3,
+   "Søkeaktivitet": -32.0,
+   "Treffprosent": 13.0,
+   "Prosjektstørrelse": -38.0,
+   "Samlet avvik": -57.0
+  },
+  {
+   "fylke": "Møre og Romsdal",
+   "soknader": 415,
+   "innvilget": 162,
+   "avslag": 253,
+   "grad": 39.0,
+   "justert": 36.6,
+   "oe": 1.032,
+   "p": 0.5913232425044457,
+   "sig": false,
+   "sokt_mkr": 213.7,
+   "tildelt_mkr": 50.9,
+   "uttelling": 23.8,
+   "kr_per_innb": 186.0,
+   "soknadsandel": 2.1,
+   "kroneandel": 2.7,
+   "befandel": 4.9,
+   "indeks": 56.0,
+   "sokn_per_10k": 15.2,
+   "sokere_per_10k": 7.0,
+   "folketall": 273169,
+   "snitt_tildeling": 314.0,
+   "arrangor_indeks": 120.8,
+   "produksjon_indeks": 16.7,
+   "topp5": 36.0,
+   "mottakere": 77,
+   "unike_sokere": 191,
+   "person_soknader": 89,
+   "org_soknader": 326,
+   "person_andel": 21.4,
+   "person_grad": 31.5,
+   "org_grad": 41.1,
+   "person_mkr": 5.0,
+   "org_mkr": 45.9,
+   "person_kroneandel": 9.8,
+   "unike_personer": 57,
+   "unike_org": 138,
+   "personer_per_10k": 2.1,
+   "org_per_10k": 5.1,
+   "storste_mottaker": "Stiftelsen Molde International Jazz Festival",
+   "storste_mkr": 7.3,
+   "gjengangere": 40.3,
+   "Søkeaktivitet": -83.0,
+   "Treffprosent": 10.0,
+   "Prosjektstørrelse": 16.0,
+   "Samlet avvik": -57.0
+  },
+  {
+   "fylke": "Rogaland",
+   "soknader": 749,
+   "innvilget": 268,
+   "avslag": 481,
+   "grad": 35.8,
+   "justert": 34.7,
+   "oe": 0.979,
+   "p": 0.6417118858773526,
+   "sig": false,
+   "sokt_mkr": 318.3,
+   "tildelt_mkr": 90.1,
+   "uttelling": 28.3,
+   "kr_per_innb": 177.0,
+   "soknadsandel": 3.8,
+   "kroneandel": 4.8,
+   "befandel": 9.0,
+   "indeks": 53.0,
+   "sokn_per_10k": 14.7,
+   "sokere_per_10k": 7.6,
+   "folketall": 508922,
+   "snitt_tildeling": 336.0,
+   "arrangor_indeks": 76.9,
+   "produksjon_indeks": 39.0,
+   "topp5": 25.6,
+   "mottakere": 155,
+   "unike_sokere": 388,
+   "person_soknader": 197,
+   "org_soknader": 552,
+   "person_andel": 26.3,
+   "person_grad": 19.8,
+   "org_grad": 41.5,
+   "person_mkr": 5.5,
+   "org_mkr": 84.6,
+   "person_kroneandel": 6.1,
+   "unike_personer": 128,
+   "unike_org": 276,
+   "personer_per_10k": 2.5,
+   "org_per_10k": 5.4,
+   "storste_mottaker": "Tou Scene As",
+   "storste_mkr": 9.4,
+   "gjengangere": 45.9,
+   "Søkeaktivitet": -86.0,
+   "Treffprosent": 1.0,
+   "Prosjektstørrelse": 22.0,
+   "Samlet avvik": -63.0
+  },
+  {
+   "fylke": "Agder",
+   "soknader": 678,
+   "innvilget": 212,
+   "avslag": 466,
+   "grad": 31.3,
+   "justert": 31.2,
+   "oe": 0.88,
+   "p": 0.014060634082549317,
+   "sig": true,
+   "sokt_mkr": 250.6,
+   "tildelt_mkr": 47.7,
+   "uttelling": 19.0,
+   "kr_per_innb": 147.0,
+   "soknadsandel": 3.5,
+   "kroneandel": 2.6,
+   "befandel": 5.8,
+   "indeks": 44.0,
+   "sokn_per_10k": 20.9,
+   "sokere_per_10k": 10.5,
+   "folketall": 323930,
+   "snitt_tildeling": 225.0,
+   "arrangor_indeks": 53.5,
+   "produksjon_indeks": 38.8,
+   "topp5": 32.6,
+   "mottakere": 116,
+   "unike_sokere": 340,
+   "person_soknader": 206,
+   "org_soknader": 471,
+   "person_andel": 30.4,
+   "person_grad": 21.4,
+   "org_grad": 35.7,
+   "person_mkr": 5.3,
+   "org_mkr": 42.3,
+   "person_kroneandel": 11.2,
+   "unike_personer": 115,
+   "unike_org": 235,
+   "personer_per_10k": 3.6,
+   "org_per_10k": 7.3,
+   "storste_mottaker": "Tori Wrånes As",
+   "storste_mkr": 8.1,
+   "gjengangere": 42.6,
+   "Søkeaktivitet": -51.0,
+   "Treffprosent": -13.0,
+   "Prosjektstørrelse": -18.0,
+   "Samlet avvik": -81.0
+  },
+  {
+   "fylke": "Akershus",
+   "soknader": 1518,
+   "innvilget": 463,
+   "avslag": 1055,
+   "grad": 30.5,
+   "justert": 31.0,
+   "oe": 0.874,
+   "p": 0.0001017614164374736,
+   "sig": true,
+   "sokt_mkr": 517.7,
+   "tildelt_mkr": 102.7,
+   "uttelling": 19.8,
+   "kr_per_innb": 137.0,
+   "soknadsandel": 7.8,
+   "kroneandel": 5.5,
+   "befandel": 13.3,
+   "indeks": 41.0,
+   "sokn_per_10k": 20.3,
+   "sokere_per_10k": 10.0,
+   "folketall": 749207,
+   "snitt_tildeling": 222.0,
+   "arrangor_indeks": 24.1,
+   "produksjon_indeks": 52.0,
+   "topp5": 32.3,
+   "mottakere": 264,
+   "unike_sokere": 749,
+   "person_soknader": 592,
+   "org_soknader": 925,
+   "person_andel": 39.0,
+   "person_grad": 26.7,
+   "org_grad": 32.9,
+   "person_mkr": 20.1,
+   "org_mkr": 82.6,
+   "person_kroneandel": 19.6,
+   "unike_personer": 356,
+   "unike_org": 420,
+   "personer_per_10k": 4.8,
+   "org_per_10k": 5.6,
+   "storste_mottaker": "De Utvalgte As",
+   "storste_mkr": 14.6,
+   "gjengangere": 38.6,
+   "Søkeaktivitet": -54.0,
+   "Treffprosent": -15.0,
+   "Prosjektstørrelse": -19.0,
+   "Samlet avvik": -88.0
+  },
+  {
+   "fylke": "Vestfold",
+   "soknader": 418,
+   "innvilget": 123,
+   "avslag": 295,
+   "grad": 29.4,
+   "justert": 28.8,
+   "oe": 0.811,
+   "p": 0.002043134141899494,
+   "sig": true,
+   "sokt_mkr": 173.7,
+   "tildelt_mkr": 35.4,
+   "uttelling": 20.4,
+   "kr_per_innb": 137.0,
+   "soknadsandel": 2.1,
+   "kroneandel": 1.9,
+   "befandel": 4.6,
+   "indeks": 41.0,
+   "sokn_per_10k": 16.1,
+   "sokere_per_10k": 8.3,
+   "folketall": 259332,
+   "snitt_tildeling": 288.0,
+   "arrangor_indeks": 44.7,
+   "produksjon_indeks": 39.2,
+   "topp5": 53.0,
+   "mottakere": 75,
+   "unike_sokere": 215,
+   "person_soknader": 125,
+   "org_soknader": 293,
+   "person_andel": 29.9,
+   "person_grad": 22.4,
+   "org_grad": 32.4,
+   "person_mkr": 2.2,
+   "org_mkr": 33.2,
+   "person_kroneandel": 6.2,
+   "unike_personer": 84,
+   "unike_org": 137,
+   "personer_per_10k": 3.2,
+   "org_per_10k": 5.3,
+   "storste_mottaker": "Ingrid Berger Myhre / Foot Forward",
+   "storste_mkr": 12.5,
+   "gjengangere": 37.2,
+   "Søkeaktivitet": -77.0,
+   "Treffprosent": -19.0,
+   "Prosjektstørrelse": 7.0,
+   "Samlet avvik": -89.0
+  },
+  {
+   "fylke": "Østfold",
+   "soknader": 499,
+   "innvilget": 154,
+   "avslag": 345,
+   "grad": 30.9,
+   "justert": 30.7,
+   "oe": 0.865,
+   "p": 0.01650154312075469,
+   "sig": true,
+   "sokt_mkr": 200.7,
+   "tildelt_mkr": 42.8,
+   "uttelling": 21.3,
+   "kr_per_innb": 135.0,
+   "soknadsandel": 2.6,
+   "kroneandel": 2.3,
+   "befandel": 5.6,
+   "indeks": 41.0,
+   "sokn_per_10k": 15.8,
+   "sokere_per_10k": 8.2,
+   "folketall": 316448,
+   "snitt_tildeling": 278.0,
+   "arrangor_indeks": 36.8,
+   "produksjon_indeks": 43.3,
+   "topp5": 49.6,
+   "mottakere": 82,
+   "unike_sokere": 258,
+   "person_soknader": 155,
+   "org_soknader": 344,
+   "person_andel": 31.1,
+   "person_grad": 18.1,
+   "org_grad": 36.6,
+   "person_mkr": 3.0,
+   "org_mkr": 39.8,
+   "person_kroneandel": 7.0,
+   "unike_personer": 105,
+   "unike_org": 163,
+   "personer_per_10k": 3.3,
+   "org_per_10k": 5.2,
+   "storste_mottaker": "Særp Tropez As",
+   "storste_mkr": 17.6,
+   "gjengangere": 43.4,
+   "Søkeaktivitet": -79.0,
+   "Treffprosent": -14.0,
+   "Prosjektstørrelse": 3.0,
+   "Samlet avvik": -90.0
+  },
+  {
+   "fylke": "Buskerud",
+   "soknader": 507,
+   "innvilget": 182,
+   "avslag": 325,
+   "grad": 35.9,
+   "justert": 35.4,
+   "oe": 0.999,
+   "p": 0.9794528443340469,
+   "sig": false,
+   "sokt_mkr": 127.1,
+   "tildelt_mkr": 28.4,
+   "uttelling": 22.4,
+   "kr_per_innb": 104.0,
+   "soknadsandel": 2.6,
+   "kroneandel": 1.5,
+   "befandel": 4.9,
+   "indeks": 31.0,
+   "sokn_per_10k": 18.6,
+   "sokere_per_10k": 8.8,
+   "folketall": 272981,
+   "snitt_tildeling": 156.0,
+   "arrangor_indeks": 40.2,
+   "produksjon_indeks": 26.1,
+   "topp5": 20.9,
+   "mottakere": 93,
+   "unike_sokere": 240,
+   "person_soknader": 200,
+   "org_soknader": 307,
+   "person_andel": 39.4,
+   "person_grad": 34.5,
+   "org_grad": 36.8,
+   "person_mkr": 8.8,
+   "org_mkr": 19.6,
+   "person_kroneandel": 31.1,
+   "unike_personer": 94,
+   "unike_org": 150,
+   "personer_per_10k": 3.4,
+   "org_per_10k": 5.5,
+   "storste_mottaker": "Motvind Kulturlag",
+   "storste_mkr": 2.0,
+   "gjengangere": 42.1,
+   "Søkeaktivitet": -63.0,
+   "Treffprosent": 1.0,
+   "Prosjektstørrelse": -54.0,
+   "Samlet avvik": -116.0
+  }
+ ],
+ "ordninger": [
+  {
+   "navn": "Musikk – konserter og turneer – prosjekter og virksomheter",
+   "kode": "NKF-MME",
+   "soknader": 2431,
+   "mkr": 206.2,
+   "grad": 33.5,
+   "oslo_kr": 37.4,
+   "oslo_sokn": 39.9,
+   "type": "produksjon",
+   "snitt_tkr": 253.0,
+   "toppfylke": "Trøndelag",
+   "toppfylke_andel": 16.7
+  },
+  {
+   "navn": "Musikkfestivaler",
+   "kode": "NKF-MFV",
+   "soknader": 420,
+   "mkr": 190.0,
+   "grad": 61.4,
+   "oslo_kr": 35.6,
+   "oslo_sokn": 18.1,
+   "type": "arrangor",
+   "snitt_tkr": 736.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 19.2
+  },
+  {
+   "navn": "Musikk – konsertarrangører",
+   "kode": "NKF-ARM",
+   "soknader": 1468,
+   "mkr": 114.9,
+   "grad": 48.6,
+   "oslo_kr": 25.5,
+   "oslo_sokn": 18.3,
+   "type": "arrangor",
+   "snitt_tkr": 161.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 11.6
+  },
+  {
+   "navn": "Scenekunst – teaterproduksjoner",
+   "kode": "NKF-FST",
+   "soknader": 747,
+   "mkr": 106.2,
+   "grad": 19.8,
+   "oslo_kr": 48.0,
+   "oslo_sokn": 51.0,
+   "type": "produksjon",
+   "snitt_tkr": 718.0,
+   "toppfylke": "Akershus",
+   "toppfylke_andel": 8.5
+  },
+  {
+   "navn": "Visuell kunst – arrangører",
+   "kode": "NKF-AVK",
+   "soknader": 161,
+   "mkr": 99.0,
+   "grad": 34.2,
+   "oslo_kr": 28.3,
+   "oslo_sokn": 31.1,
+   "type": "arrangor",
+   "snitt_tkr": 1800.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 41.7
+  },
+  {
+   "navn": "Scenekunst – danseproduksjoner",
+   "kode": "NKF-FSD",
+   "soknader": 559,
+   "mkr": 88.1,
+   "grad": 22.0,
+   "oslo_kr": 53.9,
+   "oslo_sokn": 49.9,
+   "type": "produksjon",
+   "snitt_tkr": 716.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 8.0
+  },
+  {
+   "navn": "Tidsskrift og kritikk",
+   "kode": "NKF-TTK",
+   "soknader": 258,
+   "mkr": 72.8,
+   "grad": 62.0,
+   "oslo_kr": 67.3,
+   "oslo_sokn": 66.3,
+   "type": "produksjon",
+   "snitt_tkr": 455.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 13.8
+  },
+  {
+   "navn": "Musikk - publisering",
+   "kode": "NKF-PUB",
+   "soknader": 1818,
+   "mkr": 68.6,
+   "grad": 41.9,
+   "oslo_kr": 53.9,
+   "oslo_sokn": 47.7,
+   "type": "produksjon",
+   "snitt_tkr": 90.0,
+   "toppfylke": "Trøndelag",
+   "toppfylke_andel": 9.7
+  },
+  {
+   "navn": "Musikk – komposisjon og produksjon",
+   "kode": "NKF-BST",
+   "soknader": 1477,
+   "mkr": 66.5,
+   "grad": 35.7,
+   "oslo_kr": 47.1,
+   "oslo_sokn": 43.8,
+   "type": "produksjon",
+   "snitt_tkr": 126.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 14.7
+  },
+  {
+   "navn": "Tverrfaglig kulturvirksomhet",
+   "kode": "NKF-TKV",
+   "soknader": 438,
+   "mkr": 56.6,
+   "grad": 36.3,
+   "oslo_kr": 21.9,
+   "oslo_sokn": 27.6,
+   "type": "arrangor",
+   "snitt_tkr": 356.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 14.7
+  },
+  {
+   "navn": "Litteraturformidling",
+   "kode": "NKF-LFO",
+   "soknader": 428,
+   "mkr": 50.0,
+   "grad": 66.4,
+   "oslo_kr": 12.3,
+   "oslo_sokn": 23.6,
+   "type": "arrangor",
+   "snitt_tkr": 176.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 19.6
+  },
+  {
+   "navn": "Bygg og infrastruktur - ARENA",
+   "kode": "NKF-RFK",
+   "soknader": 342,
+   "mkr": 48.9,
+   "grad": 38.6,
+   "oslo_kr": 25.3,
+   "oslo_sokn": 20.2,
+   "type": "arrangor",
+   "snitt_tkr": 370.0,
+   "toppfylke": "Innlandet",
+   "toppfylke_andel": 11.9
+  },
+  {
+   "navn": "Musikk – andre musikkprosjekter",
+   "kode": "NKF-PAM",
+   "soknader": 532,
+   "mkr": 38.0,
+   "grad": 25.0,
+   "oslo_kr": 79.1,
+   "oslo_sokn": 42.7,
+   "type": "produksjon",
+   "snitt_tkr": 286.0,
+   "toppfylke": "Trøndelag",
+   "toppfylke_andel": 4.9
+  },
+  {
+   "navn": "Kulturvern – prosjekter",
+   "kode": "NKF-PKV",
+   "soknader": 748,
+   "mkr": 32.2,
+   "grad": 27.3,
+   "oslo_kr": 27.5,
+   "oslo_sokn": 23.4,
+   "type": "arrangor",
+   "snitt_tkr": 158.0,
+   "toppfylke": "Finnmark",
+   "toppfylke_andel": 11.4
+  },
+  {
+   "navn": "Visuell kunst – produksjon og formidling – kunstnere",
+   "kode": "NKF-VIS",
+   "soknader": 1840,
+   "mkr": 31.0,
+   "grad": 26.0,
+   "oslo_kr": 48.6,
+   "oslo_sokn": 42.8,
+   "type": "produksjon",
+   "snitt_tkr": 65.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 10.9
+  },
+  {
+   "navn": "Visuell kunst – produksjon og formidling – visningssteder",
+   "kode": "NKF-VIV",
+   "soknader": 654,
+   "mkr": 30.9,
+   "grad": 37.8,
+   "oslo_kr": 23.5,
+   "oslo_sokn": 27.5,
+   "type": "arrangor",
+   "snitt_tkr": 125.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 12.9
+  },
+  {
+   "navn": "Utviklingstiltak for kulturaktører",
+   "kode": "NKF-UKA",
+   "soknader": 422,
+   "mkr": 27.1,
+   "grad": 31.3,
+   "oslo_kr": 19.7,
+   "oslo_sokn": 24.2,
+   "type": "arrangor",
+   "snitt_tkr": 205.0,
+   "toppfylke": "Finnmark",
+   "toppfylke_andel": 17.5
+  },
+  {
+   "navn": "Scenekunst – forprosjekt",
+   "kode": "NKF-FPS",
+   "soknader": 1458,
+   "mkr": 21.7,
+   "grad": 15.6,
+   "oslo_kr": 57.5,
+   "oslo_sokn": 54.9,
+   "type": "produksjon",
+   "snitt_tkr": 96.0,
+   "toppfylke": "Akershus",
+   "toppfylke_andel": 5.5
+  },
+  {
+   "navn": "Litteraturproduksjon",
+   "kode": "NKF-LPO",
+   "soknader": 408,
+   "mkr": 16.9,
+   "grad": 69.4,
+   "oslo_kr": 90.4,
+   "oslo_sokn": 77.9,
+   "type": "produksjon",
+   "snitt_tkr": 60.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 4.5
+  },
+  {
+   "navn": "Scenekunst – gjestespill og turneer",
+   "kode": "NKF-GJE",
+   "soknader": 596,
+   "mkr": 14.5,
+   "grad": 33.1,
+   "oslo_kr": 48.8,
+   "oslo_sokn": 47.0,
+   "type": "arrangor",
+   "snitt_tkr": 74.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 7.7
+  },
+  {
+   "navn": "Visuell kunst – publikasjoner og manusutvikling",
+   "kode": "NKF-MKL",
+   "soknader": 484,
+   "mkr": 11.2,
+   "grad": 34.7,
+   "oslo_kr": 57.2,
+   "oslo_sokn": 48.6,
+   "type": "produksjon",
+   "snitt_tkr": 67.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 15.1
+  },
+  {
+   "navn": "Scenekunst – kompetanseutvikling og publikasjoner",
+   "kode": "NKF-STU",
+   "soknader": 165,
+   "mkr": 9.8,
+   "grad": 37.6,
+   "oslo_kr": 47.1,
+   "oslo_sokn": 54.5,
+   "type": "produksjon",
+   "snitt_tkr": 158.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 18.7
+  },
+  {
+   "navn": "Musikk – særskilte innspillingsprosjekter",
+   "kode": "NKF-FON",
+   "soknader": 431,
+   "mkr": 9.5,
+   "grad": 24.8,
+   "oslo_kr": 39.2,
+   "oslo_sokn": 41.8,
+   "type": "produksjon",
+   "snitt_tkr": 89.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 15.6
+  },
+  {
+   "navn": "Visuell kunst – produksjon – nyetablerte kunstnere",
+   "kode": "NKF-UTS",
+   "soknader": 482,
+   "mkr": 7.8,
+   "grad": 43.4,
+   "oslo_kr": 62.9,
+   "oslo_sokn": 57.7,
+   "type": "produksjon",
+   "snitt_tkr": 37.0,
+   "toppfylke": "Vestland",
+   "toppfylke_andel": 14.7
+  }
+ ],
+ "typer": {
+  "arrangor": {
+   "sum_mkr": 708.3,
+   "soknader": 5734,
+   "innv_grad": 42.0,
+   "oslo_andel": 27.7,
+   "indeks": {
+    "Oslo": 214.2,
+    "Akershus": 24.1,
+    "Vestland": 150.6,
+    "Trøndelag": 77.2,
+    "Rogaland": 76.9,
+    "Innlandet": 97.8,
+    "Agder": 53.5,
+    "Nordland": 130.4,
+    "Troms": 150.5,
+    "Buskerud": 40.2,
+    "Østfold": 36.8,
+    "Telemark": 63.2,
+    "Vestfold": 44.7,
+    "Møre og Romsdal": 120.8,
+    "Finnmark": 294.3
+   },
+   "kr_per_innb": {
+    "Oslo": 270.0,
+    "Akershus": 30.0,
+    "Vestland": 190.0,
+    "Trøndelag": 97.0,
+    "Rogaland": 97.0,
+    "Innlandet": 123.0,
+    "Agder": 67.0,
+    "Nordland": 164.0,
+    "Troms": 189.0,
+    "Buskerud": 51.0,
+    "Østfold": 46.0,
+    "Telemark": 79.0,
+    "Vestfold": 56.0,
+    "Møre og Romsdal": 152.0,
+    "Finnmark": 370.0
+   }
+  },
+  "produksjon": {
+   "sum_mkr": 1155.8,
+   "soknader": 13832,
+   "innv_grad": 32.8,
+   "oslo_andel": 53.7,
+   "indeks": {
+    "Oslo": 414.4,
+    "Akershus": 52.0,
+    "Vestland": 80.8,
+    "Trøndelag": 79.3,
+    "Rogaland": 39.0,
+    "Innlandet": 33.1,
+    "Agder": 38.8,
+    "Nordland": 31.0,
+    "Troms": 122.5,
+    "Buskerud": 26.1,
+    "Østfold": 43.3,
+    "Telemark": 52.3,
+    "Vestfold": 39.2,
+    "Møre og Romsdal": 16.7,
+    "Finnmark": 152.4
+   },
+   "kr_per_innb": {
+    "Oslo": 851.0,
+    "Akershus": 107.0,
+    "Vestland": 166.0,
+    "Trøndelag": 163.0,
+    "Rogaland": 80.0,
+    "Innlandet": 68.0,
+    "Agder": 80.0,
+    "Nordland": 64.0,
+    "Troms": 252.0,
+    "Buskerud": 54.0,
+    "Østfold": 89.0,
+    "Telemark": 107.0,
+    "Vestfold": 80.0,
+    "Møre og Romsdal": 34.0,
+    "Finnmark": 313.0
+   }
+  }
+ },
+ "trend_kroneandel": {
+  "Oslo": [
+   48.8,
+   41.2,
+   43.1
+  ],
+  "Akershus": [
+   3.6,
+   5.3,
+   9.7
+  ],
+  "Vestland": [
+   13.5,
+   7.5,
+   8.8
+  ],
+  "Trøndelag": [
+   6.1,
+   15.3,
+   5.6
+  ],
+  "Rogaland": [
+   4.5,
+   4.6,
+   2.7
+  ],
+  "Innlandet": [
+   3.8,
+   4.4,
+   3.6
+  ],
+  "Agder": [
+   2.9,
+   1.7,
+   2.4
+  ],
+  "Nordland": [
+   2.0,
+   1.9,
+   3.6
+  ],
+  "Troms": [
+   4.5,
+   3.1,
+   4.8
+  ],
+  "Buskerud": [
+   1.3,
+   1.4,
+   2.3
+  ],
+  "Østfold": [
+   1.6,
+   3.8,
+   2.7
+  ],
+  "Telemark": [
+   1.6,
+   2.6,
+   1.6
+  ],
+  "Vestfold": [
+   1.2,
+   3.0,
+   0.8
+  ],
+  "Møre og Romsdal": [
+   2.5,
+   1.9,
+   3.1
+  ],
+  "Finnmark": [
+   2.0,
+   2.3,
+   5.2
+  ]
+ },
+ "trend_grad": {
+  "Oslo": [
+   35.8,
+   34.8,
+   32.6
+  ],
+  "Akershus": [
+   30.6,
+   31.4,
+   29.1
+  ],
+  "Vestland": [
+   31.6,
+   32.8,
+   31.8
+  ],
+  "Trøndelag": [
+   33.6,
+   37.0,
+   29.2
+  ],
+  "Rogaland": [
+   30.4,
+   38.2,
+   25.0
+  ],
+  "Innlandet": [
+   32.5,
+   32.0,
+   29.4
+  ],
+  "Agder": [
+   28.0,
+   34.6,
+   27.2
+  ],
+  "Nordland": [
+   31.9,
+   32.8,
+   32.4
+  ],
+  "Troms": [
+   42.4,
+   38.4,
+   36.5
+  ],
+  "Buskerud": [
+   33.4,
+   35.3,
+   30.3
+  ],
+  "Østfold": [
+   23.4,
+   30.0,
+   24.5
+  ],
+  "Telemark": [
+   40.5,
+   41.5,
+   30.8
+  ],
+  "Vestfold": [
+   27.2,
+   27.4,
+   24.0
+  ],
+  "Møre og Romsdal": [
+   40.1,
+   30.2,
+   31.8
+  ],
+  "Finnmark": [
+   41.0,
+   32.2,
+   47.4
+  ]
+ }
+}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const F = D.fylker;
+const nf = (v,d=1)=>v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const ni = v=>Math.round(v).toLocaleString('nb-NO');
+const NS='http://www.w3.org/2000/svg';
+// Fargene settes som var(...) slik at figurene følger temaet også når leseren
+// bytter etter innlasting. var() virker ikke i SVG-presentasjonsattributter,
+// bare via style – derfor omdirigeres fill/stroke hit.
+const el=(n,a={})=>{
+  const e=document.createElementNS(NS,n);
+  for(const k in a){
+    if((k==='fill'||k==='stroke')&&String(a[k]).startsWith('var(')) e.style[k]=a[k];
+    else e.setAttribute(k,a[k]);
+  }
+  return e;
+};
+const css=n=>`var(${n})`;
+
+/* ---- tooltip ---- */
+const tip=document.getElementById('tip');
+function bindTip(node, html){
+  node.classList.add('hoverable');
+  node.setAttribute('tabindex','0');
+  const show=e=>{
+    tip.innerHTML=html; tip.style.opacity=1;
+    const r=tip.getBoundingClientRect();
+    const x=(e.clientX??node.getBoundingClientRect().left)+14;
+    const y=(e.clientY??node.getBoundingClientRect().top)+14;
+    tip.style.left=Math.min(x,innerWidth-r.width-10)+'px';
+    tip.style.top=Math.min(y,innerHeight-r.height-10)+'px';
+  };
+  node.addEventListener('mouseenter',show);
+  node.addEventListener('mousemove',show);
+  node.addEventListener('focus',show);
+  const hide=()=>tip.style.opacity=0;
+  node.addEventListener('mouseleave',hide);
+  node.addEventListener('blur',hide);
+}
+const row=(l,v)=>`<div class="r"><span>${l}</span><span>${v}</span></div>`;
+const head=f=>`<b>${f}</b>`;
+
+// Hver figur tegnes isolert: kaster én av dem, skal resten av siden fortsatt bygges.
+function tegn(navn,fn){
+  try{ fn(); }
+  catch(e){
+    console.error('Figur «'+navn+'» feilet:',e);
+    const h=document.getElementById(navn);
+    if(h) h.innerHTML='<p style="color:var(--under);font-family:var(--sans);'
+      +'font-size:.85rem">Figuren kunne ikke tegnes.</p>';
+  }
+}
+
+function svg(host,w,h){
+  const s=el('svg',{viewBox:`0 0 ${w} ${h}`,width:w,height:h,role:'img'});
+  document.getElementById(host).appendChild(s); return s;
+}
+
+/* ================= 1. Diverging indeks ================= */
+tegn('c-indeks',function(){
+  const w=880,rowH=27,padT=50,padB=14,L=132,R=86;
+  const d=[...F].sort((a,b)=>b.indeks-a.indeks);
+  const h=padT+d.length*rowH+padB;
+  const s=svg('c-indeks',w,h);
+  const max=380, min=-88;   // rom til venstre for verditallet på lengste negative søyle
+  const x0=L, x1=w-R, span=x1-x0;
+  const X=v=>x0+(v-min)/(max-min)*span;
+  [-50,0,100,200,300].forEach(v=>{
+    s.appendChild(el('line',{x1:X(v),x2:X(v),y1:padT-9,y2:h-padB,
+      class:'gridline','stroke-dasharray':v===0?'':'2 3'}));
+    const t=el('text',{x:X(v),y:padT-15,class:'tick','text-anchor':'middle'});
+    t.textContent=100+v; s.appendChild(t);
+  });
+  const lt=el('text',{x:X(0),y:padT-33,class:'tick','text-anchor':'middle'});
+  lt.textContent='befolkningsandel'; s.appendChild(lt);
+  d.forEach((f,i)=>{
+    const y=padT+i*rowH, v=f.indeks-100, over=v>=0;
+    const g=el('g'); s.appendChild(g);
+    const bx=over?X(0):X(v), bw=Math.max(2,Math.abs(X(v)-X(0)));
+    const r=el('rect',{x:bx,y:y+5,width:bw,height:15,rx:3,class:'mark',
+      fill:over?css('--over'):css('--under')});
+    g.appendChild(r);
+    const lab=el('text',{x:L-11,y:y+16,class:'flab'+(Math.abs(v)>60?' hi':''),'text-anchor':'end'});
+    lab.textContent=f.fylke; g.appendChild(lab);
+    const val=el('text',{x:over?X(v)+7:X(v)-7,y:y+16,class:'val',
+      'text-anchor':over?'start':'end'});
+    val.textContent=ni(f.indeks); g.appendChild(val);
+    bindTip(g,head(f.fylke)+row('Kroneandel',nf(f.kroneandel)+' %')
+      +row('Befolkningsandel',nf(f.befandel)+' %')
+      +row('Tildelt',nf(f.tildelt_mkr)+' mkr')
+      +row('Kr per innbygger',ni(f.kr_per_innb))
+      +row('Søknader',ni(f.soknader)));
+  });
+});
+
+/* ================= 1b. Søkertetthet ================= */
+tegn('c-sokere',function(){
+  const host=document.getElementById('c-sokere');
+  const lg=document.createElement('div'); lg.className='legend';
+  lg.innerHTML=`<span><i class="sw" style="background:${css('--c2')}"></i>Enkeltpersoner (kunstnere som søker i eget navn)</span>`
+   +`<span><i class="sw" style="background:${css('--c1')}"></i>Organisasjoner (selskaper, stiftelser, festivaler, kommuner)</span>`;
+  host.appendChild(lg);
+  const w=880,rowH=30,padT=32,L=132,R=74;
+  const d=[...F].sort((a,b)=>(b.personer_per_10k+b.org_per_10k)-(a.personer_per_10k+a.org_per_10k));
+  const h=padT+d.length*rowH+18;
+  const s=svg('c-sokere',w,h);
+  const max=48, X=v=>L+v/max*(w-L-R);
+  [0,10,20,30,40].forEach(v=>{
+    s.appendChild(el('line',{x1:X(v),x2:X(v),y1:padT-8,y2:h-14,class:'gridline'}));
+    const t=el('text',{x:X(v),y:padT-14,class:'tick','text-anchor':'middle'});
+    t.textContent=v; s.appendChild(t);
+  });
+  d.forEach((f,i)=>{
+    const y=padT+i*rowH, g=el('g'); s.appendChild(g);
+    const wp=X(f.personer_per_10k)-L, wo=X(f.org_per_10k)-L;
+    // 2px luft mellom segmentene så de leses som to størrelser, ikke én
+    g.appendChild(el('rect',{x:L,y:y+4,width:Math.max(1.5,wp),height:17,rx:3,
+      fill:css('--c2'),class:'mark'}));
+    g.appendChild(el('rect',{x:L+wp+2,y:y+4,width:Math.max(1.5,wo),height:17,rx:3,
+      fill:css('--c1'),class:'mark'}));
+    const lab=el('text',{x:L-11,y:y+16,class:'flab','text-anchor':'end'});
+    lab.textContent=f.fylke; g.appendChild(lab);
+    const val=el('text',{x:L+wp+wo+9,y:y+16,class:'val'});
+    val.textContent=nf(f.personer_per_10k)+' + '+nf(f.org_per_10k); g.appendChild(val);
+    bindTip(g,head(f.fylke)
+      +row('Enkeltkunstnere',ni(f.unike_personer)+'  ('+nf(f.personer_per_10k)+' / 10 000)')
+      +row('Organisasjoner',ni(f.unike_org)+'  ('+nf(f.org_per_10k)+' / 10 000)')
+      +row('Innvilget, personer',nf(f.person_grad)+' %')
+      +row('Innvilget, organisasjoner',nf(f.org_grad)+' %')
+      +row('Kroner til personer',nf(f.person_kroneandel)+' % av fylkets')
+      +row('Største mottaker',f.storste_mottaker+' ('+nf(f.storste_mkr)+' mkr)'));
+  });
+});
+
+/* ================= 2. Scatter ================= */
+tegn('c-scatter',function(){
+  const w=880,h=520,L=64,R=26,T=26,B=62;
+  const s=svg('c-scatter',w,h);
+  const xs=F.map(f=>f.sokere_per_10k), ys=F.map(f=>f.justert);
+  const xMax=48, yMin=26, yMax=52;
+  const X=v=>L+(v-4)/(xMax-4)*(w-L-R);
+  const Y=v=>h-B-(v-yMin)/(yMax-yMin)*(h-T-B);
+  const totS=F.reduce((a,f)=>a+f.soknader,0), totP=D.meta.folketall;
+  const xAvg=F.reduce((a,f)=>a+f.mottakere,0)/totP*10000*0+ (function(){
+    let sum=0;F.forEach(f=>sum+=f.sokere_per_10k*f.folketall);return sum/totP;})();
+  const yAvg=D.meta.nasjonal_grad;
+  // grid
+  [10,20,30,40].forEach(v=>{s.appendChild(el('line',{x1:X(v),x2:X(v),y1:T,y2:h-B,class:'gridline'}));
+    const t=el('text',{x:X(v),y:h-B+18,class:'tick','text-anchor':'middle'});t.textContent=v;s.appendChild(t);});
+  [30,35,40,45,50].forEach(v=>{s.appendChild(el('line',{x1:L,x2:w-R,y1:Y(v),y2:Y(v),class:'gridline'}));
+    const t=el('text',{x:L-9,y:Y(v)+4,class:'tick','text-anchor':'end'});t.textContent=v+' %';s.appendChild(t);});
+  // snittlinjer
+  s.appendChild(el('line',{x1:X(xAvg),x2:X(xAvg),y1:T,y2:h-B,stroke:css('--ink-3'),
+    'stroke-width':1,'stroke-dasharray':'4 4','opacity':.55}));
+  s.appendChild(el('line',{x1:L,x2:w-R,y1:Y(yAvg),y2:Y(yAvg),stroke:css('--ink-3'),
+    'stroke-width':1,'stroke-dasharray':'4 4','opacity':.55}));
+  const kvadrant=[];   // reserveres før fylkesetikettene plasseres
+  const qa=(x,y,txt,anch)=>{
+    const t=el('text',{x,y,class:'tick','text-anchor':anch,'font-style':'italic'});
+    t.textContent=txt;t.setAttribute('opacity','.8');s.appendChild(t);
+    const tw=t.getComputedTextLength();
+    kvadrant.push({x:anch==='end'?x-tw:x,y:y-11,w:tw,h:14});
+  };
+  qa(w-R-4,T+14,'bred søkerbase · høy uttelling','end');
+  qa(L+6,h-B-8,'tynn søkerbase · lav uttelling','start');
+  // akselabels
+  const ax=el('text',{x:(L+w-R)/2,y:h-16,class:'tick','text-anchor':'middle'});
+  ax.textContent='Unike søkere per 10 000 innbyggere'; s.appendChild(ax);
+  const ay=el('text',{x:-(T+h-B)/2,y:15,class:'tick','text-anchor':'middle',
+    transform:'rotate(-90)'});
+  ay.textContent='Ordningsjustert innvilgelsesgrad'; s.appendChild(ay);
+  // bobler
+  const rMax=Math.sqrt(Math.max(...F.map(f=>f.tildelt_mkr)));
+  const placed=[...kvadrant];            // opptatte etikettbokser
+  const hit=(a,b)=>a.x<b.x+b.w+3&&b.x<a.x+a.w+3&&a.y<b.y+b.h+2&&b.y<a.y+a.h+2;
+  [...F].sort((a,b)=>b.tildelt_mkr-a.tildelt_mkr).forEach(f=>{
+    const g=el('g'); s.appendChild(g);
+    const r=6+Math.sqrt(f.tildelt_mkr)/rMax*30;
+    const over=f.justert>=yAvg;
+    const cx=X(f.sokere_per_10k), cy=Y(f.justert);
+    const c=el('circle',{cx,cy,r,class:'mark',
+      fill:over?css('--over'):css('--under'),'fill-opacity':.34,
+      stroke:over?css('--over'):css('--under'),'stroke-width':2});
+    g.appendChild(c);
+    const t=el('text',{x:cx,y:cy-r-6,class:'flab'+(f.sig?' hi':''),'text-anchor':'middle'});
+    t.textContent=f.fylke+(f.sig?'★':''); g.appendChild(t);
+    // Etiketten prøver plassering over, under, høyre, venstre – første ledige vinner,
+    // ellers den som kolliderer minst. Uten dette klumper Østlandsfylkene seg sammen.
+    const tw=t.getComputedTextLength(), th=13;
+    const kand=[[cx-tw/2,cy-r-8-th,'middle',cx],[cx-tw/2,cy+r+7,'middle',cx],
+                [cx+r+7,cy-th/2+1,'start',cx+r+7],[cx-r-7-tw,cy-th/2+1,'end',cx-r-7]];
+    let valg=kand.find(k=>{
+      const b={x:k[0],y:k[1],w:tw,h:th};
+      return b.x>L-4&&b.x+b.w<w-R+18&&b.y>T-6&&b.y+b.h<h-B+2
+             && !placed.some(p=>hit(b,p));
+    })||kand[1];
+    t.setAttribute('x',valg[3]); t.setAttribute('y',valg[1]+th-2);
+    t.setAttribute('text-anchor',valg[2]);
+    placed.push({x:valg[0],y:valg[1],w:tw,h:th});
+    bindTip(g,head(f.fylke)+row('Unike søkere / 10 000',nf(f.sokere_per_10k))
+      +row('Rå innvilgelsesgrad',nf(f.grad)+' %')
+      +row('Justert',nf(f.justert)+' %')
+      +row('Tildelt',nf(f.tildelt_mkr)+' mkr')
+      +(f.sig?row('Avvik fra snitt','signifikant'):row('Avvik fra snitt','ikke signifikant')));
+  });
+});
+
+/* ================= 3. Dekomponering ================= */
+tegn('c-dekomp',function(){
+  const keys=['Søkeaktivitet','Treffprosent','Prosjektstørrelse'];
+  const cols=[css('--c1'),css('--c2'),css('--c3')];
+  const host=document.getElementById('c-dekomp');
+  const lg=document.createElement('div'); lg.className='legend';
+  lg.innerHTML=keys.map((k,i)=>`<span><i class="sw" style="background:${cols[i]}"></i>${k}</span>`)
+    .join('')+`<span><i class="sw" style="background:${css('--ink-2')};border-radius:0;height:2px"></i>Samlet avvik</span>`;
+  host.appendChild(lg);
+  const w=760,rowH=34,padT=26,L=132,R=54;
+  const d=[...F].sort((a,b)=>b['Samlet avvik']-a['Samlet avvik']);
+  const h=padT+d.length*rowH+24;
+  const s=svg('c-dekomp',w,h);
+  const lim=130, x0=L,x1=w-R;
+  const X=v=>x0+(v+lim)/(2*lim)*(x1-x0);
+  [-100,-50,0,50,100].forEach(v=>{
+    s.appendChild(el('line',{x1:X(v),x2:X(v),y1:padT-8,y2:h-22,class:'gridline',
+      'stroke-dasharray':v===0?'':'2 3'}));
+    const t=el('text',{x:X(v),y:padT-14,class:'tick','text-anchor':'middle'});
+    t.textContent=v>0?'+'+v:v; s.appendChild(t);
+  });
+  d.forEach((f,i)=>{
+    const y=padT+i*rowH, g=el('g'); s.appendChild(g);
+    const lab=el('text',{x:L-11,y:y+18,class:'flab','text-anchor':'end'});
+    lab.textContent=f.fylke; g.appendChild(lab);
+    // tre segmenter, hver fra null
+    keys.forEach((k,j)=>{
+      const v=Math.max(-lim,Math.min(lim,f[k]));
+      const bx=v>=0?X(0):X(v), bw=Math.max(1.5,Math.abs(X(v)-X(0)));
+      g.appendChild(el('rect',{x:bx,y:y+3+j*8,width:bw,height:6,rx:2,
+        fill:cols[j],class:'mark'}));
+    });
+    const tot=Math.max(-lim,Math.min(lim,f['Samlet avvik']));
+    g.appendChild(el('line',{x1:X(tot),x2:X(tot),y1:y+1,y2:y+29,
+      stroke:css('--ink-2'),'stroke-width':2}));
+    const val=el('text',{x:w-R+8,y:y+18,class:'val','text-anchor':'start'});
+    val.textContent=(f['Samlet avvik']>0?'+':'')+ni(f['Samlet avvik']); g.appendChild(val);
+    bindTip(g,head(f.fylke)+keys.map(k=>row(k,(f[k]>0?'+':'')+ni(f[k]))).join('')
+      +row('<b>Samlet</b>',(f['Samlet avvik']>0?'+':'')+ni(f['Samlet avvik']))
+      +row('Kr per innbygger',ni(f.kr_per_innb)));
+  });
+});
+
+/* ================= 4. Rå vs justert ================= */
+tegn('c-just',function(){
+  const host=document.getElementById('c-just');
+  const lg=document.createElement('div'); lg.className='legend';
+  lg.innerHTML=`<span><i class="sw" style="background:${css('--mid')};border-radius:50%"></i>Rå innvilgelsesgrad</span>`
+   +`<span><i class="sw" style="background:${css('--over')};border-radius:50%"></i>Justert, over landssnitt</span>`
+   +`<span><i class="sw" style="background:${css('--under')};border-radius:50%"></i>Justert, under landssnitt</span>`
+   +`<span>★ signifikant (p &lt; 0,05)</span>`;
+  host.appendChild(lg);
+  // 50° gir smalt vannrett fotavtrykk per etikett; colW må overstige det,
+  // og B må romme fallhøyden (lengste navn ≈ 88px → 88·sin50° ≈ 68px).
+  const w=880,colW=58,T=30,B=94,L=48;
+  const d=[...F].sort((a,b)=>b.justert-a.justert);
+  const h=386;
+  const s=svg('c-just',Math.max(w,L+d.length*colW+20),h);
+  const yMin=26,yMax=52;
+  const Y=v=>h-B-(v-yMin)/(yMax-yMin)*(h-T-B);
+  [30,35,40,45,50].forEach(v=>{
+    s.appendChild(el('line',{x1:L-14,x2:L+d.length*colW,y1:Y(v),y2:Y(v),class:'gridline'}));
+    const t=el('text',{x:L-20,y:Y(v)+4,class:'tick','text-anchor':'end'});t.textContent=v+' %';s.appendChild(t);
+  });
+  const na=D.meta.nasjonal_grad;
+  s.appendChild(el('line',{x1:L-14,x2:L+d.length*colW,y1:Y(na),y2:Y(na),
+    stroke:css('--ink-2'),'stroke-width':1.5,'stroke-dasharray':'5 4'}));
+  const nt=el('text',{x:L+d.length*colW,y:Y(na)-7,class:'tick','text-anchor':'end'});
+  nt.textContent='landssnitt 35,5 %'; s.appendChild(nt);
+  d.forEach((f,i)=>{
+    const x=L+i*colW+colW/2, g=el('g'); s.appendChild(g);
+    const over=f.justert>=na, col=over?css('--over'):css('--under');
+    g.appendChild(el('line',{x1:x,x2:x,y1:Y(f.grad),y2:Y(f.justert),
+      stroke:col,'stroke-width':2,opacity:.5}));
+    g.appendChild(el('circle',{cx:x,cy:Y(f.grad),r:4.5,fill:css('--paper'),
+      stroke:css('--mid'),'stroke-width':2}));
+    g.appendChild(el('circle',{cx:x,cy:Y(f.justert),r:6,fill:col,class:'mark',
+      stroke:css('--card'),'stroke-width':2}));
+    const t=el('text',{x:0,y:0,class:'flab'+(f.sig?' hi':''),'text-anchor':'end',
+      transform:`translate(${x+5},${h-B+15}) rotate(-50)`});
+    t.textContent=f.fylke+(f.sig?' ★':''); g.appendChild(t);
+    bindTip(g,head(f.fylke)+row('Rå grad',nf(f.grad)+' %')+row('Justert',nf(f.justert)+' %')
+      +row('Observert / forventet',nf(f.oe,2))
+      +row('Innvilget / søknader',ni(f.innvilget)+' / '+ni(f.soknader))
+      +row('p-verdi',f.p<0.001?'&lt; 0,001':nf(f.p,3)));
+  });
+});
+
+/* ================= 5. Dumbbell ================= */
+tegn('c-dumbbell',function(){
+  const host=document.getElementById('c-dumbbell');
+  const lg=document.createElement('div'); lg.className='legend';
+  lg.innerHTML=`<span><i class="sw" style="background:${css('--c4')};border-radius:50%"></i>Arrangør, visningssted, infrastruktur og formidling — 708 mkr</span>`
+   +`<span><i class="sw" style="background:${css('--c3')};border-radius:50%"></i>Produksjon, kunstnerskap og publisering — 1 156 mkr</span>`;
+  host.appendChild(lg);
+  const w=880,rowH=28,padT=32,L=132,R=64;
+  const d=[...F].sort((a,b)=>(b.arrangor_indeks+b.produksjon_indeks)-(a.arrangor_indeks+a.produksjon_indeks));
+  const h=padT+d.length*rowH+16;
+  const s=svg('c-dumbbell',w,h);
+  const lo=15,hi=450;
+  const X=v=>L+(Math.log(Math.max(lo,v))-Math.log(lo))/(Math.log(hi)-Math.log(lo))*(w-L-R);
+  [20,50,100,200,400].forEach(v=>{
+    s.appendChild(el('line',{x1:X(v),x2:X(v),y1:padT-8,y2:h-10,class:'gridline',
+      'stroke-dasharray':v===100?'':'2 3','stroke-width':v===100?1.5:1}));
+    const t=el('text',{x:X(v),y:padT-14,class:'tick','text-anchor':'middle'});
+    t.textContent=v; s.appendChild(t);
+  });
+  d.forEach((f,i)=>{
+    const y=padT+i*rowH+13, g=el('g'); s.appendChild(g);
+    const a=f.arrangor_indeks,p=f.produksjon_indeks;
+    g.appendChild(el('line',{x1:X(a),x2:X(p),y1:y,y2:y,stroke:css('--ink-3'),
+      'stroke-width':1.5,opacity:.45}));
+    g.appendChild(el('circle',{cx:X(a),cy:y,r:5.5,fill:css('--c4'),class:'mark',
+      stroke:css('--card'),'stroke-width':1.5}));
+    g.appendChild(el('circle',{cx:X(p),cy:y,r:5.5,fill:css('--c3'),class:'mark',
+      stroke:css('--card'),'stroke-width':1.5}));
+    const lab=el('text',{x:L-11,y:y+4,class:'flab','text-anchor':'end'});
+    lab.textContent=f.fylke; g.appendChild(lab);
+    bindTip(g,head(f.fylke)
+      +row('Arrangør / infrastruktur',ni(a)+'  ('+ni(D.typer.arrangor.kr_per_innb[f.fylke])+' kr/innb.)')
+      +row('Produksjon / kunstnerskap',ni(p)+'  ('+ni(D.typer.produksjon.kr_per_innb[f.fylke])+' kr/innb.)'));
+  });
+});
+
+/* ================= 6. Trend (slope) ================= */
+tegn('c-trend',function(){
+  const w=880,h=380,L=52,R=118,T=26,B=44;
+  const s=svg('c-trend',w,h);
+  const yrs=[2024,2025,2026];
+  const X=i=>L+i*((w-L-R)/2);
+  const yMax=52;
+  const Y=v=>h-B-(Math.sqrt(v)/Math.sqrt(yMax))*(h-T-B);
+  [0,5,10,20,30,50].forEach(v=>{
+    s.appendChild(el('line',{x1:L,x2:w-R,y1:Y(v),y2:Y(v),class:'gridline'}));
+    const t=el('text',{x:L-9,y:Y(v)+4,class:'tick','text-anchor':'end'});
+    t.textContent=v+' %'; s.appendChild(t);
+  });
+  yrs.forEach((y,i)=>{const t=el('text',{x:X(i),y:h-B+20,class:'tick','text-anchor':'middle'});
+    t.textContent=y; s.appendChild(t);});
+  const note=el('text',{x:X(2),y:h-B+34,class:'tick','text-anchor':'middle','font-style':'italic'});
+  note.textContent='(7 av 11 runder)'; s.appendChild(note);
+  const ordered=[...F].sort((a,b)=>D.trend_kroneandel[b.fylke][2]-D.trend_kroneandel[a.fylke][2]);
+  ordered.forEach(f=>{
+    const v=D.trend_kroneandel[f.fylke];
+    const big=f.fylke==='Oslo';
+    const g=el('g'); s.appendChild(g);
+    const col=big?css('--over'):(v[2]>=v[0]?css('--c4'):css('--under'));
+    const pts=v.map((val,i)=>`${X(i)},${Y(val)}`).join(' ');
+    g.appendChild(el('polyline',{points:pts,fill:'none',stroke:col,class:'mark',
+      'stroke-width':big?2.6:1.6,opacity:big?1:.72,'stroke-linejoin':'round'}));
+    v.forEach((val,i)=>g.appendChild(el('circle',{cx:X(i),cy:Y(val),r:big?4:2.8,fill:col})));
+    const lab=el('text',{x:w-R+9,y:Y(v[2])+4,class:'flab'+(big?' hi':'')});
+    lab.textContent=f.fylke+' '+nf(v[2]); g.appendChild(lab);
+    bindTip(g,head(f.fylke)+yrs.map((y,i)=>row(y,nf(v[i])+' %')).join('')
+      +row('Topp 5-tilsagn',nf(f.topp5)+' % av kronene')
+      +row('Mottakere',ni(f.mottakere)));
+  });
+  // Spre etikettene: press nedover, deretter oppover igjen hvis stabelen
+  // renner ut nederst. Ett pass alene skyver de nederste ut av figuren.
+  const GAP=14.5, labs=[...s.querySelectorAll('text.flab')];
+  labs.sort((a,b)=>+a.getAttribute('y')-+b.getAttribute('y'));
+  let y=T+6;
+  labs.forEach(l=>{ y=Math.max(+l.getAttribute('y'),y); l.setAttribute('y',y); y+=GAP; });
+  let bunn=h-B+6;
+  for(let i=labs.length-1;i>=0;i--){
+    const cur=+labs[i].getAttribute('y');
+    if(cur>bunn) labs[i].setAttribute('y',bunn);
+    bunn=Math.min(bunn,+labs[i].getAttribute('y'))-GAP;
+  }
+  // knekklinje fra punkt til etikett når den er flyttet langt
+  labs.forEach(l=>{
+    const f=l.textContent.replace(/\s[\d,]+$/,'');
+    const v=D.trend_kroneandel[f]; if(!v) return;
+    const ly=+l.getAttribute('y')-4, py=Y(v[2]);
+    // etiketten ligger i sin egen <g>, ikke rett under <svg>
+    if(Math.abs(ly-py)>4)
+      l.parentNode.insertBefore(el('line',{x1:X(2)+5,x2:w-R+6,y1:py,y2:ly,
+        stroke:css('--ink-3'),'stroke-width':.75,opacity:.4}),l);
+  });
+});
+
+/* ================= Tabeller ================= */
+tegn('t-ordning',function(){
+  const t=document.getElementById('t-ordning');
+  const maxO=Math.max(...D.ordninger.map(o=>o.oslo_kr));
+  t.innerHTML='<thead><tr><th>Ordning</th><th>Type</th><th>Søknader</th>'
+    +'<th>Innvilget</th><th>Mill. kr</th><th>Snitt tildeling</th>'
+    +'<th>Oslos kroneandel</th><th>Største fylke utenom Oslo</th></tr></thead><tbody>'
+    +D.ordninger.map(o=>`<tr>
+      <td>${o.navn}</td>
+      <td><span class="tag">${o.type==='arrangor'?'Arrangør':'Produksjon'}</span></td>
+      <td class="n">${ni(o.soknader)}</td>
+      <td class="n">${nf(o.grad)} %</td>
+      <td class="n">${nf(o.mkr)}</td>
+      <td class="n">${ni(o.snitt_tkr)} tkr</td>
+      <td class="n"><span class="minibar" style="width:${Math.round(o.oslo_kr/maxO*46)}px"></span>
+        &nbsp;${nf(o.oslo_kr)} %</td>
+      <td style="text-align:left">${o.toppfylke} <span style="color:var(--ink-3)">${nf(o.toppfylke_andel)} %</span></td>
+    </tr>`).join('')+'</tbody>';
+});
+
+tegn('t-fylke',function(){
+  const t=document.getElementById('t-fylke');
+  const d=[...F].sort((a,b)=>b.indeks-a.indeks);
+  t.innerHTML='<thead><tr><th>Fylke</th><th>Folketall</th><th>Søkere</th>'
+    +'<th>– personer</th><th>– organisasjoner</th><th>Søkere / 10 000</th>'
+    +'<th>Søknader</th><th>Innvilget</th><th>Avslag</th><th>Rå grad</th><th>Justert grad</th>'
+    +'<th>Søkt mkr</th><th>Tildelt mkr</th><th>Uttelling</th><th>Kr / innb.</th>'
+    +'<th>Kroner til personer</th><th>Indeks</th><th>Topp 5-andel</th></tr></thead><tbody>'
+    +d.map(f=>`<tr>
+      <td>${f.fylke}</td>
+      <td class="n">${ni(f.folketall)}</td>
+      <td class="n">${ni(f.unike_sokere)}</td>
+      <td class="n">${ni(f.unike_personer)}</td>
+      <td class="n">${ni(f.unike_org)}</td>
+      <td class="n">${nf(f.sokere_per_10k)}</td>
+      <td class="n">${ni(f.soknader)}</td>
+      <td class="n">${ni(f.innvilget)}</td>
+      <td class="n">${ni(f.avslag)}</td>
+      <td class="n">${nf(f.grad)} %</td>
+      <td class="n">${nf(f.justert)} %${f.sig?' ★':''}</td>
+      <td class="n">${ni(f.sokt_mkr)}</td>
+      <td class="n">${nf(f.tildelt_mkr)}</td>
+      <td class="n">${nf(f.uttelling)} %</td>
+      <td class="n">${ni(f.kr_per_innb)}</td>
+      <td class="n">${nf(f.person_kroneandel)} %</td>
+      <td class="n"><span class="tag ${f.indeks>=100?'up':'down'}">${ni(f.indeks)}</span></td>
+      <td class="n">${nf(f.topp5)} %</td>
+    </tr>`).join('')+'</tbody>';
+});
+</script>
+
+</body></html>
