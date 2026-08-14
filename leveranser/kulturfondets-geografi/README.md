@@ -22,6 +22,19 @@ Merk: geografien er **søkerens registrerte adresse**, ikke der aktiviteten fore
 2026 er ufullstendig (sju søknadsrunder mot ti–elleve de foregående årene), så nivåtall
 per år er ikke sammenlignbare. Analysen dekker Norsk kulturfond alene.
 
+## Utvidelse: hvor kulturorganisasjonene faktisk holder til
+
+`kilde/hent_brreg_kulturenheter.py` henter alle enheter med næringskode 90 (kunstnerisk
+virksomhet og underholdning) og 91 (biblioteker, arkiver, museer) fra Enhetsregisteret,
+fordeler dem på fylke etter kommunenummer og kobler dem mot folketallet og søkerbasen i
+`kilde/data.json`. Det gir nevneren analysen mangler: er få søkere fra et fylke et tegn
+på at kulturlivet der er lite, eller på at et stort kulturliv ikke søker?
+
+**Ikke kjørt ennå.** Scriptet er skrevet uten nettilgang til data.brreg.no, og
+API-kontrakten er derfor ikke verifisert. All øvrig logikk — paginering, avduplisering,
+fylkesmapping, kobling og snapshot — er tørrkjørt mot simulerte svar. Første ekte kjøring
+må kontrolleres mot kanaritallene scriptet printer.
+
 ## Bygge på nytt
 
 ```bash
