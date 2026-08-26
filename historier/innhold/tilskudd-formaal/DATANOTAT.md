@@ -107,6 +107,20 @@ analysen til ett år der de store forvalterne rapporterer fullt, å utelate NKF/
 kjøre på tilskudd.no-bulk alene, eller å gjøre selve rapporteringshullene til historien.
 Valget er ikke tatt.
 
+**Rekkefølgen er bestemt (2026-08-26): universet avgrenses FØR mer kategorisering kjøres.**
+
+Grunnen er at avgrensningen kan endre hvilke tekster som i det hele tatt skal med. Kjører vi
+de gjenstående ~28 000 tekstene nå, bruker vi opp kreditten på et grunnlag som uansett ikke
+kan publiseres — og risikerer å betale for tekster som faller utenfor det endelige universet.
+
+Når avgrensningen er på plass:
+
+    python pipeline/kategoriser_formaal.py --alle    # med gemini-3.1-flash-lite
+
+Hele settet på nytt med én modell koster ~$3,77 og gir et konsistent grunnlag. Alternativet
+er å kjøre bare det som mangler (~$1,85) og leve med at grunnlaget er delt mellom Haiku og
+Gemini — `modellsetning()` opplyser da om blandingen automatisk i fotnoten.
+
 ## Andre forbehold
 
 - Beløp er nominelle kroner, ikke deflatert.
