@@ -139,6 +139,21 @@ def kall_modell(
         try:
             with urllib.request.urlopen(req, timeout=tidsavbrudd) as svar:
                 data = json.loads(svar.read())
+            # OpenRouter leverer også oppstrømsfeil som HTTP 200 med en error-kropp.
+            # Uten dette ser en forbigående «Service temporarily overloaded» ut som et
+            # permanent formatavvik, og kjøringen dør på noe som ville gått over.
+            feil = data.get("error") if isinstance(data, dict) else None
+            if feil:
+                kode = int(feil.get("code") or 0)
+                if kode == 402:
+                    raise TomForKreditt(f"OpenRouter avviste kallet: {feil.get('message')}")
+                siste_feil = f"kropp-feil {kode}: {str(feil.get('message'))[:200]}"
+                if kode not in STATUS_SOM_PROVES_IGJEN or n == forsok - 1:
+                    raise SystemExit(f"OpenRouter svarte {siste_feil}")
+                ventetid = min(2 ** n * (4 if gratis else 1), 60)
+                print(f"    …{siste_feil[:120]} — nytt forsøk om {ventetid}s")
+                time.sleep(ventetid)
+                continue
             break
         except urllib.error.HTTPError as e:
             kropp = e.read().decode("utf-8", "replace")
