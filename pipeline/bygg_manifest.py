@@ -4,7 +4,7 @@ Forsiden på impromptu.no (index.html i repo-roten) leser manifestet og
 genererer galleriet automatisk. Kjør dette scriptet etter at du har lagt til eller endret en
 historie:
 
-    python3 pipeline/bygg_manifest.py
+    python pipeline/bygg_manifest.py
 
 Scriptet validerer samtidig at alle historier følger metadata-kontrakten
 (se kontrakt.py) — bryter en historie kontrakten, bygges ikke manifestet.
@@ -17,13 +17,14 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from kontrakt import INNHOLD_DIR, valider_historie
+from kontrakt import INNHOLD_DIR, er_utkast, valider_historie
 
 MANIFEST_FIL = INNHOLD_DIR / "manifest.json"
 
 
 def main() -> int:
     historier = []
+    utkast = []
     feil = []
 
     for mappe in sorted(p for p in INNHOLD_DIR.iterdir() if p.is_dir()):
@@ -31,7 +32,11 @@ def main() -> int:
         datafil = mappe / "data.json"
         if not datafil.exists():
             continue
-        meta = json.loads(datafil.read_text(encoding="utf-8")).get("meta", {})
+        data = json.loads(datafil.read_text(encoding="utf-8"))
+        if er_utkast(data):
+            utkast.append(mappe.name)
+            continue
+        meta = data.get("meta", {})
         historier.append({
             "id": mappe.name,
             "tittel": meta.get("tittel"),
@@ -54,6 +59,8 @@ def main() -> int:
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(f"✓ manifest.json bygget med {len(historier)} historier")
+    for slug in utkast:
+        print(f"  – {slug} holdt utenfor forsiden (meta.utkast = true)")
     return 0
 
 

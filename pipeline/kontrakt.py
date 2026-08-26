@@ -12,8 +12,10 @@ Enhver snapshot-fil (innhold/<slug>/data.json) skal ha denne formen:
         "enhet": str,                   # f.eks. "antall personer"
         "oppdateringsfrekvens": str,    # f.eks. "årlig"
         "beskrivelse": str,             # 1-2 setninger, vises i galleriet
-        "demo": bool                    # valgfri: true = plassholderdata,
+        "demo": bool,                   # valgfri: true = plassholderdata,
                                         # kjør hentescriptet for ekte tall
+        "utkast": bool                  # valgfri: true = holdes utenfor manifestet
+                                        # (upublisert/til faktasjekk)
       },
       "visninger": {
         "<viz-id>": {"type": "hero" | "tidslinje" | "kart" | "kortgalleri", ...}
@@ -30,6 +32,12 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+# Windows-konsollen bruker cp1252 og kaster UnicodeEncodeError på ✓/✗-tegnene
+# scriptene skriver ut. No-op på macOS/Linux, som allerede er UTF-8.
+for _strom in (sys.stdout, sys.stderr):
+    if hasattr(_strom, "reconfigure"):
+        _strom.reconfigure(encoding="utf-8", errors="replace")
 
 PAKREVDE_METAFELT = [
     "tittel",
@@ -59,6 +67,10 @@ def valider_snapshot(data: dict, slug: str = "?") -> list[str]:
         if not isinstance(verdi, str) or not verdi.strip():
             feil.append(f"{slug}: meta.{felt} mangler eller er tom")
 
+    for flagg in ("demo", "utkast"):
+        if flagg in meta and not isinstance(meta[flagg], bool):
+            feil.append(f"{slug}: meta.{flagg} må være true/false, fikk {meta[flagg]!r}")
+
     visninger = data.get("visninger")
     if not isinstance(visninger, dict) or not visninger:
         feil.append(f"{slug}: mangler 'visninger' med minst én visualisering")
@@ -72,6 +84,15 @@ def valider_snapshot(data: dict, slug: str = "?") -> list[str]:
                     f"{sorted(GYLDIGE_VISNINGSTYPER)}, fikk {viz.get('type')!r}"
                 )
     return feil
+
+
+def er_utkast(data: dict) -> bool:
+    """True hvis historien bevisst holdes utenfor manifestet.
+
+    Et utkast valideres som alle andre historier — det skal være publiserbart i det
+    øyeblikket flagget fjernes — men bygg_manifest.py tar det ikke med på forsiden.
+    """
+    return bool((data.get("meta") or {}).get("utkast"))
 
 
 def valider_historie(mappe: Path) -> list[str]:
