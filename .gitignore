@@ -1,2 +1,9 @@
 __pycache__/
 *.pyc
+
+# Rådata skal ikke inn i repoet. Alt som ligger her serveres statisk av Vercel, så en
+# innsjekket CSV blir offentlig nedlastbar fra impromptu.no. Kudir-vedtakseksporter
+# inneholder navngitte privatpersoner med avslag — se SIKKERHET.md.
+# Hentescriptene leser rådata utenfra (jf. TILDELINGER_CSV).
+*.csv
+*.xlsx

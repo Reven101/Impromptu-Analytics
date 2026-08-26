@@ -32,10 +32,17 @@ API-kall. Et LLM-steg er en datakilde med egen feilrate, og behandles som det:
   du versjonen — da blir gamle svar ugyldige i stedet for å blandes med nye.
 - **Cachen sjekkes inn.** Den er både sporingslogg (hvilken modell sa hva) og
   kostnadssparer: en ny kjøring betaler bare for det som faktisk er nytt.
-- **Mål, ikke anslå.** `forbruk_oppsummert()` leser faktisk pris fra OpenRouters
-  `usage.cost`. Resonnerende modeller koster langt mer enn tokentellingen antyder — Sonnet 5
-  brukte 66 % av output-budsjettet på resonnering og ble 5,3× dyrere enn Haiku 4.5 på samme
-  jobb, mot 5 prosentpoeng bedre treff.
+- **Listepris er ikke pris.** `forbruk_oppsummert()` leser faktisk kostnad fra OpenRouters
+  `usage.cost`. Resonnerende modeller fakturerer tenketokens som output, og det snur
+  rangeringen: `gemini-3.7-flash` har lavere listepris enn Haiku, men brukte 415 av 458
+  output-tokens på resonnering og ble dobbelt så dyr. Sonnet 5 ble 5,3× dyrere av samme
+  grunn. Mål alltid før du bytter modell.
+- **Gratismodellene er ikke tilgjengelige i praksis.** `:free`-variantene ligger i en delt
+  pulje hos leverandøren. Gemma 4 31b ga 429 på åtte forsøk over 248 sekunder, på seks
+  tekster. `--reserve` finnes, men regn ikke med den.
+- **Rådata skal ikke inn i repoet.** Alt her serveres statisk av Vercel, så en innsjekket
+  CSV blir offentlig nedlastbar. `.gitignore` sperrer `*.csv` og `*.xlsx`; hentescriptene
+  leser utenfra (`TILDELINGER_CSV`).
 - **`maks_tokens` skal være realistisk, ikke «romslig for sikkerhets skyld».** OpenRouter
   reserverer kreditt mot `maks_tokens` for hver forespørsel i luften. Et oppblåst tak ganget
   med antall tråder sprenger in-flight-budsjettet og gir HTTP 402 med god saldo på konto —

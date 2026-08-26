@@ -29,6 +29,24 @@ utenfor kategoriseringen og telt for seg.
 | Andel i «annet» (kategorilisten treffer ikke) | 1,0 % av kronene |
 | Andel i «uklar_beskrivelse» (kilden sier ikke noe) | 29,2 % av kronene |
 
+### Modellvalg (ICNPO-fasit, n=300, samme utvalg og seed for alle)
+
+| Modell | Treff | Idrett | Kunst og kultur | $/1000 tekster |
+|---|---|---|---|---|
+| claude-sonnet-5 | 71,0 % | 95,1 % | 84,7 % | 0,981 |
+| **gemini-3.1-flash-lite** | **68,7 %** | 91,4 % | 81,9 % | **0,066** |
+| claude-haiku-4.5 | 65,7 % | 92,6 % | 73,6 % | 0,182 |
+| gemini-2.5-flash-lite | 51,7 % | 91,4 % | 65,3 % | 0,022 |
+| gemini-3.7-flash | ikke testet | | | 0,388 |
+
+`gemini-3.1-flash-lite` er valgt som standardmodell: bedre enn Haiku til under en tredjedel
+av prisen, og 2,3 prosentpoeng under Sonnet til en femtendedel. gemini-3.7-flash har lavere
+listepris enn Haiku, men resonnerer (415 av 458 output-tokens) og blir dobbelt så dyr.
+
+**Grunnlaget som ligger i cachen nå er kategorisert med claude-haiku-4.5.** Tas historien opp
+igjen, må enten hele settet kjøres om med én modell (~$3,80), eller så må det blandede
+grunnlaget opplyses om — `modellsetning()` i hent_tilskudd_formaal.py gjør det automatisk.
+
 ICNPO-testen er en nedre grense, ikke en fasit for formålskategoriene: ICNPO klassifiserer
 mottakerorganisasjonens *sektor*, ikke tiltaket. Bommene er toveis mellom bins som overlapper
 i ICNPO selv (Rekreasjon ↔ Interesseorganisasjoner, Sosiale tjenester → Krisehjelp), og begge

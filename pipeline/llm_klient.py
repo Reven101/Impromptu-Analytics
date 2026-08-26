@@ -25,12 +25,38 @@ from pathlib import Path
 
 BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Standardmodell for bulk-beriking. Haiku-klasse: rundt $1 per million innfelt-tokens,
-# som er to størrelsesordener billigere enn en frontier-modell på en jobb som består av
-# titusenvis av korte, like klassifiseringer.
-STANDARDMODELL = "anthropic/claude-haiku-4.5"
+# Standardmodell for bulk-beriking, valgt på målte tall (ICNPO-fasittest, n=300, og
+# faktisk pris per 1000 tekster fra usage.cost — se DATANOTAT for historien):
+#
+#   gemini-3.1-flash-lite   68,7 %   $0,066    ← valgt
+#   claude-haiku-4.5        65,7 %   $0,182
+#   claude-sonnet-5         71,0 %   $0,981
+#   gemini-2.5-flash-lite   51,7 %   $0,022    for svak
+#   gemini-3.7-flash          n/a    $0,388    resonnerer, se under
+#
+# LISTEPRIS ER IKKE PRIS. Resonnerende modeller fakturerer tenketokens som output:
+# gemini-3.7-flash har lavere listepris enn Haiku, men brukte 415 av 458 output-tokens på
+# resonnering vi ikke bruker, og ble dobbelt så dyr. Mål alltid med usage.cost før du
+# bytter — sammenlign aldri modeller på prislisten alene.
+STANDARDMODELL = "google/gemini-3.1-flash-lite"
+
+# Reserve når kreditten tar slutt.
+#
+# ADVARSEL: gratisnivået ligger i en delt pulje hos leverandøren og er i praksis ikke
+# tilgjengelig — åtte forsøk over 248 sekunder ga 429 hver gang, på en test med seks
+# tekster. Regn ikke med den til bulkjobber. Vil du ha reell gratiskapasitet, må egen
+# Google-nøkkel kobles på under openrouter.ai/settings/integrations.
+#
+# Bytte skjer bare med --reserve, skjer høylytt, og registreres per cache-oppføring: en
+# historie der deler av grunnlaget er kategorisert av en annen modell må opplyse om det.
+RESERVEMODELL = "google/gemma-4-31b-it:free"
 
 STATUS_SOM_PROVES_IGJEN = {408, 409, 429, 500, 502, 503, 504, 529}
+
+
+class TomForKreditt(Exception):
+    """HTTP 402. Egen type så kallende kode kan bytte til RESERVEMODELL i stedet for å
+    stoppe — men bare hvis den velger det bevisst, og registrerer byttet."""
 
 # Forbruket akkumuleres på tvers av kall så scriptene kan skrive ut hva en kjøring kostet.
 # OpenRouter oppgir faktisk pris per kall i usage.cost — vi anslår ikke.
@@ -82,10 +108,15 @@ def kall_modell(
     modell: str = STANDARDMODELL,
     temperatur: float = 0.0,
     maks_tokens: int = 4000,
-    forsok: int = 5,
+    forsok: int | None = None,
     tidsavbrudd: int = 120,
 ) -> str:
     """Returnerer modellens svartekst. Feiler hardt framfor å returnere noe tvilsomt."""
+    # Gratismodellene ligger i en delt pulje og rate-limites oppstrøms. De trenger flere
+    # og lengre forsøk enn en betalt modell — ellers gir de opp før puljen frigjøres.
+    gratis = modell.endswith(":free")
+    if forsok is None:
+        forsok = 8 if gratis else 5
     payload = json.dumps(
         {
             "model": modell,
@@ -114,7 +145,7 @@ def kall_modell(
                 # Ta med kroppen: 402 dekker både «tom konto» og «in-flight-budsjettet
                 # sprengt», og de krever helt ulike tiltak. Uten teksten er de umulige
                 # å skille fra hverandre.
-                raise SystemExit(
+                raise TomForKreditt(
                     "OpenRouter avviste kallet med HTTP 402:\n"
                     f"  {kropp[:600]}\n"
                     "  Saldo og forbruk: https://openrouter.ai/settings/credits\n"
@@ -134,8 +165,8 @@ def kall_modell(
             siste_feil = f"{type(e).__name__}: {e}"
             if n == forsok - 1:
                 raise SystemExit(f"OpenRouter utilgjengelig etter {forsok} forsøk ({siste_feil})")
-        ventetid = 2 ** n
-        print(f"    …{siste_feil} — nytt forsøk om {ventetid}s")
+        ventetid = min(2 ** n * (4 if gratis else 1), 60)
+        print(f"    …{siste_feil[:120]} — nytt forsøk om {ventetid}s")
         time.sleep(ventetid)
 
     if "choices" not in data or not data["choices"]:
