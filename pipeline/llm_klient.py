@@ -42,10 +42,24 @@ STANDARDMODELL = "google/gemini-3.1-flash-lite"
 
 # Reserve når kreditten tar slutt.
 #
-# ADVARSEL: gratisnivået ligger i en delt pulje hos leverandøren og er i praksis ikke
-# tilgjengelig — åtte forsøk over 248 sekunder ga 429 hver gang, på en test med seks
-# tekster. Regn ikke med den til bulkjobber. Vil du ha reell gratiskapasitet, må egen
-# Google-nøkkel kobles på under openrouter.ai/settings/integrations.
+# ADVARSEL: gratismodeller er testet grundig og duger ikke til bulk. Målt:
+#
+#   gemma-4-31b:free        429 på åtte forsøk over 248 s — puljen er mettet
+#   nemotron-super-120b     60,0 % treff, 24 min for 300 tekster (37 t for 28 000)
+#   nemotron-nano-omni      formatfeil; brant 28 501 resonneringstokens på én bunt
+#   nemotron-ultra-550b     78 s på seks tekster; døde på oppstrømsfeil
+#   nemotron-content-safety moderasjonsklassifikator, svarer «User Safety: safe»
+#
+# NVIDIAs pulje har en hard grense på 16 samtidige forespørsler DELT MED ALLE ANDRE
+# OpenRouter-brukere, ikke bare deg — den treffes selv når du kjører én jobb alene.
+# Gratis er mulig, ikke gunstig: super-120b er 8,7 prosentpoeng svakere enn
+# standardmodellen og bruker timer der den bruker minutter, for å spare et par dollar.
+#
+# En røyktest på seks tekster avslører ingenting av dette: alle fire nemotron-modellene
+# svarte 6/6 der. Formatsammenbruddet i nano-omni kom først på 300 rader.
+#
+# Vil du ha reell gratiskapasitet, må egen leverandørnøkkel kobles på under
+# openrouter.ai/settings/integrations.
 #
 # Bytte skjer bare med --reserve, skjer høylytt, og registreres per cache-oppføring: en
 # historie der deler av grunnlaget er kategorisert av en annen modell må opplyse om det.

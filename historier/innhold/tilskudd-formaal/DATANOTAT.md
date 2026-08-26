@@ -43,6 +43,26 @@ utenfor kategoriseringen og telt for seg.
 av prisen, og 2,3 prosentpoeng under Sonnet til en femtendedel. gemini-3.7-flash har lavere
 listepris enn Haiku, men resonnerer (415 av 458 output-tokens) og blir dobbelt så dyr.
 
+### Gratismodellene ble testet og forkastet
+
+| Modell | Treff | Tid, 300 tekster | Merknad |
+|---|---|---|---|
+| nemotron-3-super-120b:free | 60,0 % | 24 min | best av gratismodellene |
+| nemotron-3-nano-omni:free | — | — | formatsammenbrudd; 28 501 resonneringstokens på én bunt |
+| nemotron-3-ultra-550b:free | — | — | 78 s på seks tekster; døde på oppstrømsfeil |
+| nemotron-3.5-lightning:free | ikke fullført | — | 49 s på seks tekster |
+| nemotron-3.5-content-safety:free | — | — | moderasjonsklassifikator, ikke aktuell |
+| gemma-4-31b:free | — | — | 429 på åtte forsøk over 248 s |
+
+NVIDIAs gratispulje har en hard grense på 16 samtidige forespørsler som deles med alle
+andre OpenRouter-brukere — den treffes selv når man kjører én jobb alene. Beste
+gratismodell er 8,7 prosentpoeng svakere enn standardmodellen og ville brukt anslagsvis
+37 timer sekvensielt på de gjenstående 28 000 tekstene, mot under en time og $1,85.
+
+**Metodemerknad:** en røyktest på seks tekster skilte ikke modellene i det hele tatt — alle
+fire nemotron-variantene svarte 6/6. Formatsammenbruddet i nano-omni og treffforskjellene
+kom først fram på 300 rader. Test på nok data til at feilmodusene rekker å vise seg.
+
 **Grunnlaget som ligger i cachen nå er kategorisert med claude-haiku-4.5.** Tas historien opp
 igjen, må enten hele settet kjøres om med én modell (~$3,80), eller så må det blandede
 grunnlaget opplyses om — `modellsetning()` i hent_tilskudd_formaal.py gjør det automatisk.

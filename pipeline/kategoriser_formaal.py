@@ -443,6 +443,7 @@ def fasittest(antall: int, modell: str, buntstorrelse: int) -> int:
 
     liste = "\n".join(f"- {k}" for k in icnpo)
     treff = 0
+    formatfeil = 0
     per_kategori: Counter = Counter()
     per_kategori_treff: Counter = Counter()
     forvekslinger: Counter = Counter()
@@ -472,9 +473,20 @@ def fasittest(antall: int, modell: str, buntstorrelse: int) -> int:
             # modeller pakker svaret i en ```json-blokk. Romsligere enn formålskodene.
             maks_tokens=100 * len(bunt) + 400,
         )
-        rader = hent_json_liste(svar)
+        # Formatbrudd er en egenskap ved modellen vi vil MÅLE, ikke en grunn til å avbryte.
+        # Svake modeller skriver resonneringen sin som svartekst i stedet for JSON; da skal
+        # testen rapportere hvor ofte det skjer framfor å dø på første tilfelle.
+        try:
+            rader = hent_json_liste(svar)
+        except ValueError:
+            formatfeil += len(bunt)
+            print(f"  {min(i + buntstorrelse, len(utvalg))}/{len(utvalg)} — formatfeil, hoppet over")
+            continue
         if len(rader) != len(bunt):
-            raise SystemExit(f"Fikk {len(rader)} svar på {len(bunt)} rader — senk --bunt")
+            formatfeil += len(bunt)
+            print(f"  {min(i + buntstorrelse, len(utvalg))}/{len(utvalg)} — "
+                  f"{len(rader)} svar på {len(bunt)} rader, hoppet over")
+            continue
         for (_, fasit), post in zip(bunt, rader):
             gjett = str(post.get("kategori", "")).strip()
             per_kategori[fasit] += 1
@@ -487,9 +499,21 @@ def fasittest(antall: int, modell: str, buntstorrelse: int) -> int:
                 forvekslinger[(fasit, gjett)] += 1
         print(f"  {min(i + buntstorrelse, len(utvalg))}/{len(utvalg)} — {treff} treff så langt")
 
-    andel = treff / len(utvalg) * 100
+    besvart = len(utvalg) - formatfeil
+    if not besvart:
+        raise SystemExit(
+            f"Modellen ga ugyldig format på alle {len(utvalg)} radene — den kan ikke "
+            "brukes til strukturert klassifisering."
+        )
+    andel = treff / besvart * 100
     print(f"\nForbruk: {forbruk_oppsummert()}")
-    print(f"\nTreffsikkerhet: {treff}/{len(utvalg)} = {andel:.1f} %")
+    if formatfeil:
+        print(
+            f"\nFormatfeil: {formatfeil} av {len(utvalg)} rader "
+            f"({formatfeil / len(utvalg) * 100:.0f} %) — modellen svarte ikke med gyldig "
+            "JSON, og de er utelatt fra treffprosenten under"
+        )
+    print(f"\nTreffsikkerhet: {treff}/{besvart} = {andel:.1f} %")
     print("\nPer kategori (kun kategorier med minst 5 rader i utvalget):")
     for kat, n in per_kategori.most_common():
         if n >= 5:
