@@ -38,7 +38,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kontrakt  # noqa: F401  — setter UTF-8 på stdout (se CLAUDE.md)
 from llm_klient import (
+    RESERVEMODELL,
     STANDARDMODELL,
+    TomForKreditt,
     forbruk_oppsummert,
     hent_json_liste,
     kall_modell,
@@ -189,20 +191,100 @@ def samle_unike_tekster() -> tuple[dict[str, dict], dict[str, float]]:
 # ---------------------------------------------------------------- cache
 
 
-def nokkel(tekst: str, modell: str) -> str:
-    raa = f"{PROMPTVERSJON}|{modell}|{tekst.lower()}"
-    return hashlib.sha256(raa.encode("utf-8")).hexdigest()[:16]
+def nokkel(tekst: str) -> str:
+    """Cache-nøkkel. Modellnavnet inngår bevisst IKKE.
+
+    Det gjorde det før, men da ble halve cachen usynlig for oppslag så snart en kjøring
+    byttet modell underveis. Modellen ligger nå på hver enkelt oppføring i stedet, slik at
+    et blandet grunnlag kan oppdages og opplyses om framfor å forsvinne.
+    """
+    return hashlib.sha256(f"{PROMPTVERSJON}|{tekst.lower()}".encode("utf-8")).hexdigest()[:16]
 
 
 def les_cache() -> dict:
     if not CACHE_FIL.exists():
         return {"metode": {}, "kategorier": {}}
-    return json.loads(CACHE_FIL.read_text(encoding="utf-8"))
+    cache = json.loads(CACHE_FIL.read_text(encoding="utf-8"))
+
+    gamle = cache.get("kategorier") or {}
+    if gamle and "modell" not in next(iter(gamle.values())):
+        cache["kategorier"] = migrer(gamle, cache.get("metode") or {})
+    return cache
+
+
+def migrer(gamle: dict, metode: dict) -> dict:
+    """Migrerer fra da cache-nøkkelen inneholdt modellnavnet.
+
+    Modellen kan utledes eksakt: den gamle nøkkelen var sha256(promptversjon|modell|tekst),
+    og teksten ligger lagret på oppføringen. Vi prøver kandidatene mot nøkkelen framfor å
+    stemple alt med metode.modell — cachen inneholder også tekster fra testkjøringer med
+    andre modeller, og de skal ikke få feil merkelapp.
+
+    Kolliderer to modeller på samme tekst, beholdes standardmodellens svar: det er den
+    grunnlaget ellers er kategorisert med.
+    """
+
+    def gammel_nokkel(tekst: str, versjon: str, modell: str) -> str:
+        raa = f"{versjon}|{modell}|{tekst.lower()}"
+        return hashlib.sha256(raa.encode("utf-8")).hexdigest()[:16]
+
+    modeller = [STANDARDMODELL, RESERVEMODELL, "anthropic/claude-sonnet-5"]
+    if metode.get("modell"):
+        modeller.append(metode["modell"])
+    # Tidligere promptversjoner tas med for å kunne KJENNE IGJEN dem, ikke for å beholde
+    # dem: de brukte en annen kategoriliste, og skal forkastes.
+    versjoner = [PROMPTVERSJON, "formaal-v1"]
+
+    ny: dict[str, dict] = {}
+    funnet: Counter = Counter()
+    forkastet: Counter = Counter()
+    ukjent = 0
+
+    for gnok, post in gamle.items():
+        traff = next(
+            (
+                (v, m)
+                for v in versjoner
+                for m in modeller
+                if gammel_nokkel(post["tekst"], v, m) == gnok
+            ),
+            None,
+        )
+        if traff is None:
+            ukjent += 1
+            continue
+        versjon, modell = traff
+        if versjon != PROMPTVERSJON:
+            forkastet[versjon] += 1
+            continue
+        funnet[modell] += 1
+        k = nokkel(post["tekst"])
+        if k in ny and ny[k]["modell"] == STANDARDMODELL:
+            continue  # standardmodellens svar vinner ved kollisjon
+        ny[k] = {**post, "modell": modell}
+
+    print(f"  cache migrert: {len(gamle):,} oppføringer → {len(ny):,} unike tekster")
+    for m, n in funnet.most_common():
+        print(f"    {n:6,}  {m}")
+    for v, n in forkastet.most_common():
+        print(f"    {n:6,}  forkastet — promptversjon {v}, annen kategoriliste")
+    if ukjent:
+        raise SystemExit(
+            f"{ukjent} oppføringer kunne ikke tilskrives en promptversjon og modell. "
+            "Utvid listene i migrer() framfor å gjette."
+        )
+    return ny
+
+
+def modellfordeling(cache: dict) -> Counter:
+    return Counter(p.get("modell", "ukjent") for p in cache["kategorier"].values())
 
 
 def skriv_cache(cache: dict, modell: str) -> None:
+    fordeling = modellfordeling(cache)
     cache["metode"] = {
         "modell": modell,
+        "modeller": dict(fordeling),
         "promptversjon": PROMPTVERSJON,
         "dato_kjort": date.today().isoformat(),
         "antall_tekster": len(cache["kategorier"]),
@@ -281,9 +363,15 @@ def _kategoriser_bunt(tekster: list[str], modell: str) -> list[str]:
     return ut
 
 
-def kjor(tekster: list[str], modell: str, buntstorrelse: int, arbeidere: int) -> dict:
+def kjor(
+    tekster: list[str],
+    modell: str,
+    buntstorrelse: int,
+    arbeidere: int,
+    reserve: bool = False,
+) -> dict:
     cache = les_cache()
-    mangler = [t for t in tekster if nokkel(t, modell) not in cache["kategorier"]]
+    mangler = [t for t in tekster if nokkel(t) not in cache["kategorier"]]
     print(f"  {len(tekster) - len(mangler)} av {len(tekster)} tekster lå i cachen")
     if not mangler:
         return cache
@@ -297,14 +385,30 @@ def kjor(tekster: list[str], modell: str, buntstorrelse: int, arbeidere: int) ->
         kategorier = kategoriser_bunt(bunt, modell)
         with _las:
             for tekst, kat in zip(bunt, kategorier):
-                cache["kategorier"][nokkel(tekst, modell)] = {"tekst": tekst, "kategori": kat}
+                cache["kategorier"][nokkel(tekst)] = {
+                    "tekst": tekst,
+                    "kategori": kat,
+                    "modell": modell,
+                }
             ferdig += 1
             if ferdig % 25 == 0 or ferdig == len(bunter):
                 print(f"    {ferdig}/{len(bunter)} bunter")
                 skriv_cache(cache, modell)
 
-    with ThreadPoolExecutor(max_workers=arbeidere) as pool:
-        list(pool.map(behandle, bunter))
+    try:
+        with ThreadPoolExecutor(max_workers=arbeidere) as pool:
+            list(pool.map(behandle, bunter))
+    except TomForKreditt as e:
+        skriv_cache(cache, modell)
+        if not reserve or modell == RESERVEMODELL:
+            raise SystemExit(str(e))
+        print(
+            f"\n!! Kreditten er brukt opp. Bytter til reservemodellen {RESERVEMODELL}.\n"
+            f"   {len(cache['kategorier']):,} tekster er allerede kategorisert med {modell}\n"
+            "   og røres ikke. Resten får en annen modell, og det registreres per\n"
+            "   oppføring — grunnlaget blir blandet, og må opplyses om i historien.\n"
+        )
+        return kjor(tekster, RESERVEMODELL, buntstorrelse, arbeidere, reserve=True)
 
     skriv_cache(cache, modell)
     return cache
@@ -422,7 +526,7 @@ def kontrolltall(
     kroner: Counter = Counter()
     dekket = 0
     for tekst, post in unike.items():
-        treff = cache["kategorier"].get(nokkel(tekst, modell))
+        treff = cache["kategorier"].get(nokkel(tekst))
         if not treff:
             continue
         dekket += 1
@@ -492,6 +596,11 @@ def main() -> int:
     ap.add_argument("--modell", default=STANDARDMODELL)
     ap.add_argument("--bunt", type=int, default=20, help="tekster per modellkall")
     ap.add_argument("--arbeidere", type=int, default=8, help="parallelle kall")
+    ap.add_argument(
+        "--reserve",
+        action="store_true",
+        help=f"bytt til gratismodellen ({RESERVEMODELL}) hvis kreditten tar slutt",
+    )
     args = ap.parse_args()
 
     if args.fasittest:
@@ -528,7 +637,7 @@ def main() -> int:
         tekster = tekster[: args.grense]
         print(f"  begrenset til de {len(tekster)} vanligste")
 
-    cache = kjor(tekster, args.modell, args.bunt, args.arbeidere)
+    cache = kjor(tekster, args.modell, args.bunt, args.arbeidere, reserve=args.reserve)
     print(f"\nForbruk: {forbruk_oppsummert()}")
     kontrolltall(cache, unike, sum_, args.modell, streng=bool(args.alle))
     print(f"\nSkrevet: {CACHE_FIL}")

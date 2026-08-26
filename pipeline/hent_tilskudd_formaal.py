@@ -66,9 +66,25 @@ def prosent(del_: float, av: float) -> str:
     return f"{del_ / av * 100:.0f} %".replace(".", ",")
 
 
+def modellsetning(modeller) -> str:
+    """Navngir modellen(e) bak kategoriene.
+
+    Er grunnlaget blandet — det skjer hvis kreditten tok slutt og reservemodellen tok
+    over — skal fotnoten si det, med andelen fra hver. Leseren skal ikke måtte gjette.
+    """
+    tot = sum(modeller.values())
+    rangert = modeller.most_common()
+    if len(rangert) == 1:
+        return f"språkmodellen {rangert[0][0]}"
+    deler = ", ".join(f"{m} ({n / tot * 100:.0f} %)" for m, n in rangert)
+    return f"flere språkmodeller — {deler}"
+
+
 def samle() -> dict:
-    cache = json.loads(CACHE_FIL.read_text(encoding="utf-8"))
-    modell = cache["metode"]["modell"]
+    from kategoriser_formaal import les_cache, modellfordeling
+
+    cache = les_cache()
+    modeller = modellfordeling(cache)
     oppslag = cache["kategorier"]
 
     tot = defaultdict(float)
@@ -94,7 +110,7 @@ def samle() -> dict:
             continue
 
         tot["beskrevet"] += kr
-        treff = oppslag.get(nokkel(tekst, modell))
+        treff = oppslag.get(nokkel(tekst))
         if not treff:
             # Utenfor det som er kategorisert (den lange halen av småbeløp).
             ukjent_kr += kr
@@ -104,7 +120,7 @@ def samle() -> dict:
         per_ar[ar][treff["kategori"]] += kr
 
     return {
-        "modell": modell,
+        "modeller": modeller,
         "dato_kjort": cache["metode"]["dato_kjort"],
         "tot": dict(tot),
         "ukjent_kr": ukjent_kr,
@@ -144,8 +160,9 @@ def bygg_visninger(d: dict) -> dict:
         ],
         "fotnote": (
             f"Tildelte beløp {AR_FRA}–{AR_TIL} fra tilskudd.no. Formålskategoriene er "
-            f"maskinelt utledet fra fritekstfeltene med språkmodellen {d['modell']} "
-            f"({d['dato_kjort']}); de dekker {dekning:.0f} % av kronene med beskrivelse."
+            f"maskinelt utledet fra fritekstfeltene ({d['dato_kjort']}) med "
+            f"{modellsetning(d['modeller'])}; de dekker {dekning:.0f} % av kronene med "
+            "beskrivelse."
         ),
     }
 

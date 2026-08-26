@@ -31,7 +31,7 @@
           "detalj": "formelstyrt, eller beskrevet med bare en tittel"
         }
       ],
-      "fotnote": "Tildelte beløp 2021–2025 fra tilskudd.no. Formålskategoriene er maskinelt utledet fra fritekstfeltene med språkmodellen anthropic/claude-haiku-4.5 (2026-08-26); de dekker 97 % av kronene med beskrivelse."
+      "fotnote": "Tildelte beløp 2021–2025 fra tilskudd.no. Formålskategoriene er maskinelt utledet fra fritekstfeltene (2026-08-26) med språkmodellen anthropic/claude-haiku-4.5; de dekker 97 % av kronene med beskrivelse."
     },
     "formaal": {
       "type": "kortgalleri",
