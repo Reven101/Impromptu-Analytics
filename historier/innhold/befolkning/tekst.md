@@ -2,6 +2,8 @@
 
 Da freden kom i 1945, bodde det litt over tre millioner mennesker i Norge. I dag er vi over fem og en halv. Veksten har ikke kommet jevnt — den forteller en historie om babyboom, utflytting, oljevelstand og innvandring.
 
+Tallene under starter i 1951, som er det første året SSBs fylkesfordelte serie dekker. Veksten siden krigen er altså litt større enn det som vises her.
+
 ## Den lange kurven
 
 Kurven under har ingen dramatiske knekk, og det er nettopp poenget: befolkningsvekst er rentes rente. Etterkrigstidens store barnekull ga fart, så flatet veksten ut på 1980-tallet — før innvandringen løftet den til rekordnivåer etter årtusenskiftet.

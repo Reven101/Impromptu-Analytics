@@ -147,8 +147,13 @@ def bygg_snapshot(landserie: dict[int, int], fylkestall: dict[str, int], siste_a
             "geografi": "Norge, fylker",
             "enhet": "personer",
             "oppdateringsfrekvens": "kvartalsvis",
-            "beskrivelse": ("Norges befolkning har vokst med nesten to og en halv "
-                            "million siden krigen. Hvor bor vi nå — og hvor gikk veksten?"),
+            # Årstallet interpoleres fra serien. Sto tidligere som «siden krigen», mens
+            # tallet gjelder fra seriens første år (1951) — SSBs kommunefordelte serie
+            # starter der, ikke i 1945. Formuleringen undervurderte dermed veksten den
+            # skulle illustrere, og ville drevet fra hverandre igjen hvis serien endret seg.
+            "beskrivelse": (f"Norges befolkning har vokst med nesten to og en halv "
+                            f"million siden {forste_aar}. Hvor bor vi nå — og hvor "
+                            "gikk veksten?"),
         },
         "visninger": {
             "hero": {

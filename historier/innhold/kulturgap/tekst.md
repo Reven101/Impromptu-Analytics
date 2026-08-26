@@ -4,7 +4,7 @@ Kulturbarometeret teller ikke bare hvor mange av oss som går ut for å oppleve 
 
 ## Kinoen tetter gapet
 
-Kinoen er det nærmeste vi kommer et felles kulturrom: uansett utdanningsnivå er det tilbudet flest har brukt. Men helt jevnt har det aldri vært — og det mest interessante i kurvene under er retningen. I 1991 skilte det nesten førti prosentpoeng mellom dem med grunnskole og dem med lang universitetsutdanning. Siden har den nederste kurven klatret mens den øverste har ligget flatt, og gapet er omtrent halvert. Aller jevnest er ellers tribunen: på idrettsarrangement skiller bare noen få prosentpoeng.
+Kinoen er det nærmeste vi kommer et felles kulturrom: uansett utdanningsnivå er det tilbudet flest har brukt. Men helt jevnt har det aldri vært — og det mest interessante i kurvene under er retningen. I 1991 skilte det nesten førti prosentpoeng mellom dem med grunnskole og dem med lang universitetsutdanning. Siden har den nederste kurven klatret mens den øverste har ligget flatt, og gapet er omtrent halvert. Jevnest er ellers tribunen og dansesalen: både idrettsarrangement og ballett og dans skiller bare seks prosentpoeng.
 
 [[viz:folkelig]]
 
