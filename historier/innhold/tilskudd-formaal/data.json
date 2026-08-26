@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "tittel": "Pengene uten formål",
+    "kilde": "tilskudd.no (Lotteri- og stiftelsestilsynet)",
+    "kilde_url": "https://tilskudd.no",
+    "dato_hentet": "2026-08-26",
+    "geografi": "Norge",
+    "enhet": "tildelte kroner",
+    "oppdateringsfrekvens": "årlig",
+    "beskrivelse": "Staten delte ut 66,4 mrd kr i tilskudd 2021–2025. For minst 64 % av kronene står det ingen steder hva de skulle brukes til.",
+    "utkast": true
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "Statlige tilskudd 2021–2025",
+      "rader": [
+        {
+          "etikett": "Utbetalt i tilskudd",
+          "verdi": "66,4 mrd kr",
+          "detalj": "638 153 tildelinger"
+        },
+        {
+          "etikett": "Fordelt etter formel",
+          "verdi": "49 %",
+          "detalj": "momskompensasjon, grasrotandel, partistøtte, trossamfunn — ingen søknad om et bestemt tiltak"
+        },
+        {
+          "etikett": "Uten oppgitt formål i det hele tatt",
+          "verdi": "minst 64 %",
+          "detalj": "formelstyrt, eller beskrevet med bare en tittel"
+        }
+      ],
+      "fotnote": "Tildelte beløp 2021–2025 fra tilskudd.no. Formålskategoriene er maskinelt utledet fra fritekstfeltene med språkmodellen anthropic/claude-haiku-4.5 (2026-08-26); de dekker 97 % av kronene med beskrivelse."
+    },
+    "formaal": {
+      "type": "kortgalleri",
+      "tittel": "Hva pengene skal brukes til",
+      "undertekst": "tildelte kroner 2021–2025, blant tilskuddene som faktisk beskriver et formål",
+      "kort": [
+        {
+          "overtittel": "Drift",
+          "verdi": "6,0 mrd kr",
+          "detalj": "26 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Anlegg og utstyr",
+          "verdi": "4,1 mrd kr",
+          "detalj": "18 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Arrangement",
+          "verdi": "3,5 mrd kr",
+          "detalj": "15 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Helse og omsorg",
+          "verdi": "2,5 mrd kr",
+          "detalj": "11 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Inkludering",
+          "verdi": "2,0 mrd kr",
+          "detalj": "9 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Opplæring",
+          "verdi": "1,4 mrd kr",
+          "detalj": "6 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Produksjon og utgivelse",
+          "verdi": "1,0 mrd kr",
+          "detalj": "5 % av kronene med oppgitt formål"
+        },
+        {
+          "overtittel": "Informasjon og formidling",
+          "verdi": "0,9 mrd kr",
+          "detalj": "4 % av kronene med oppgitt formål"
+        }
+      ]
+    },
+    "utvikling": {
+      "type": "tidslinje",
+      "tittel": "De fem største formålene over tid",
+      "undertekst": "tildelte kroner per budsjettår",
+      "enhet": "mrd kr",
+      "serier": [
+        {
+          "navn": "Drift",
+          "punkter": [
+            [
+              2021,
+              1.123
+            ],
+            [
+              2022,
+              1.103
+            ],
+            [
+              2023,
+              1.137
+            ],
+            [
+              2024,
+              1.342
+            ],
+            [
+              2025,
+              1.253
+            ]
+          ]
+        },
+        {
+          "navn": "Anlegg og utstyr",
+          "punkter": [
+            [
+              2021,
+              0.67
+            ],
+            [
+              2022,
+              0.709
+            ],
+            [
+              2023,
+              0.863
+            ],
+            [
+              2024,
+              1.035
+            ],
+            [
+              2025,
+              0.832
+            ]
+          ]
+        },
+        {
+          "navn": "Arrangement",
+          "punkter": [
+            [
+              2021,
+              1.872
+            ],
+            [
+              2022,
+              0.568
+            ],
+            [
+              2023,
+              0.719
+            ],
+            [
+              2024,
+              0.129
+            ],
+            [
+              2025,
+              0.254
+            ]
+          ]
+        },
+        {
+          "navn": "Helse og omsorg",
+          "punkter": [
+            [
+              2021,
+              0.669
+            ],
+            [
+              2022,
+              0.403
+            ],
+            [
+              2023,
+              0.519
+            ],
+            [
+              2024,
+              0.449
+            ],
+            [
+              2025,
+              0.434
+            ]
+          ]
+        },
+        {
+          "navn": "Inkludering",
+          "punkter": [
+            [
+              2021,
+              0.396
+            ],
+            [
+              2022,
+              0.263
+            ],
+            [
+              2023,
+              0.322
+            ],
+            [
+              2024,
+              0.353
+            ],
+            [
+              2025,
+              0.635
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}
