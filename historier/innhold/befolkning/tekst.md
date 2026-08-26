@@ -12,7 +12,7 @@ Kurven under har ingen dramatiske knekk, og det er nettopp poenget: befolkningsv
 
 ## Hvor bor vi?
 
-Norgeskartet under er tegnet som et rutenett — hvert fylke én rute, mørkere farge betyr flere folk. Mønsteret er velkjent, men fortsatt slående: vi klumper oss rundt Oslofjorden og langs kysten i sør og vest, mens Nord-Norge har store arealer og få mennesker.
+Norgeskartet under er tegnet som et rutenett — hvert fylke én rute, mørkere farge betyr flere folk. Mønsteret er velkjent, men fortsatt slående: vi klumper oss rundt Oslofjorden og langs kysten i sør og vest, mens de tre nordligste fylkene har færrest innbyggere av alle. Merk at ruten viser antall folk, ikke tetthet — arealet er ikke med i tallene, så kartet sier hvor få vi er i nord, ikke hvor spredt vi bor.
 
 [[viz:fylkeskart]]
 

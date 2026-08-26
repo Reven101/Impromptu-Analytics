@@ -254,8 +254,12 @@ def bygg_snapshot(ngram: dict[int, float], storting: list[dict], demo: bool) -> 
                 "eyebrow": "Ett ord, to arkiver",
                 "sporsmal": "Hvor stort ble ordet «kultur»?",
                 "rader": [
+                    # Tallet er snittet for siste tiår mot snittet for første, ikke
+                    # «i dag mot 1860». Sto tidligere bare som «enn på 1860-tallet», som
+                    # leses som dagens nivå — og siste enkeltår er 9,8×, ikke 14×.
                     {"etikett": "I avisene", "verdi": f"~{ganger}× oftere",
-                     "detalj": f"enn på {min(ngram)}-tallet, målt per million avisord"},
+                     "detalj": (f"snittet {max(ngram) - 9}–{max(ngram)} mot "
+                                f"{min(ngram)}-tallet, per million avisord")},
                     {"etikett": "På Stortinget", "verdi": f"{toppsesjon['kultursaker']} saker",
                      "detalj": f"i toppsesjonen {toppsesjon['sesjon']}"},
                 ],

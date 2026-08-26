@@ -110,6 +110,7 @@ def kall_modell(
     maks_tokens: int = 4000,
     forsok: int | None = None,
     tidsavbrudd: int = 120,
+    _doblinger: int = 0,
 ) -> str:
     """Returnerer modellens svartekst. Feiler hardt framfor å returnere noe tvilsomt."""
     # Gratismodellene ligger i en delt pulje og rate-limites oppstrøms. De trenger flere
@@ -188,10 +189,23 @@ def kall_modell(
     # symptomet i stedet for årsaken.
     if valg.get("finish_reason") == "length":
         res = (bruk.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0
+        # Resonnerende modeller bruker vidt forskjellig mye tenketokens, og de trekkes fra
+        # samme budsjett som svaret. Et fast tak som passer én modell sulter en annen, så
+        # vi dobler og prøver igjen framfor å kreve at kalleren gjetter riktig på forhånd.
+        # Taket på to doblinger hindrer at en modell som aldri stopper får løpe fritt.
+        if _doblinger < 2:
+            print(
+                f"    avkuttet på {maks_tokens} tokens ({res} på resonnering) — "
+                f"dobler til {maks_tokens * 2}"
+            )
+            return kall_modell(
+                meldinger, modell, temperatur, maks_tokens * 2, forsok, tidsavbrudd,
+                _doblinger + 1,
+            )
         raise SystemExit(
-            f"Modellen ble avkuttet av maks_tokens ({maks_tokens}); den rakk "
-            f"{bruk.get('completion_tokens')} tokens, hvorav {res} på resonnering. "
-            "Øk budsjettet, eller be om mindre per kall."
+            f"Modellen ble avkuttet selv med {maks_tokens} tokens; den rakk "
+            f"{bruk.get('completion_tokens')}, hvorav {res} på resonnering. "
+            "Be om færre elementer per kall."
         )
     return valg["message"]["content"]
 

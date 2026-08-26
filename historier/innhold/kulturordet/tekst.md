@@ -12,7 +12,7 @@ Det er verdt å stoppe ved *hva* som vokser. Ordet «kultur» er en språklig pa
 
 ## Ordet på Stortinget
 
-Politikken fulgte etter språket. I Stortingets saksregister kan vi telle sakene som bærer kultur i tittelen eller emnefeltet; kulturmeldinger, budsjettdebatter, spørsmål om alt fra bibliotekfilialer til dataspill.
+Politikken fulgte etter språket. I Stortingets saksregister kan vi telle sakene som bærer kultur i tittelen eller emnefeltet; kulturmeldinger, budsjettdebatter, spørsmål om alt fra bibliotekfilialer til dataspill. Kurven viser antall saker, ikke andel av alle saker Stortinget behandler — vokser saksmengden totalt, kan andelen kultursaker ha stått stille selv om antallet stiger.
 
 [[viz:storting]]
 

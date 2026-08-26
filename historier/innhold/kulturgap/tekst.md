@@ -6,6 +6,8 @@ Kulturbarometeret teller ikke bare hvor mange av oss som går ut for å oppleve 
 
 Kinoen er det nærmeste vi kommer et felles kulturrom: uansett utdanningsnivå er det tilbudet flest har brukt. Men helt jevnt har det aldri vært — og det mest interessante i kurvene under er retningen. I 1991 skilte det nesten førti prosentpoeng mellom dem med grunnskole og dem med lang universitetsutdanning. Siden har den nederste kurven klatret mens den øverste har ligget flatt, og gapet er omtrent halvert. Jevnest er ellers tribunen og dansesalen: både idrettsarrangement og ballett og dans skiller bare seks prosentpoeng.
 
+Et forbehold gjelder alle kurvene her: 2021 er et pandemiår. Alle grupper faller kraftig det året — kinobruken nesten halveres i begge ender av utdanningsskalaen — og gapet er derfor på sitt minste i 2021 uten at det betyr at forskjellen forsvant. Les retningen på tvers av målingene, ikke bunnpunktet.
+
 [[viz:folkelig]]
 
 ## Det delte kulturlivet
