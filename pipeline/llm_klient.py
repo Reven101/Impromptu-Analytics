@@ -183,12 +183,15 @@ def kall_modell(
         )
 
     valg = data["choices"][0]
-    # Et avkuttet svar er halvferdig JSON. Uten denne sjekken feiler det først nede i
-    # parseren, med en melding som peker på symptomet i stedet for årsaken.
+    # Et avkuttet svar er ubrukelig — halvferdig JSON eller en setning som stopper midt i.
+    # Uten denne sjekken feiler det først lenger nede, med en melding som peker på
+    # symptomet i stedet for årsaken.
     if valg.get("finish_reason") == "length":
+        res = (bruk.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0
         raise SystemExit(
-            f"Modellen ble avkuttet av maks_tokens ({maks_tokens}). Øk budsjettet eller "
-            "senk antall elementer per kall — svaret er halvferdig JSON."
+            f"Modellen ble avkuttet av maks_tokens ({maks_tokens}); den rakk "
+            f"{bruk.get('completion_tokens')} tokens, hvorav {res} på resonnering. "
+            "Øk budsjettet, eller be om mindre per kall."
         )
     return valg["message"]["content"]
 
