@@ -1,0 +1,632 @@
+{
+ "meta": {
+  "tittel": "Bygda savner barn, ikke korps",
+  "kilde": "Brønnøysundregistrene og Statistisk sentralbyrå",
+  "kilde_url": "https://data.brreg.no/enhetsregisteret/api/dokumentasjon",
+  "dato_hentet": "2026-08-27",
+  "geografi": "Norge, fylker",
+  "enhet": "organisasjoner",
+  "oppdateringsfrekvens": "daglig",
+  "beskrivelse": "Skolekorpsene står tettest der folketallet faller — men i de 65 kommunene med befolkningsnedgang er det ikke stiftet ett eneste nytt skolekorps siden 2009."
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Stiftet i 2025",
+   "rader": [
+    {
+     "etikett": "Nye skolekorps",
+     "verdi": "2",
+     "detalj": "av 829 som finnes i dag"
+    },
+    {
+     "etikett": "Nye kor og songlag",
+     "verdi": "39",
+     "detalj": "av 1 372 som finnes i dag"
+    },
+    {
+     "etikett": "Median stiftelsesår, skolekorps",
+     "verdi": "1963",
+     "detalj": "for kor er medianen 1993"
+    }
+   ],
+   "fotnote": "Foreninger i Enhetsregisteret sortert på navn. Tellingen gjelder organisasjoner som står i registeret i dag."
+  },
+  "nystiftet": {
+   "type": "tidslinje",
+   "tittel": "Nystiftede foreninger per år, 2000–2025",
+   "undertekst": "organisasjoner som fortsatt står i registeret",
+   "enhet": "nye foreninger",
+   "serier": [
+    {
+     "navn": "Teater og revy",
+     "punkter": [
+      [
+       2000,
+       17
+      ],
+      [
+       2001,
+       10
+      ],
+      [
+       2002,
+       12
+      ],
+      [
+       2003,
+       17
+      ],
+      [
+       2004,
+       18
+      ],
+      [
+       2005,
+       15
+      ],
+      [
+       2006,
+       22
+      ],
+      [
+       2007,
+       18
+      ],
+      [
+       2008,
+       18
+      ],
+      [
+       2009,
+       22
+      ],
+      [
+       2010,
+       18
+      ],
+      [
+       2011,
+       36
+      ],
+      [
+       2012,
+       24
+      ],
+      [
+       2013,
+       29
+      ],
+      [
+       2014,
+       33
+      ],
+      [
+       2015,
+       44
+      ],
+      [
+       2016,
+       23
+      ],
+      [
+       2017,
+       42
+      ],
+      [
+       2018,
+       46
+      ],
+      [
+       2019,
+       35
+      ],
+      [
+       2020,
+       19
+      ],
+      [
+       2021,
+       30
+      ],
+      [
+       2022,
+       25
+      ],
+      [
+       2023,
+       40
+      ],
+      [
+       2024,
+       39
+      ],
+      [
+       2025,
+       34
+      ]
+     ]
+    },
+    {
+     "navn": "Kor og songlag",
+     "punkter": [
+      [
+       2000,
+       12
+      ],
+      [
+       2001,
+       13
+      ],
+      [
+       2002,
+       9
+      ],
+      [
+       2003,
+       16
+      ],
+      [
+       2004,
+       21
+      ],
+      [
+       2005,
+       18
+      ],
+      [
+       2006,
+       10
+      ],
+      [
+       2007,
+       17
+      ],
+      [
+       2008,
+       18
+      ],
+      [
+       2009,
+       11
+      ],
+      [
+       2010,
+       19
+      ],
+      [
+       2011,
+       24
+      ],
+      [
+       2012,
+       18
+      ],
+      [
+       2013,
+       19
+      ],
+      [
+       2014,
+       20
+      ],
+      [
+       2015,
+       20
+      ],
+      [
+       2016,
+       19
+      ],
+      [
+       2017,
+       15
+      ],
+      [
+       2018,
+       33
+      ],
+      [
+       2019,
+       31
+      ],
+      [
+       2020,
+       26
+      ],
+      [
+       2021,
+       25
+      ],
+      [
+       2022,
+       30
+      ],
+      [
+       2023,
+       38
+      ],
+      [
+       2024,
+       31
+      ],
+      [
+       2025,
+       39
+      ]
+     ]
+    },
+    {
+     "navn": "Skolekorps",
+     "punkter": [
+      [
+       2000,
+       2
+      ],
+      [
+       2001,
+       6
+      ],
+      [
+       2002,
+       3
+      ],
+      [
+       2003,
+       4
+      ],
+      [
+       2004,
+       2
+      ],
+      [
+       2005,
+       3
+      ],
+      [
+       2006,
+       1
+      ],
+      [
+       2007,
+       1
+      ],
+      [
+       2008,
+       2
+      ],
+      [
+       2009,
+       2
+      ],
+      [
+       2010,
+       1
+      ],
+      [
+       2011,
+       1
+      ],
+      [
+       2012,
+       1
+      ],
+      [
+       2013,
+       2
+      ],
+      [
+       2014,
+       4
+      ],
+      [
+       2015,
+       10
+      ],
+      [
+       2016,
+       2
+      ],
+      [
+       2017,
+       3
+      ],
+      [
+       2018,
+       3
+      ],
+      [
+       2019,
+       0
+      ],
+      [
+       2020,
+       0
+      ],
+      [
+       2021,
+       1
+      ],
+      [
+       2022,
+       2
+      ],
+      [
+       2023,
+       4
+      ],
+      [
+       2024,
+       3
+      ],
+      [
+       2025,
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  "bestand": {
+   "type": "tidslinje",
+   "stil": "søyle",
+   "tittel": "Skolekorpsene vi har, etter stiftelsestiår",
+   "undertekst": "dagens bestand fordelt på tiåret de ble stiftet, 1900–2019",
+   "enhet": "skolekorps",
+   "x_navn": "Tiår (fra år)",
+   "serier": [
+    {
+     "navn": "Skolekorps",
+     "punkter": [
+      [
+       1900,
+       6
+      ],
+      [
+       1910,
+       13
+      ],
+      [
+       1920,
+       38
+      ],
+      [
+       1930,
+       25
+      ],
+      [
+       1940,
+       31
+      ],
+      [
+       1950,
+       190
+      ],
+      [
+       1960,
+       192
+      ],
+      [
+       1970,
+       131
+      ],
+      [
+       1980,
+       43
+      ],
+      [
+       1990,
+       32
+      ],
+      [
+       2000,
+       26
+      ],
+      [
+       2010,
+       27
+      ]
+     ]
+    }
+   ]
+  },
+  "fylkeskart": {
+   "type": "kart",
+   "tittel": "Hvor står korpsene tettest?",
+   "undertekst": "skolekorps per 1000 barn 6–15 år, 2026",
+   "enhet": "skolekorps per 1000 barn",
+   "verdier": {
+    "03": 1.05,
+    "11": 1.53,
+    "15": 2.64,
+    "18": 1.95,
+    "31": 1.14,
+    "32": 0.98,
+    "33": 1.23,
+    "34": 1.4,
+    "39": 0.9,
+    "40": 0.99,
+    "42": 0.86,
+    "46": 1.42,
+    "50": 1.57,
+    "55": 1.03,
+    "56": 1.81
+   }
+  },
+  "kommunetype": {
+   "type": "kortgalleri",
+   "tittel": "Kulturlivet er tettest der folk blir færre",
+   "undertekst": "kommuner gruppert etter folketallsendring 2009–2026",
+   "kort": [
+    {
+     "overtittel": "Vekst (+21%)",
+     "verdi": "1,21",
+     "detalj": "skolekorps per 1000 barn · 169 kommuner · 34 nye korps siden 2009"
+    },
+    {
+     "overtittel": "Stabil (+0%)",
+     "verdi": "2,00",
+     "detalj": "skolekorps per 1000 barn · 118 kommuner · 7 nye korps siden 2009"
+    },
+    {
+     "overtittel": "Nedgang (-9%)",
+     "verdi": "2,60",
+     "detalj": "skolekorps per 1000 barn · 65 kommuner · 0 nye korps siden 2009"
+    }
+   ]
+  },
+  "styret": {
+   "type": "kortgalleri",
+   "tittel": "Hvem sitter i styret?",
+   "undertekst": "medianalder blant sittende styremedlemmer, 2025",
+   "kort": [
+    {
+     "overtittel": "Skolekorps",
+     "verdi": "46 år",
+     "detalj": "10% er 60 eller eldre · 4 256 styremedlemmer"
+    },
+    {
+     "overtittel": "Teater og revy",
+     "verdi": "47 år",
+     "detalj": "22% er 60 eller eldre · 4 163 styremedlemmer"
+    },
+    {
+     "overtittel": "Voksenkorps",
+     "verdi": "54 år",
+     "detalj": "32% er 60 eller eldre · 2 693 styremedlemmer"
+    },
+    {
+     "overtittel": "Kor og songlag",
+     "verdi": "60 år",
+     "detalj": "51% er 60 eller eldre · 6 312 styremedlemmer"
+    },
+    {
+     "overtittel": "Folkemusikk og tradisjon",
+     "verdi": "67 år",
+     "detalj": "70% er 60 eller eldre · 9 031 styremedlemmer"
+    }
+   ]
+  }
+ },
+ "_noekkeltall": {
+  "siste_aar": 2025,
+  "totalt": 5397,
+  "profil": {
+   "skolekorps": {
+    "antall": 829,
+    "median": 1963,
+    "for_1990": 0.8723958333333334,
+    "siste_ti": 21,
+    "forrige_ti": 25
+   },
+   "voksenkorps": {
+    "antall": 532,
+    "median": 1973,
+    "for_1990": 0.6390532544378699,
+    "siste_ti": 61,
+    "forrige_ti": 49
+   },
+   "kor": {
+    "antall": 1372,
+    "median": 1993,
+    "for_1990": 0.4585843373493976,
+    "siste_ti": 305,
+    "forrige_ti": 176
+   },
+   "teater": {
+    "antall": 970,
+    "median": 2012,
+    "for_1990": 0.1391484942886812,
+    "siste_ti": 360,
+    "forrige_ti": 264
+   },
+   "tradisjon": {
+    "antall": 1694,
+    "median": 1979,
+    "for_1990": 0.6915213469633193,
+    "siste_ti": 111,
+    "forrige_ti": 111
+   }
+  },
+  "styre": {
+   "skolekorps": {
+    "antall": 4256,
+    "median": 46,
+    "andel_60": 0.09915413533834587,
+    "andel_u40": 0.17340225563909775
+   },
+   "voksenkorps": {
+    "antall": 2693,
+    "median": 54,
+    "andel_60": 0.324545116969922,
+    "andel_u40": 0.18492387671741553
+   },
+   "kor": {
+    "antall": 6312,
+    "median": 60,
+    "andel_60": 0.5095057034220533,
+    "andel_u40": 0.135297845373891
+   },
+   "teater": {
+    "antall": 4163,
+    "median": 47,
+    "andel_60": 0.22051405236608215,
+    "andel_u40": 0.32740811914484746
+   },
+   "tradisjon": {
+    "antall": 9031,
+    "median": 67,
+    "andel_60": 0.6961576791053039,
+    "andel_u40": 0.06444469051046396
+   }
+  },
+  "kommunetype": {
+   "vekst": {
+    "kommuner": 169,
+    "folketall": 4873346,
+    "folkevekst": 0.20853617799856505,
+    "barnevekst": 0.0659559894652555,
+    "skolekorps": 666,
+    "korps_per_1000_barn": 1.2054975030273192,
+    "kor_per_10000": 2.19151277171783,
+    "nye_skolekorps": 34,
+    "nye_kor": 345
+   },
+   "stabil": {
+    "kommuner": 118,
+    "folketall": 609978,
+    "folkevekst": 0.003685798814620833,
+    "barnevekst": -0.19243097269193887,
+    "skolekorps": 128,
+    "korps_per_1000_barn": 2.0001562622079847,
+    "kor_per_10000": 3.7870218270167118,
+    "nye_skolekorps": 7,
+    "nye_kor": 55
+   },
+   "nedgang": {
+    "kommuner": 65,
+    "folketall": 144076,
+    "folkevekst": -0.0943002445356651,
+    "barnevekst": -0.33149664929262845,
+    "skolekorps": 35,
+    "korps_per_1000_barn": 2.598945570654192,
+    "kor_per_10000": 4.927954690579972,
+    "nye_skolekorps": 0,
+    "nye_kor": 17
+   }
+  },
+  "fylke_topp": [
+   "Møre og Romsdal",
+   2.64
+  ],
+  "fylke_bunn": [
+   "Agder",
+   0.86
+  ],
+  "frivillighetsregisteret": {
+   "av_vaare": 4420,
+   "andel_kunst_kultur": 0.8776018099547511,
+   "andel_grasrot": 0.8142533936651584
+  }
+ }
+}

@@ -1,6 +1,15 @@
 {
-  "generert": "2026-08-26",
+  "generert": "2026-08-27",
   "historier": [
+    {
+      "id": "bygda-savner-barn",
+      "tittel": "Bygda savner barn, ikke korps",
+      "kilde": "Brønnøysundregistrene og Statistisk sentralbyrå",
+      "dato_hentet": "2026-08-27",
+      "geografi": "Norge, fylker",
+      "beskrivelse": "Skolekorpsene står tettest der folketallet faller — men i de 65 kommunene med befolkningsnedgang er det ikke stiftet ett eneste nytt skolekorps siden 2009.",
+      "demo": false
+    },
     {
       "id": "kultur",
       "tittel": "Folk går helst på kino eller konsert",
