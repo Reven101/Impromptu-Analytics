@@ -176,7 +176,7 @@ def bygg_snapshot(org: list[dict], styrer: dict, frivillig: dict,
             "oppdateringsfrekvens": "daglig",
             "beskrivelse": (
                 f"Skolekorpsene står tettest der folketallet faller — men i de "
-                f"{nedgang['kommuner']} kommunene med befolkningsnedgang er det "
+                f"{nedgang['kommuner']} kommunegruppene med befolkningsnedgang er det "
                 f"{ingen} siden {fra}."),
         },
         "visninger": {
@@ -232,22 +232,22 @@ def bygg_snapshot(org: list[dict], styrer: dict, frivillig: dict,
             "kommunetype": {
                 "type": "kortgalleri",
                 "tittel": "Kulturlivet er tettest der folk blir færre",
-                "undertekst": f"kommuner gruppert etter folketallsendring {fra}–{til}",
+                "undertekst": f"kommunegrupper etter folketallsendring {fra}–{til}",
                 "kort": [
                     {"overtittel": f"Vekst (+{kommunetype['vekst']['folkevekst']:.0%})",
                      "verdi": f"{kommunetype['vekst']['korps_per_1000_barn']:.2f}".replace(".", ","),
                      "detalj": (f"skolekorps per 1000 barn · "
-                                f"{kommunetype['vekst']['kommuner']} kommuner · "
+                                f"{kommunetype['vekst']['kommuner']} kommunegrupper · "
                                 f"{kommunetype['vekst']['nye_skolekorps']} nye korps siden {fra}")},
                     {"overtittel": f"Stabil ({kommunetype['stabil']['folkevekst']:+.0%})",
                      "verdi": f"{kommunetype['stabil']['korps_per_1000_barn']:.2f}".replace(".", ","),
                      "detalj": (f"skolekorps per 1000 barn · "
-                                f"{kommunetype['stabil']['kommuner']} kommuner · "
+                                f"{kommunetype['stabil']['kommuner']} kommunegrupper · "
                                 f"{kommunetype['stabil']['nye_skolekorps']} nye korps siden {fra}")},
                     {"overtittel": f"Nedgang ({nedgang['folkevekst']:.0%})",
                      "verdi": f"{nedgang['korps_per_1000_barn']:.2f}".replace(".", ","),
                      "detalj": (f"skolekorps per 1000 barn · "
-                                f"{nedgang['kommuner']} kommuner · "
+                                f"{nedgang['kommuner']} kommunegrupper · "
                                 f"{nedgang['nye_skolekorps']} nye korps siden {fra}")},
                 ],
             },

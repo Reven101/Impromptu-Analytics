@@ -7,7 +7,7 @@
   "geografi": "Norge, fylker",
   "enhet": "organisasjoner",
   "oppdateringsfrekvens": "daglig",
-  "beskrivelse": "Skolekorpsene står tettest der folketallet faller — men i de 65 kommunene med befolkningsnedgang er det ikke stiftet ett eneste nytt skolekorps siden 2009."
+  "beskrivelse": "Skolekorpsene står tettest der folketallet faller — men i de 65 kommunegruppene med befolkningsnedgang er det ikke stiftet ett eneste nytt skolekorps siden 2009."
  },
  "visninger": {
   "hero": {
@@ -456,22 +456,22 @@
   "kommunetype": {
    "type": "kortgalleri",
    "tittel": "Kulturlivet er tettest der folk blir færre",
-   "undertekst": "kommuner gruppert etter folketallsendring 2009–2026",
+   "undertekst": "kommunegrupper etter folketallsendring 2009–2026",
    "kort": [
     {
      "overtittel": "Vekst (+21%)",
      "verdi": "1,21",
-     "detalj": "skolekorps per 1000 barn · 169 kommuner · 34 nye korps siden 2009"
+     "detalj": "skolekorps per 1000 barn · 169 kommunegrupper · 34 nye korps siden 2009"
     },
     {
      "overtittel": "Stabil (+0%)",
      "verdi": "2,00",
-     "detalj": "skolekorps per 1000 barn · 118 kommuner · 7 nye korps siden 2009"
+     "detalj": "skolekorps per 1000 barn · 118 kommunegrupper · 7 nye korps siden 2009"
     },
     {
      "overtittel": "Nedgang (-9%)",
      "verdi": "2,60",
-     "detalj": "skolekorps per 1000 barn · 65 kommuner · 0 nye korps siden 2009"
+     "detalj": "skolekorps per 1000 barn · 65 kommunegrupper · 0 nye korps siden 2009"
     }
    ]
   },

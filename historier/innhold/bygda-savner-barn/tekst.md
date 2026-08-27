@@ -24,7 +24,7 @@ Nesten ni av ti skolekorps som finnes i dag ble stiftet før 1990. For kor er an
 
 ## Bygda savner barn, ikke korps
 
-Deler man landet i kommuner som har vokst, stått stille eller mistet folk siden 2009, er korpstettheten *høyest* der folketallet faller — 2,60 skolekorps per 1000 barn i fraflyttingskommunene, mot 1,21 i vekstkommunene. Det samme gjelder kor: 4,9 per 10 000 innbyggere i nedgangskommunene mot 2,2 i vekstkommunene.
+Deler man landet i kommuner som har vokst, stått stille eller mistet folk siden 2009 — gruppert slik at kommunesammenslåingene ikke ødelegger sammenligningen — er korpstettheten *høyest* der folketallet faller — 2,60 skolekorps per 1000 barn i fraflyttingskommunene, mot 1,21 i vekstkommunene. Det samme gjelder kor: 4,9 per 10 000 innbyggere i nedgangskommunene mot 2,2 i vekstkommunene.
 
 [[viz:kommunetype]]
 
