@@ -1,12 +1,14 @@
 /* ============================================================
    VISUALISERINGSKOMPONENTER
-   Fire gjenbrukbare typer: hero, tidslinje, kart, kortgalleri.
+   Fem gjenbrukbare typer: hero, tidslinje, kart, verdenskart,
+   kortgalleri.
    Alle er rent datadrevne: lagVisning(spec, meta) -> HTMLElement.
    Nye historier skal aldri trenge endringer her — bare nye
    data.json + tekst.md. Ny komponent legges til i REGISTER.
    ============================================================ */
 
 import { escapeHtml } from "./markdown.js";
+import { VERDEN, VERDEN_VIEWBOX } from "./verdensgeometri.js";
 
 const nb = new Intl.NumberFormat("nb-NO");
 const SERIE_FARGER = ["#0E7D59", "#A9761B", "#B23A28", "#3E6CB0", "#C05A6E", "#8A4A82"];
@@ -412,7 +414,140 @@ function lagKart(spec, meta) {
 }
 
 /* ============================================================
-   4. KORTGALLERI — rutenett av fakta-kort.
+   4. VERDENSKART — koroplett over landomriss, nøklet på ISO2.
+
+   Geometrien er generert av pipeline/lag_verdensgeometri.py og
+   ligger ferdig projisert i verdensgeometri.js. Ingen projeksjon
+   skjer her; komponenten maler `d`-strenger.
+
+   MERK: et koroplettkart vekter etter AREAL. Bruk det til
+   tidspunkt og rater — ikke til volum, der Russland ville
+   dominert et bilde Norge egentlig eier.
+   ============================================================ */
+
+function lagVerdenskart(spec, meta) {
+  const fig = figurRamme({ ...spec, undertekst: spec.undertekst || spec.enhet || meta.enhet });
+  const verdier = spec.verdier || {};
+  const enhet = spec.enhet || meta.enhet;
+
+  const tall = Object.values(verdier).filter((v) => typeof v === "number");
+  const sortert = tall.slice().sort((a, b) => a - b);
+  const min = sortert[0], maks = sortert[sortert.length - 1];
+
+  /* Skala: logaritmisk som standard, ikke lineær.
+
+     Landtall spenner nesten alltid over flere størrelsesordener. Med spennet
+     1-147 år og median 114 legger en lineær skala 25 land i det laveste
+     trinnet: Norge (1 år) og Russland (16 år) får samme farge, og hele Europa
+     blir én flate. Kvantiler jevner ut antallet, men skiller fortsatt ikke 1
+     fra 16. Logaritmen gjør det, fordi den måler forhold og ikke differanser
+     — og forskjellen mellom ett og seksten år ER større enn mellom 130 og 145.
+
+     Prisen er at trinnene dekker ulike spenn, så legenden må skrive ut hver
+     grense. En jevn rampe merket bare «1» og «147» ville lovet en lineær
+     skala vi ikke har. */
+  const skalatype = spec.skala || (min > 0 ? "log" : "kvantil");
+  const grenser = [];
+  if (skalatype === "log") {
+    const lo = Math.log(min), hi = Math.log(maks);
+    for (let i = 1; i < RAMPE.length; i++) {
+      grenser.push(Math.exp(lo + ((hi - lo) * i) / RAMPE.length));
+    }
+  } else if (skalatype === "kvantil") {
+    for (let i = 1; i < RAMPE.length; i++) {
+      grenser.push(sortert[Math.min(sortert.length - 1,
+        Math.floor((i / RAMPE.length) * sortert.length))]);
+    }
+  } else {
+    for (let i = 1; i < RAMPE.length; i++) {
+      grenser.push(min + ((maks - min) * i) / RAMPE.length);
+    }
+  }
+  const trinn = (v) => {
+    let i = 0;
+    while (i < grenser.length && v >= grenser[i]) i++;
+    return i;
+  };
+
+  const ytre = el("div", "viz-kart-ytre");
+  const tooltip = lagTooltip(ytre);
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", VERDEN_VIEWBOX);
+  svg.setAttribute("class", "viz-verdenskart");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", spec.tittel || "Verdenskart");
+
+  for (const [kode, d] of Object.entries(VERDEN)) {
+    const v = verdier[kode];
+    const bane = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    bane.setAttribute("d", d);
+    bane.setAttribute("class", typeof v === "number" ? "viz-land" : "viz-land viz-land-tom");
+    if (typeof v === "number") bane.style.fill = RAMPE[trinn(v)];
+    /* Landnavnet kommer fra data.json når det finnes der; ellers står koden.
+       Geometrifila bærer ingen navn — den skal være ren geometri. */
+    const navn = (spec.navn && spec.navn[kode]) || kode;
+    const visT = (ev) => {
+      const rb = ytre.getBoundingClientRect();
+      tooltip.vis(ev.clientX - rb.left, ev.clientY - rb.top,
+        [{ verdi: v === undefined ? "ingen registrert" : formatVerdi(v, enhet), etikett: navn }]);
+    };
+    bane.addEventListener("pointerenter", visT);
+    bane.addEventListener("pointermove", visT);
+    bane.addEventListener("pointerleave", tooltip.skjul);
+    svg.appendChild(bane);
+  }
+  ytre.appendChild(svg);
+
+  const legend = el("div", "viz-kart-legend");
+  /* Med kvantiler er svakhetene ulikt brede, så grensene må stå under dem.
+     «1 – 147» over en jevn rampe ville lovet en lineær skala vi ikke har. */
+  const trapp = el("div", "viz-kart-trapp");
+  const skala = el("span", "viz-kart-skala");
+  for (const farge of RAMPE) {
+    const s = el("span");
+    s.style.background = farge;
+    skala.appendChild(s);
+  }
+  trapp.appendChild(skala);
+  const merker = el("div", "viz-kart-merker");
+  for (const v of [min, ...grenser, maks]) {
+    merker.appendChild(el("span", "mono-etikett", kompakt(Math.round(v))));
+  }
+  trapp.appendChild(merker);
+  legend.appendChild(trapp);
+  /* Umalte land betyr «ingen registrert oppsetning», ikke «ingen oppsetning».
+     Forskjellen er hele forbeholdet i spredningshistorien, og den hører hjemme
+     i legenden framfor bare i brødteksten. */
+  if (spec.tom_etikett) {
+    const tom = el("span", "viz-kart-tom-nokkel");
+    tom.appendChild(el("span", "viz-kart-tom-rute"));
+    tom.appendChild(el("span", "mono-etikett", spec.tom_etikett));
+    legend.appendChild(tom);
+  }
+  ytre.appendChild(legend);
+
+  fig.appendChild(ytre);
+  /* `antall` er valgfritt og sier hvor mange observasjoner hvert lands verdi
+     hviler på. Et kart kan ikke vise det — alle flater ser like sikre ut — så
+     tabellen er stedet leseren kan se at Norges median bygger på 28 verk og
+     Qatars på ett. */
+  const harAntall = spec.antall && Object.keys(spec.antall).length;
+  fig.appendChild(lagTabell(
+    harAntall ? ["Land", enhet || "Verdi", spec.antall_navn || "Antall"]
+              : ["Land", enhet || "Verdi"],
+    Object.entries(verdier)
+      .map(([kode, v]) => {
+        const navn = (spec.navn && spec.navn[kode]) || kode;
+        return harAntall ? [navn, v, spec.antall[kode] ?? "–"] : [navn, v];
+      })
+      .sort((a, b) => (a[1] || 0) - (b[1] || 0))
+  ));
+  return fig;
+}
+
+/* ============================================================
+   5. KORTGALLERI — rutenett av fakta-kort.
    ============================================================ */
 function lagKortgalleri(spec) {
   const fig = figurRamme(spec);
@@ -435,6 +570,7 @@ const REGISTER = {
   hero: lagHero,
   tidslinje: lagTidslinje,
   kart: lagKart,
+  verdenskart: lagVerdenskart,
   kortgalleri: lagKortgalleri,
 };
 

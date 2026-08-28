@@ -217,6 +217,25 @@
   .viz-flis { font-size: .6rem; }
 }
 
+/* -- Verdenskart ------------------------------------------------ */
+.viz-verdenskart { width: 100%; height: auto; display: block; }
+.viz-land {
+  fill: var(--papir);
+  stroke: var(--flate);
+  /* Strekbredden er i viewBox-enheter (1000 bred), ikke piksler. 0.8 gir en
+     hårfin grense som holder Luxembourg synlig uten å tegne Russland som et
+     rutenett. */
+  stroke-width: .8;
+  transition: opacity .12s;
+}
+.viz-land-tom { fill: var(--papir); stroke: var(--linje); stroke-dasharray: 2 2; }
+.viz-land:hover { opacity: .78; }
+.viz-kart-tom-nokkel { display: inline-flex; align-items: center; gap: var(--rom-1); margin-left: var(--rom-3); }
+.viz-kart-tom-rute {
+  width: 14px; height: 10px; border-radius: 2px;
+  background: var(--papir); border: 1px dashed var(--linje);
+}
+
 /* -- Kortgalleri ------------------------------------------------ */
 .viz-kortrute {
   display: grid;
@@ -248,3 +267,9 @@
   font-size: .8rem;
   text-align: center;
 }
+
+/* Kvantiltrapp: fargetrinnene med grenseverdiene under seg. Trinnene dekker
+   ulike spenn, så tallene må stå ved hver overgang og ikke bare i endene. */
+.viz-kart-trapp { display: inline-flex; flex-direction: column; gap: 2px; }
+.viz-kart-merker { display: flex; justify-content: space-between; width: 100%; }
+.viz-kart-merker .mono-etikett { font-size: .62rem; }
