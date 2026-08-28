@@ -7,3 +7,11 @@ __pycache__/
 # Hentescriptene leser rådata utenfra (jf. TILDELINGER_CSV).
 *.csv
 *.xlsx
+
+# API-nøkler. Ingen .env-fil ligger i repoet i dag, og det skal den ikke gjøre —
+# alt her serveres statisk av Vercel, så en innsjekket nøkkel er en publisert
+# nøkkel. Sperret som mønster, ikke som enkeltfil, fordi feilen skjer den dagen
+# noen lager .env.local eller nvidia.env i farten.
+.env
+.env.*
+*.env
