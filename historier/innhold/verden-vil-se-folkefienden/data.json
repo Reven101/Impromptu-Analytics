@@ -1,0 +1,395 @@
+{
+  "meta": {
+    "tittel": "Verden vil se folkefienden",
+    "kilde": "IbsenStage, Universitetet i Oslo",
+    "kilde_url": "https://ibsenstage.hf.uio.no/",
+    "dato_hentet": "2026-08-28",
+    "geografi": "115 land",
+    "enhet": "andel av oppsetningene",
+    "oppdateringsfrekvens": "Løpende",
+    "beskrivelse": "«En folkefiende» har tredoblet seg som andel av Ibsen-oppsetningene siden 2005 — og siden 2017 har tre stykker tatt tre av fire oppsetninger i verden."
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "1035 oppsetninger i 70 land, 2022–2025",
+      "rader": [
+        {
+          "etikett": "Et dukkehjem",
+          "verdi": "30 %",
+          "detalj": "av alle Ibsen-oppsetninger i verden"
+        },
+        {
+          "etikett": "En folkefiende",
+          "verdi": "21 %",
+          "detalj": "var 6,8 % i 2005–09"
+        },
+        {
+          "etikett": "Peer Gynt",
+          "verdi": "12 %",
+          "detalj": "var 17,9 % i samme periode"
+        }
+      ],
+      "fotnote": "Andel av oppsetningene, ikke av forestillingene. Et verk telles én gang per oppsetning. 2026 er utelatt: arkivet har annonserte oppsetninger fram til oktober, og de er ikke spilt."
+    },
+    "andeler": {
+      "type": "tidslinje",
+      "tittel": "Tre stykker, tre baner",
+      "undertekst": "Andel av oppsetningene, femårsbolker",
+      "enhet": "%",
+      "serier": [
+        {
+          "navn": "Et dukkehjem",
+          "punkter": [
+            [
+              1952,
+              24.0
+            ],
+            [
+              1957,
+              22.8
+            ],
+            [
+              1962,
+              11.1
+            ],
+            [
+              1967,
+              18.3
+            ],
+            [
+              1972,
+              22.6
+            ],
+            [
+              1977,
+              15.8
+            ],
+            [
+              1982,
+              15.9
+            ],
+            [
+              1987,
+              19.7
+            ],
+            [
+              1992,
+              36.1
+            ],
+            [
+              1997,
+              18.5
+            ],
+            [
+              2002,
+              20.7
+            ],
+            [
+              2007,
+              20.3
+            ],
+            [
+              2012,
+              21.0
+            ],
+            [
+              2017,
+              21.5
+            ],
+            [
+              2022,
+              23.7
+            ],
+            [
+              2025,
+              37.0
+            ]
+          ]
+        },
+        {
+          "navn": "En folkefiende",
+          "punkter": [
+            [
+              1952,
+              19.1
+            ],
+            [
+              1957,
+              3.4
+            ],
+            [
+              1962,
+              16.5
+            ],
+            [
+              1967,
+              5.6
+            ],
+            [
+              1972,
+              7.3
+            ],
+            [
+              1977,
+              7.8
+            ],
+            [
+              1982,
+              9.3
+            ],
+            [
+              1987,
+              4.9
+            ],
+            [
+              1992,
+              7.2
+            ],
+            [
+              1997,
+              7.1
+            ],
+            [
+              2002,
+              7.6
+            ],
+            [
+              2007,
+              6.8
+            ],
+            [
+              2012,
+              13.3
+            ],
+            [
+              2017,
+              16.4
+            ],
+            [
+              2022,
+              19.4
+            ],
+            [
+              2025,
+              23.8
+            ]
+          ]
+        },
+        {
+          "navn": "Peer Gynt",
+          "punkter": [
+            [
+              1952,
+              7.9
+            ],
+            [
+              1957,
+              6.3
+            ],
+            [
+              1962,
+              16.4
+            ],
+            [
+              1967,
+              7.8
+            ],
+            [
+              1972,
+              15.5
+            ],
+            [
+              1977,
+              16.2
+            ],
+            [
+              1982,
+              10.2
+            ],
+            [
+              1987,
+              11.1
+            ],
+            [
+              1992,
+              17.0
+            ],
+            [
+              1997,
+              20.2
+            ],
+            [
+              2002,
+              15.9
+            ],
+            [
+              2007,
+              17.9
+            ],
+            [
+              2012,
+              12.4
+            ],
+            [
+              2017,
+              15.6
+            ],
+            [
+              2022,
+              18.0
+            ],
+            [
+              2025,
+              10.3
+            ]
+          ]
+        }
+      ]
+    },
+    "konsentrasjon": {
+      "type": "tidslinje",
+      "tittel": "Fra 2017 tar de tre største stadig mer",
+      "undertekst": "Andel av oppsetningene som er ett av de tre mest spilte verkene",
+      "enhet": "%",
+      "serier": [
+        {
+          "navn": "Topp tre",
+          "punkter": [
+            [
+              2000,
+              48.4
+            ],
+            [
+              2001,
+              45.3
+            ],
+            [
+              2002,
+              58.7
+            ],
+            [
+              2003,
+              48.7
+            ],
+            [
+              2004,
+              63.6
+            ],
+            [
+              2005,
+              52.6
+            ],
+            [
+              2006,
+              53.2
+            ],
+            [
+              2007,
+              58.6
+            ],
+            [
+              2008,
+              50.1
+            ],
+            [
+              2009,
+              58.0
+            ],
+            [
+              2010,
+              58.9
+            ],
+            [
+              2011,
+              58.5
+            ],
+            [
+              2012,
+              52.0
+            ],
+            [
+              2013,
+              45.5
+            ],
+            [
+              2014,
+              54.1
+            ],
+            [
+              2015,
+              51.7
+            ],
+            [
+              2016,
+              49.7
+            ],
+            [
+              2017,
+              58.7
+            ],
+            [
+              2018,
+              62.4
+            ],
+            [
+              2019,
+              63.1
+            ],
+            [
+              2020,
+              67.4
+            ],
+            [
+              2021,
+              72.2
+            ],
+            [
+              2022,
+              57.8
+            ],
+            [
+              2023,
+              65.8
+            ],
+            [
+              2024,
+              71.8
+            ],
+            [
+              2025,
+              74.8
+            ]
+          ]
+        }
+      ]
+    },
+    "endring": {
+      "type": "kortgalleri",
+      "tittel": "Hvem vokste, hvem falt",
+      "undertekst": "Andel 2010–2019 mot 2022–2025",
+      "kort": [
+        {
+          "overtittel": "Et dukkehjem",
+          "verdi": "+8.6 pp",
+          "detalj": "fra 21.2 % til 29.8 %"
+        },
+        {
+          "overtittel": "En folkefiende",
+          "verdi": "+6.0 pp",
+          "detalj": "fra 14.7 % til 20.7 %"
+        },
+        {
+          "overtittel": "Fruen fra havet",
+          "verdi": "-3.2 pp",
+          "detalj": "fra 5.0 % til 1.8 %"
+        },
+        {
+          "overtittel": "Vildanden",
+          "verdi": "-2.5 pp",
+          "detalj": "fra 4.7 % til 2.2 %"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,658 @@
+{
+  "meta": {
+    "tittel": "Hundre år til Kina",
+    "kilde": "IbsenStage, Universitetet i Oslo",
+    "kilde_url": "https://ibsenstage.hf.uio.no/",
+    "dato_hentet": "2026-08-28",
+    "geografi": "115 land",
+    "enhet": "år",
+    "oppdateringsfrekvens": "Løpende",
+    "beskrivelse": "Norden spilte Ibsen året han utga — resten av verden brukte i median 116 år på det samme, og Kina ventet i 116."
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "25 343 oppsetninger, 1850–2026",
+      "rader": [
+        {
+          "etikett": "Norden",
+          "verdi": "1 år",
+          "detalj": "fra utgivelse til første oppsetning"
+        },
+        {
+          "etikett": "Tyskland",
+          "verdi": "5 år",
+          "detalj": "USA og Nederland brukte 6"
+        },
+        {
+          "etikett": "Kina",
+          "verdi": "116 år",
+          "detalj": "Bangladesh 120, Sør-Korea 114"
+        }
+      ],
+      "fotnote": "Median over de verkene landet har satt opp. Verkenes utgivelsesår er hentet fra Wikidata; 28 av 30 har et."
+    },
+    "spredning": {
+      "type": "verdenskart",
+      "tittel": "År fra utgivelse til første kjente oppsetning",
+      "undertekst": "Median over verkene i hvert land",
+      "enhet": "år",
+      "verdier": {
+        "NO": 1,
+        "SE": 1,
+        "DK": 1,
+        "DE": 5,
+        "FI": 1,
+        "AT": 8,
+        "RU": 16,
+        "PL": 10,
+        "HU": 16,
+        "CZ": 13,
+        "RS": 25,
+        "US": 6,
+        "RO": 16,
+        "UA": 16,
+        "NL": 6,
+        "GB": 18,
+        "CH": 15,
+        "HR": 15,
+        "IT": 11,
+        "BE": 21,
+        "AU": 82,
+        "LV": 17,
+        "SK": 33,
+        "FR": 12,
+        "NZ": 103,
+        "LK": 114,
+        "IN": 114,
+        "IS": 48,
+        "EG": 60,
+        "SI": 30,
+        "ES": 38,
+        "EE": 80,
+        "IE": 24,
+        "GR": 32,
+        "MX": 76,
+        "UY": 79,
+        "BG": 20,
+        "CY": 83,
+        "GE": 24,
+        "PT": 92,
+        "TR": 79,
+        "BR": 70,
+        "JP": 37,
+        "CA": 51,
+        "AR": 79,
+        "LT": 30,
+        "BY": 126,
+        "CN": 116,
+        "MK": 46,
+        "BA": 42,
+        "KR": 114,
+        "CL": 92,
+        "PE": 129,
+        "ZA": 93,
+        "MD": 126,
+        "IL": 100,
+        "TH": 99,
+        "CO": 126,
+        "IQ": 81,
+        "IR": 110,
+        "HK": 93,
+        "LU": 121,
+        "AM": 109,
+        "BF": 122,
+        "PK": 120,
+        "BD": 120,
+        "PH": 118,
+        "LI": 116,
+        "VE": 120,
+        "FO": 120,
+        "SY": 121,
+        "ME": 134,
+        "SG": 132,
+        "NG": 134,
+        "MT": 135,
+        "AZ": 122,
+        "NP": 124,
+        "ZW": 129,
+        "TW": 123,
+        "VN": 127,
+        "KE": 127,
+        "SM": 138,
+        "AO": 126,
+        "GL": 143,
+        "CU": 124,
+        "PS": 128,
+        "MZ": 129,
+        "GH": 127,
+        "MW": 127,
+        "PR": 124,
+        "ZM": 127,
+        "DZ": 129,
+        "ID": 120,
+        "QA": 147,
+        "AL": 136,
+        "ER": 130,
+        "BM": 128,
+        "CR": 122,
+        "LB": 140,
+        "LY": 131,
+        "XK": 131,
+        "AF": 132,
+        "AE": 138,
+        "DO": 142,
+        "EC": 136,
+        "MY": 139,
+        "PY": 129,
+        "SN": 139,
+        "TG": 143,
+        "KZ": 145,
+        "RE": 135,
+        "TM": 146
+      },
+      "navn": {
+        "RU": "Russland",
+        "GB": "Storbritannia",
+        "CH": "Sveits",
+        "DE": "Tyskland",
+        "NO": "Norge",
+        "SE": "Sverige",
+        "DK": "Danmark",
+        "FI": "Finland",
+        "AT": "Østerrike",
+        "PL": "Polen",
+        "HU": "Ungarn",
+        "CZ": "Tsjekkia",
+        "RS": "Serbia",
+        "US": "USA",
+        "RO": "Romania",
+        "UA": "Ukraina",
+        "NL": "Nederland",
+        "HR": "Kroatia",
+        "IT": "Italia",
+        "BE": "Belgia",
+        "AU": "Australia",
+        "LV": "Latvia",
+        "SK": "Slovakia",
+        "FR": "Frankrike",
+        "NZ": "New Zealand",
+        "LK": "Sri Lanka",
+        "IN": "India",
+        "IS": "Island",
+        "EG": "Egypt",
+        "SI": "Slovenia",
+        "ES": "Spania",
+        "EE": "Estland",
+        "IE": "Irland",
+        "GR": "Hellas",
+        "MX": "Mexico",
+        "UY": "Uruguay",
+        "BG": "Bulgaria",
+        "CY": "Cyprus",
+        "GE": "Georgia",
+        "PT": "Portugal",
+        "TR": "Tyrkia",
+        "BR": "Brasil",
+        "JP": "Japan",
+        "CA": "Canada",
+        "AR": "Argentina",
+        "LT": "Litauen",
+        "BY": "Hviterussland",
+        "CN": "Kina",
+        "MK": "Nord-Makedonia",
+        "BA": "Bosnia and Herzegovina",
+        "KR": "Sør-Korea",
+        "CL": "Chile",
+        "PE": "Peru",
+        "ZA": "Sør-Afrika",
+        "MD": "Moldova",
+        "IL": "Israel",
+        "TH": "Thailand",
+        "CO": "Colombia",
+        "IQ": "Irak",
+        "IR": "Iran",
+        "HK": "Hong Kong",
+        "LU": "Luxembourg",
+        "AM": "Armenia",
+        "BF": "Burkina Faso",
+        "PK": "Pakistan",
+        "BD": "Bangladesh",
+        "PH": "Filippinene",
+        "LI": "Liechtenstein",
+        "VE": "Venezuela",
+        "FO": "Færøyene",
+        "SY": "Syria",
+        "ME": "Montenegro",
+        "SG": "Singapore",
+        "NG": "Nigeria",
+        "MT": "Malta",
+        "AZ": "Azerbaijan",
+        "NP": "Nepal",
+        "ZW": "Zimbabwe",
+        "TW": "Taiwan",
+        "VN": "Vietnam",
+        "KE": "Kenya",
+        "SM": "San Marino",
+        "AO": "Angola",
+        "GL": "Grønland",
+        "CU": "Cuba",
+        "PS": "Palestinian Territories",
+        "MZ": "Mozambique",
+        "GH": "Ghana",
+        "MW": "Malawi",
+        "PR": "Puerto Rico",
+        "ZM": "Zambia",
+        "DZ": "Algeria",
+        "ID": "Indonesia",
+        "QA": "Qatar",
+        "AL": "Albania",
+        "ER": "Eritrea",
+        "BM": "Bermuda",
+        "CR": "Costa Rica",
+        "LB": "Lebanon",
+        "LY": "Libya",
+        "XK": "Kosovo",
+        "AF": "Afghanistan",
+        "AE": "United Arab Emirates",
+        "DO": "Den dominikanske republikk",
+        "EC": "Ecuador",
+        "MY": "Malaysia",
+        "PY": "Paraguay",
+        "SN": "Senegal",
+        "TG": "Togo",
+        "KZ": "Kasakhstan",
+        "RE": "Reunion",
+        "TM": "Turkmenistan"
+      },
+      "antall": {
+        "NO": 28,
+        "SE": 23,
+        "DK": 22,
+        "DE": 23,
+        "FI": 21,
+        "AT": 20,
+        "RU": 19,
+        "PL": 20,
+        "HU": 18,
+        "CZ": 19,
+        "RS": 13,
+        "US": 22,
+        "RO": 18,
+        "UA": 20,
+        "NL": 16,
+        "GB": 24,
+        "CH": 21,
+        "HR": 13,
+        "IT": 19,
+        "BE": 15,
+        "AU": 14,
+        "LV": 18,
+        "SK": 10,
+        "FR": 18,
+        "NZ": 9,
+        "LK": 4,
+        "IN": 14,
+        "IS": 10,
+        "EG": 8,
+        "SI": 15,
+        "ES": 18,
+        "EE": 13,
+        "IE": 13,
+        "GR": 19,
+        "MX": 12,
+        "UY": 9,
+        "BG": 16,
+        "CY": 6,
+        "GE": 4,
+        "PT": 12,
+        "TR": 10,
+        "BR": 13,
+        "JP": 15,
+        "CA": 15,
+        "AR": 15,
+        "LT": 10,
+        "BY": 5,
+        "CN": 13,
+        "MK": 9,
+        "BA": 6,
+        "KR": 10,
+        "CL": 7,
+        "PE": 3,
+        "ZA": 7,
+        "MD": 4,
+        "IL": 12,
+        "TH": 2,
+        "CO": 3,
+        "IQ": 3,
+        "IR": 12,
+        "HK": 7,
+        "LU": 7,
+        "AM": 1,
+        "BF": 2,
+        "PK": 6,
+        "BD": 13,
+        "PH": 4,
+        "LI": 1,
+        "VE": 3,
+        "FO": 3,
+        "SY": 1,
+        "ME": 3,
+        "SG": 5,
+        "NG": 2,
+        "MT": 4,
+        "AZ": 3,
+        "NP": 3,
+        "ZW": 3,
+        "TW": 3,
+        "VN": 3,
+        "KE": 3,
+        "SM": 1,
+        "AO": 1,
+        "GL": 1,
+        "CU": 4,
+        "PS": 4,
+        "MZ": 4,
+        "GH": 1,
+        "MW": 1,
+        "PR": 1,
+        "ZM": 1,
+        "DZ": 1,
+        "ID": 2,
+        "QA": 1,
+        "AL": 2,
+        "ER": 1,
+        "BM": 1,
+        "CR": 2,
+        "LB": 2,
+        "LY": 1,
+        "XK": 1,
+        "AF": 1,
+        "AE": 2,
+        "DO": 2,
+        "EC": 1,
+        "MY": 1,
+        "PY": 1,
+        "SN": 1,
+        "TG": 1,
+        "KZ": 2,
+        "RE": 1,
+        "TM": 1
+      },
+      "antall_navn": "Verk satt opp",
+      "tom_etikett": "ingen registrert oppsetning"
+    },
+    "utbredelse": {
+      "type": "tidslinje",
+      "tittel": "Land som har spilt Ibsen",
+      "undertekst": "Kumulativt, fra første registrerte oppsetning",
+      "enhet": "land",
+      "serier": [
+        {
+          "navn": "Land",
+          "punkter": [
+            [
+              1850,
+              1
+            ],
+            [
+              1855,
+              1
+            ],
+            [
+              1860,
+              2
+            ],
+            [
+              1865,
+              3
+            ],
+            [
+              1870,
+              3
+            ],
+            [
+              1875,
+              3
+            ],
+            [
+              1880,
+              16
+            ],
+            [
+              1885,
+              16
+            ],
+            [
+              1890,
+              26
+            ],
+            [
+              1895,
+              35
+            ],
+            [
+              1900,
+              43
+            ],
+            [
+              1905,
+              46
+            ],
+            [
+              1910,
+              49
+            ],
+            [
+              1915,
+              50
+            ],
+            [
+              1920,
+              50
+            ],
+            [
+              1925,
+              53
+            ],
+            [
+              1930,
+              56
+            ],
+            [
+              1935,
+              57
+            ],
+            [
+              1940,
+              57
+            ],
+            [
+              1945,
+              58
+            ],
+            [
+              1950,
+              59
+            ],
+            [
+              1955,
+              61
+            ],
+            [
+              1960,
+              64
+            ],
+            [
+              1965,
+              64
+            ],
+            [
+              1970,
+              64
+            ],
+            [
+              1975,
+              64
+            ],
+            [
+              1980,
+              65
+            ],
+            [
+              1985,
+              65
+            ],
+            [
+              1990,
+              65
+            ],
+            [
+              1995,
+              71
+            ],
+            [
+              2000,
+              75
+            ],
+            [
+              2005,
+              87
+            ],
+            [
+              2010,
+              101
+            ],
+            [
+              2015,
+              105
+            ],
+            [
+              2020,
+              110
+            ],
+            [
+              2025,
+              115
+            ]
+          ]
+        }
+      ]
+    },
+    "ventetid": {
+      "type": "tidslinje",
+      "tittel": "Jo senere Ibsen skrev, jo kortere ventet verden",
+      "undertekst": "Median år til oppsetning i de 27 landene som har spilt minst 15 av verkene",
+      "enhet": "år",
+      "x_navn": "Verkets utgivelsesår",
+      "serier": [
+        {
+          "navn": "Ventetid",
+          "punkter": [
+            [
+              1862,
+              38
+            ],
+            [
+              1866,
+              44
+            ],
+            [
+              1867,
+              46
+            ],
+            [
+              1869,
+              37
+            ],
+            [
+              1877,
+              3
+            ],
+            [
+              1879,
+              10
+            ],
+            [
+              1881,
+              10
+            ],
+            [
+              1882,
+              9
+            ],
+            [
+              1884,
+              13
+            ],
+            [
+              1886,
+              8
+            ],
+            [
+              1888,
+              7
+            ],
+            [
+              1890,
+              8
+            ],
+            [
+              1892,
+              8
+            ],
+            [
+              1894,
+              2
+            ],
+            [
+              1896,
+              1
+            ],
+            [
+              1899,
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    "verk": {
+      "type": "kortgalleri",
+      "tittel": "Samme land, helt ulik ventetid",
+      "undertekst": "Median år til oppsetning blant de 27 landene som har spilt minst 15 verk",
+      "kort": [
+        {
+          "overtittel": "John Gabriel Borkman",
+          "verdi": "1 år",
+          "detalj": "utgitt 1896"
+        },
+        {
+          "overtittel": "Når vi døde vågner",
+          "verdi": "1 år",
+          "detalj": "utgitt 1899"
+        },
+        {
+          "overtittel": "Lille Eyolf",
+          "verdi": "2 år",
+          "detalj": "utgitt 1894"
+        },
+        {
+          "overtittel": "Kjærlighedens komedie",
+          "verdi": "38 år",
+          "detalj": "utgitt 1862"
+        },
+        {
+          "overtittel": "Brand",
+          "verdi": "44 år",
+          "detalj": "utgitt 1866"
+        },
+        {
+          "overtittel": "Peer Gynt",
+          "verdi": "46 år",
+          "detalj": "utgitt 1867"
+        }
+      ]
+    }
+  }
+}
