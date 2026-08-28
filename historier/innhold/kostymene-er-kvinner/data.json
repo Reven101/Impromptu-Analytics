@@ -1,0 +1,224 @@
+{
+  "meta": {
+    "tittel": "Kostymene er kvinner, lyset er menn",
+    "kilde": "IbsenStage, Universitetet i Oslo",
+    "kilde_url": "https://ibsenstage.hf.uio.no/",
+    "dato_hentet": "2026-08-28",
+    "geografi": "115 land",
+    "enhet": "andel kvinner",
+    "oppdateringsfrekvens": "Løpende",
+    "beskrivelse": "Sju av ti kostymedesignere i Ibsen-teatret er kvinner og én av ni komponister — og blant regissørene har andelen gått fra 14 til 34 prosent siden 1980, mens skuespillerne knapt har rikket seg.",
+    "utkast": true
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "349 041 krediteringer, 96 415 personer",
+      "rader": [
+        {
+          "etikett": "Kostymedesigner",
+          "verdi": "69 %",
+          "detalj": "er kvinner"
+        },
+        {
+          "etikett": "Regissør",
+          "verdi": "21 %",
+          "detalj": "over hele perioden; 34 % på 2020-tallet"
+        },
+        {
+          "etikett": "Komponist",
+          "verdi": "11 %",
+          "detalj": "den laveste av tolv roller"
+        }
+      ],
+      "fotnote": "Kjønn er ikke registrert i kilden. Det er utledet av fornavn med gemini-3.1-flash-lite og korrigert mot rollefigur; målt feilrate 1,50 %. Se datanotatet."
+    },
+    "roller": {
+      "type": "kortgalleri",
+      "tittel": "Tolv roller, fra sju av ti til én av ni",
+      "undertekst": "Andel kvinner blant krediteringene, hele perioden",
+      "kort": [
+        {
+          "overtittel": "Kostymedesigner",
+          "verdi": "69 %",
+          "detalj": "av 10 894 krediteringer"
+        },
+        {
+          "overtittel": "Koreograf",
+          "verdi": "62 %",
+          "detalj": "av 2 183 krediteringer"
+        },
+        {
+          "overtittel": "Dramaturg",
+          "verdi": "57 %",
+          "detalj": "av 4 027 krediteringer"
+        },
+        {
+          "overtittel": "Skuespiller",
+          "verdi": "41 %",
+          "detalj": "av 214 195 krediteringer"
+        },
+        {
+          "overtittel": "Produsent",
+          "verdi": "38 %",
+          "detalj": "av 1 672 krediteringer"
+        },
+        {
+          "overtittel": "Bearbeider",
+          "verdi": "29 %",
+          "detalj": "av 6 651 krediteringer"
+        },
+        {
+          "overtittel": "Scenograf",
+          "verdi": "28 %",
+          "detalj": "av 13 911 krediteringer"
+        },
+        {
+          "overtittel": "Regissør",
+          "verdi": "21 %",
+          "detalj": "av 20 237 krediteringer"
+        },
+        {
+          "overtittel": "Oversetter",
+          "verdi": "19 %",
+          "detalj": "av 9 453 krediteringer"
+        },
+        {
+          "overtittel": "Lysdesigner",
+          "verdi": "16 %",
+          "detalj": "av 7 374 krediteringer"
+        },
+        {
+          "overtittel": "Lyddesigner",
+          "verdi": "13 %",
+          "detalj": "av 3 166 krediteringer"
+        },
+        {
+          "overtittel": "Komponist",
+          "verdi": "11 %",
+          "detalj": "av 6 635 krediteringer"
+        }
+      ]
+    },
+    "utvikling": {
+      "type": "tidslinje",
+      "tittel": "Regissørene beveger seg. Skuespillerne gjør ikke det",
+      "undertekst": "Andel kvinner, tiår med stabil registrering",
+      "enhet": "%",
+      "x_navn": "Tiår",
+      "serier": [
+        {
+          "navn": "Skuespiller",
+          "punkter": [
+            [
+              1950,
+              36.9
+            ],
+            [
+              1960,
+              37.2
+            ],
+            [
+              1970,
+              40.3
+            ],
+            [
+              1980,
+              40.0
+            ],
+            [
+              1990,
+              43.3
+            ],
+            [
+              2000,
+              44.0
+            ],
+            [
+              2010,
+              42.4
+            ],
+            [
+              2020,
+              44.0
+            ]
+          ]
+        },
+        {
+          "navn": "Regissør",
+          "punkter": [
+            [
+              1950,
+              19.8
+            ],
+            [
+              1960,
+              9.1
+            ],
+            [
+              1970,
+              18.1
+            ],
+            [
+              1980,
+              13.8
+            ],
+            [
+              1990,
+              24.2
+            ],
+            [
+              2000,
+              26.7
+            ],
+            [
+              2010,
+              33.5
+            ],
+            [
+              2020,
+              34.0
+            ]
+          ]
+        },
+        {
+          "navn": "Kostymedesigner",
+          "punkter": [
+            [
+              1950,
+              74.1
+            ],
+            [
+              1960,
+              57.6
+            ],
+            [
+              1970,
+              44.9
+            ],
+            [
+              1980,
+              49.9
+            ],
+            [
+              1990,
+              74.4
+            ],
+            [
+              2000,
+              80.5
+            ],
+            [
+              2010,
+              72.6
+            ],
+            [
+              2020,
+              72.4
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}
