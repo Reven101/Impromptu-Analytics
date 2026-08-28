@@ -130,8 +130,8 @@ def main() -> None:
             "oppdateringsfrekvens": "Løpende",
             "beskrivelse": (
                 "«En folkefiende» har tredoblet seg som andel av Ibsen-oppsetningene "
-                "siden 2005 — og siden 2017 har tre stykker tatt tre av fire "
-                "oppsetninger i verden."
+                "siden 2005 — og siden 2017 har de tre mest spilte stykkene "
+                "tatt over 57 prosent av oppsetningene hvert eneste år."
             ),
         },
         "visninger": {

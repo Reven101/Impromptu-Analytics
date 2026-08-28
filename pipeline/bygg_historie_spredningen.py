@@ -202,8 +202,9 @@ def main() -> None:
             "enhet": "år",
             "oppdateringsfrekvens": "Løpende",
             "beskrivelse": (
-                "Norden spilte Ibsen året han utga — resten av verden brukte i "
-                "median 116 år på det samme, og Kina ventet i 116."
+                "Norden spilte Ibsen året han utga — for verden som helhet er "
+                "medianen 114 år fra utgivelse til første kjente oppsetning, "
+                "og Kina ventet i 116."
             ),
         },
         "visninger": {

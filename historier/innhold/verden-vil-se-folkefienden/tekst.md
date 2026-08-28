@@ -10,7 +10,7 @@ En lege oppdager at kurbadet byen lever av, er forgiftet. Han vil offentliggjør
 
 Kurven for «En folkefiende» har svingt i hele etterkrigstiden — 19 prosent på begynnelsen av femtitallet, tre prosent fem år senere. Stykket har vært populært i bølger før.
 
-**Men det har aldri før steget fire femårsbolker på rad: fra 6,8 prosent i 2005–09 til 13,3, 16,4 og 19,4 — og 23,8 prosent i 2025.** Det er nå Ibsens nest mest spilte verk i verden, i 30 land, med Spania, USA og Tyrkia på topp.
+**Men det har aldri før steget fire femårsbolker på rad: fra 6,8 prosent i 2005–09 til 13,3, 16,4 og 19,4 — og 23,8 prosent i 2025.** Det er nå Ibsens nest mest spilte verk i verden, satt opp i 30 av de 70 landene som har spilt Ibsen siden 2022, med Spania, USA og Tyrkia på topp.
 
 Vi kan ikke si hvorfor ut fra disse dataene. Vi kan si at stigningen var i gang allerede i bolken 2010–14, altså lenge før pandemien, og at den ikke hviler på ett enkelt land: stykket er satt opp i 30 land siden 2022.
 
@@ -24,6 +24,6 @@ Den nærliggende innvendingen er at ferske år er dårligere registrert, og at e
 
 [[viz:endring]]
 
-Det er ikke slik at Ibsen spilles mindre. Det er slik at verden spiller *færre av ham*. «Fruen fra havet» og «Vildanden» er nesten borte fra scenene; «Et dukkehjem» alene er nå tre av ti oppsetninger.
+Ibsen spilles altså litt mindre — og betydelig smalere. Det er det siste som er endringen. «Fruen fra havet» og «Vildanden» er nesten borte fra scenene; «Et dukkehjem» alene er nå tre av ti oppsetninger.
 
 **Metodenotat:** Andelene er regnet av oppsetninger, ikke av forestillinger — en produksjon som gikk femti kvelder teller like mye som en som gikk én. Hvert verk telles én gang per oppsetning, slik at en kveld med to Ibsen-stykker teller for begge, men ikke dobbelt for ett. Siste punkt i andelsgrafen er 2025 alene, ikke en full femårsbolk — det er derfor mer utsatt for støy enn punktene før det, og kortgalleriet sammenligner ti år (2010–2019) med fire (2022–2025). Andelsgrafen bruker ellers femårsbolker fordi årstallene er for støyende til å leses: «Et dukkehjem» går fra 11,7 prosent i 2015 til 23,3 prosent i 2016 uten at noe har skjedd. Konsentrasjonsgrafen tåler årstall. 2026 er holdt utenfor: arkivet har annonserte oppsetninger fram til oktober det året, og de er ikke spilt ennå. Alle tall og forbehold er dokumentert i datanotatet som følger historien.
