@@ -91,6 +91,22 @@ femtitallet til 2 949 i 2005–09, så svingningene er ekte og ikke småtallsst�
 Fordelingen over land er sjekket for begge de to verkene som vokser: «En folkefiende» er
 satt opp i 30 land siden 2022, «Et dukkehjem» i 45. Økningen hviler ikke på ett land.
 
+## «Et dukkehjem» stiger fire år på rad
+
+Andelen har gått 16,4 → 28,1 → 33,6 → 37,0 prosent fra 2022 til 2025. Tre kontroller er
+gjort før det ble skrevet inn:
+
+- **Ikke et registreringsfenomen.** Hvis ferske år var tynnere registrert, og store
+  oppsetninger ble ført først, ville toppstykkenes andel blåses opp. Men 2025 har *flere*
+  oppsetninger enn 2024 (347 mot 236), i flere land (47 mot 43), og med flere kilder per
+  oppsetning (2,55 mot 1,51). Det er motsatt av det lag ville gitt.
+- **Ikke ett land.** De 275 oppsetningene i 2023–2025 fordeler seg på 39 land, med USA
+  (49), Spania (48), Frankrike (42) og Italia (29) på topp.
+- **Ikke en rekord.** 37 prosent er høyt for de siste tiårene, men stykket lå på 59,6
+  prosent i 1990, 45,5 i 1966 og 74,7 i 1880. Enkeltår svinger kraftig — 2015 hadde 11,7
+  prosent og 2016 hadde 23,3 — så fire år på rad er det som gjør bevegelsen verdt å nevne,
+  ikke nivået.
+
 ## Begrensninger
 
 **Ingen visning viser landfordelingen.** Påstanden om 30 land og rangeringen Spania / USA /
