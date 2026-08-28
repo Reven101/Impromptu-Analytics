@@ -147,6 +147,9 @@ def bygg_snapshot(landserie: dict[int, int], fylkestall: dict[str, int], siste_a
             "geografi": "Norge, fylker",
             "enhet": "personer",
             "oppdateringsfrekvens": "kvartalsvis",
+            # Tatt av forsiden 2026-08-28 til fordel for de to Ibsen-historiene.
+            # Historien er uendret og nås fortsatt på sin egen URL.
+            "utkast": True,
             # Årstallet interpoleres fra serien. Sto tidligere som «siden krigen», mens
             # tallet gjelder fra seriens første år (1951) — SSBs kommunefordelte serie
             # starter der, ikke i 1945. Formuleringen undervurderte dermed veksten den

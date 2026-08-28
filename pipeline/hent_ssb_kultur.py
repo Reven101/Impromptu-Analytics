@@ -226,6 +226,9 @@ def bygg_snapshot(serier: dict[str, dict[int, int]]) -> dict:
             "geografi": "Norge",
             "enhet": "prosent av befolkningen 9–79 år",
             "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
+            # Tatt av forsiden 2026-08-28 til fordel for de to Ibsen-historiene.
+            # Historien er uendret og nås fortsatt på sin egen URL.
+            "utkast": True,
             "beskrivelse": ("Kulturbarometeret har målt hva vi går ut for å oppleve "
                             "siden 1991. Kinoen topper fortsatt — men pandemien viste "
                             "hvor fort alt kan stenge."),

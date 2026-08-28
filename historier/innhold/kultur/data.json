@@ -1,590 +1,591 @@
 {
- "meta": {
-  "tittel": "Folk går helst på kino eller konsert",
-  "kilde": "Statistisk sentralbyrå",
-  "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
-  "dato_hentet": "2026-07-04",
-  "geografi": "Norge",
-  "enhet": "prosent av befolkningen 9–79 år",
-  "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
-  "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge."
- },
- "visninger": {
-  "hero": {
-   "type": "hero",
-   "eyebrow": "Kulturbruken",
-   "rader": [
-    {
-     "etikett": "Var på kino i løpet av 2025",
-     "verdi": "62 %",
-     "detalj": "ned fra 65 % i 2023"
-    }
-   ],
-   "fotnote": "Andel av befolkningen 9–79 år som har brukt tilbudet siste 12 måneder. Kilde: Norsk kulturbarometer (SSB)."
+  "meta": {
+    "tittel": "Folk går helst på kino eller konsert",
+    "kilde": "Statistisk sentralbyrå",
+    "kilde_url": "https://www.ssb.no/kultur-og-fritid/tid-og-mediebruk/statistikk/norsk-kulturbarometer",
+    "dato_hentet": "2026-07-04",
+    "geografi": "Norge",
+    "enhet": "prosent av befolkningen 9–79 år",
+    "oppdateringsfrekvens": "hvert andre til fjerde år (kulturbruksundersøkelsen)",
+    "utkast": true,
+    "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge."
   },
-  "storefem": {
-   "type": "tidslinje",
-   "tittel": "De store kulturvanene siden 1991",
-   "undertekst": "andel som har brukt tilbudet siste 12 måneder",
-   "enhet": "%",
-   "serier": [
-    {
-     "navn": "Kino",
-     "punkter": [
-      [
-       1991,
-       58
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "Kulturbruken",
+      "rader": [
+        {
+          "etikett": "Var på kino i løpet av 2025",
+          "verdi": "62 %",
+          "detalj": "ned fra 65 % i 2023"
+        }
       ],
-      [
-       1994,
-       61
-      ],
-      [
-       1997,
-       60
-      ],
-      [
-       2000,
-       65
-      ],
-      [
-       2004,
-       68
-      ],
-      [
-       2008,
-       70
-      ],
-      [
-       2012,
-       67
-      ],
-      [
-       2016,
-       72
-      ],
-      [
-       2021,
-       40
-      ],
-      [
-       2023,
-       65
-      ],
-      [
-       2025,
-       62
-      ]
-     ]
+      "fotnote": "Andel av befolkningen 9–79 år som har brukt tilbudet siste 12 måneder. Kilde: Norsk kulturbarometer (SSB)."
     },
-    {
-     "navn": "Idrettsarrangement",
-     "punkter": [
-      [
-       1991,
-       57
-      ],
-      [
-       1994,
-       59
-      ],
-      [
-       1997,
-       54
-      ],
-      [
-       2000,
-       57
-      ],
-      [
-       2004,
-       55
-      ],
-      [
-       2008,
-       56
-      ],
-      [
-       2012,
-       55
-      ],
-      [
-       2016,
-       55
-      ],
-      [
-       2021,
-       29
-      ],
-      [
-       2023,
-       48
-      ],
-      [
-       2025,
-       49
+    "storefem": {
+      "type": "tidslinje",
+      "tittel": "De store kulturvanene siden 1991",
+      "undertekst": "andel som har brukt tilbudet siste 12 måneder",
+      "enhet": "%",
+      "serier": [
+        {
+          "navn": "Kino",
+          "punkter": [
+            [
+              1991,
+              58
+            ],
+            [
+              1994,
+              61
+            ],
+            [
+              1997,
+              60
+            ],
+            [
+              2000,
+              65
+            ],
+            [
+              2004,
+              68
+            ],
+            [
+              2008,
+              70
+            ],
+            [
+              2012,
+              67
+            ],
+            [
+              2016,
+              72
+            ],
+            [
+              2021,
+              40
+            ],
+            [
+              2023,
+              65
+            ],
+            [
+              2025,
+              62
+            ]
+          ]
+        },
+        {
+          "navn": "Idrettsarrangement",
+          "punkter": [
+            [
+              1991,
+              57
+            ],
+            [
+              1994,
+              59
+            ],
+            [
+              1997,
+              54
+            ],
+            [
+              2000,
+              57
+            ],
+            [
+              2004,
+              55
+            ],
+            [
+              2008,
+              56
+            ],
+            [
+              2012,
+              55
+            ],
+            [
+              2016,
+              55
+            ],
+            [
+              2021,
+              29
+            ],
+            [
+              2023,
+              48
+            ],
+            [
+              2025,
+              49
+            ]
+          ]
+        },
+        {
+          "navn": "Konsert",
+          "punkter": [
+            [
+              1991,
+              48
+            ],
+            [
+              1994,
+              55
+            ],
+            [
+              1997,
+              57
+            ],
+            [
+              2000,
+              58
+            ],
+            [
+              2004,
+              61
+            ],
+            [
+              2008,
+              62
+            ],
+            [
+              2012,
+              61
+            ],
+            [
+              2016,
+              62
+            ],
+            [
+              2021,
+              23
+            ],
+            [
+              2023,
+              58
+            ],
+            [
+              2025,
+              60
+            ]
+          ]
+        },
+        {
+          "navn": "Folkebibliotek",
+          "punkter": [
+            [
+              1991,
+              49
+            ],
+            [
+              1994,
+              51
+            ],
+            [
+              1997,
+              52
+            ],
+            [
+              2000,
+              52
+            ],
+            [
+              2004,
+              54
+            ],
+            [
+              2008,
+              51
+            ],
+            [
+              2012,
+              49
+            ],
+            [
+              2016,
+              46
+            ],
+            [
+              2021,
+              37
+            ],
+            [
+              2023,
+              44
+            ],
+            [
+              2025,
+              49
+            ]
+          ]
+        },
+        {
+          "navn": "Museum",
+          "punkter": [
+            [
+              1991,
+              41
+            ],
+            [
+              1994,
+              45
+            ],
+            [
+              1997,
+              44
+            ],
+            [
+              2000,
+              45
+            ],
+            [
+              2004,
+              42
+            ],
+            [
+              2008,
+              43
+            ],
+            [
+              2012,
+              41
+            ],
+            [
+              2016,
+              44
+            ],
+            [
+              2021,
+              29
+            ],
+            [
+              2023,
+              45
+            ],
+            [
+              2025,
+              46
+            ]
+          ]
+        }
       ]
-     ]
     },
-    {
-     "navn": "Konsert",
-     "punkter": [
-      [
-       1991,
-       48
-      ],
-      [
-       1994,
-       55
-      ],
-      [
-       1997,
-       57
-      ],
-      [
-       2000,
-       58
-      ],
-      [
-       2004,
-       61
-      ],
-      [
-       2008,
-       62
-      ],
-      [
-       2012,
-       61
-      ],
-      [
-       2016,
-       62
-      ],
-      [
-       2021,
-       23
-      ],
-      [
-       2023,
-       58
-      ],
-      [
-       2025,
-       60
+    "lange": {
+      "type": "tidslinje",
+      "tittel": "De lange linjene",
+      "undertekst": "andel som har brukt tilbudet siste 12 måneder",
+      "enhet": "%",
+      "serier": [
+        {
+          "navn": "Teater og revy",
+          "punkter": [
+            [
+              1991,
+              44
+            ],
+            [
+              1994,
+              45
+            ],
+            [
+              1997,
+              44
+            ],
+            [
+              2000,
+              50
+            ],
+            [
+              2004,
+              49
+            ],
+            [
+              2008,
+              53
+            ],
+            [
+              2012,
+              45
+            ],
+            [
+              2016,
+              50
+            ],
+            [
+              2021,
+              16
+            ],
+            [
+              2023,
+              38
+            ],
+            [
+              2025,
+              37
+            ]
+          ]
+        },
+        {
+          "navn": "Kunstutstilling",
+          "punkter": [
+            [
+              1991,
+              41
+            ],
+            [
+              1994,
+              44
+            ],
+            [
+              1997,
+              43
+            ],
+            [
+              2000,
+              44
+            ],
+            [
+              2004,
+              42
+            ],
+            [
+              2008,
+              42
+            ],
+            [
+              2012,
+              38
+            ],
+            [
+              2016,
+              36
+            ],
+            [
+              2021,
+              18
+            ],
+            [
+              2023,
+              25
+            ],
+            [
+              2025,
+              26
+            ]
+          ]
+        },
+        {
+          "navn": "Tros-/livssynsmøte",
+          "punkter": [
+            [
+              1994,
+              39
+            ],
+            [
+              1997,
+              39
+            ],
+            [
+              2000,
+              41
+            ],
+            [
+              2004,
+              40
+            ],
+            [
+              2008,
+              39
+            ],
+            [
+              2012,
+              34
+            ],
+            [
+              2016,
+              36
+            ],
+            [
+              2021,
+              19
+            ],
+            [
+              2023,
+              27
+            ],
+            [
+              2025,
+              28
+            ]
+          ]
+        },
+        {
+          "navn": "Ballett og dans",
+          "punkter": [
+            [
+              1991,
+              8
+            ],
+            [
+              1994,
+              9
+            ],
+            [
+              1997,
+              8
+            ],
+            [
+              2000,
+              11
+            ],
+            [
+              2004,
+              12
+            ],
+            [
+              2008,
+              13
+            ],
+            [
+              2012,
+              14
+            ],
+            [
+              2016,
+              14
+            ],
+            [
+              2021,
+              5
+            ],
+            [
+              2023,
+              13
+            ],
+            [
+              2025,
+              14
+            ]
+          ]
+        },
+        {
+          "navn": "Opera",
+          "punkter": [
+            [
+              1991,
+              5
+            ],
+            [
+              1994,
+              5
+            ],
+            [
+              1997,
+              6
+            ],
+            [
+              2000,
+              6
+            ],
+            [
+              2004,
+              5
+            ],
+            [
+              2008,
+              7
+            ],
+            [
+              2012,
+              8
+            ],
+            [
+              2016,
+              8
+            ],
+            [
+              2021,
+              3
+            ],
+            [
+              2023,
+              7
+            ],
+            [
+              2025,
+              8
+            ]
+          ]
+        }
       ]
-     ]
     },
-    {
-     "navn": "Folkebibliotek",
-     "punkter": [
-      [
-       1991,
-       49
-      ],
-      [
-       1994,
-       51
-      ],
-      [
-       1997,
-       52
-      ],
-      [
-       2000,
-       52
-      ],
-      [
-       2004,
-       54
-      ],
-      [
-       2008,
-       51
-      ],
-      [
-       2012,
-       49
-      ],
-      [
-       2016,
-       46
-      ],
-      [
-       2021,
-       37
-      ],
-      [
-       2023,
-       44
-      ],
-      [
-       2025,
-       49
+    "status": {
+      "type": "kortgalleri",
+      "tittel": "Kulturåret 2025",
+      "undertekst": "andel som brukte tilbudet siste 12 måneder",
+      "kort": [
+        {
+          "overtittel": "Kino",
+          "verdi": "62 %",
+          "detalj": "mot 58 % i 1991"
+        },
+        {
+          "overtittel": "Konsert",
+          "verdi": "60 %",
+          "detalj": "mot 48 % i 1991"
+        },
+        {
+          "overtittel": "Folkebibliotek",
+          "verdi": "49 %",
+          "detalj": "mot 49 % i 1991"
+        },
+        {
+          "overtittel": "Idrettsarrangement",
+          "verdi": "49 %",
+          "detalj": "mot 57 % i 1991"
+        },
+        {
+          "overtittel": "Museum",
+          "verdi": "46 %",
+          "detalj": "mot 41 % i 1991"
+        },
+        {
+          "overtittel": "Teater og revy",
+          "verdi": "37 %",
+          "detalj": "mot 44 % i 1991"
+        },
+        {
+          "overtittel": "Kulturfestival",
+          "verdi": "32 %",
+          "detalj": "mot 28 % i 2004"
+        },
+        {
+          "overtittel": "Tros-/livssynsmøte",
+          "verdi": "28 %",
+          "detalj": "mot 39 % i 1994"
+        },
+        {
+          "overtittel": "Kunstutstilling",
+          "verdi": "26 %",
+          "detalj": "mot 41 % i 1991"
+        },
+        {
+          "overtittel": "Ballett og dans",
+          "verdi": "14 %",
+          "detalj": "mot 8 % i 1991"
+        },
+        {
+          "overtittel": "Opera",
+          "verdi": "8 %",
+          "detalj": "mot 5 % i 1991"
+        }
       ]
-     ]
-    },
-    {
-     "navn": "Museum",
-     "punkter": [
-      [
-       1991,
-       41
-      ],
-      [
-       1994,
-       45
-      ],
-      [
-       1997,
-       44
-      ],
-      [
-       2000,
-       45
-      ],
-      [
-       2004,
-       42
-      ],
-      [
-       2008,
-       43
-      ],
-      [
-       2012,
-       41
-      ],
-      [
-       2016,
-       44
-      ],
-      [
-       2021,
-       29
-      ],
-      [
-       2023,
-       45
-      ],
-      [
-       2025,
-       46
-      ]
-     ]
     }
-   ]
-  },
-  "lange": {
-   "type": "tidslinje",
-   "tittel": "De lange linjene",
-   "undertekst": "andel som har brukt tilbudet siste 12 måneder",
-   "enhet": "%",
-   "serier": [
-    {
-     "navn": "Teater og revy",
-     "punkter": [
-      [
-       1991,
-       44
-      ],
-      [
-       1994,
-       45
-      ],
-      [
-       1997,
-       44
-      ],
-      [
-       2000,
-       50
-      ],
-      [
-       2004,
-       49
-      ],
-      [
-       2008,
-       53
-      ],
-      [
-       2012,
-       45
-      ],
-      [
-       2016,
-       50
-      ],
-      [
-       2021,
-       16
-      ],
-      [
-       2023,
-       38
-      ],
-      [
-       2025,
-       37
-      ]
-     ]
-    },
-    {
-     "navn": "Kunstutstilling",
-     "punkter": [
-      [
-       1991,
-       41
-      ],
-      [
-       1994,
-       44
-      ],
-      [
-       1997,
-       43
-      ],
-      [
-       2000,
-       44
-      ],
-      [
-       2004,
-       42
-      ],
-      [
-       2008,
-       42
-      ],
-      [
-       2012,
-       38
-      ],
-      [
-       2016,
-       36
-      ],
-      [
-       2021,
-       18
-      ],
-      [
-       2023,
-       25
-      ],
-      [
-       2025,
-       26
-      ]
-     ]
-    },
-    {
-     "navn": "Tros-/livssynsmøte",
-     "punkter": [
-      [
-       1994,
-       39
-      ],
-      [
-       1997,
-       39
-      ],
-      [
-       2000,
-       41
-      ],
-      [
-       2004,
-       40
-      ],
-      [
-       2008,
-       39
-      ],
-      [
-       2012,
-       34
-      ],
-      [
-       2016,
-       36
-      ],
-      [
-       2021,
-       19
-      ],
-      [
-       2023,
-       27
-      ],
-      [
-       2025,
-       28
-      ]
-     ]
-    },
-    {
-     "navn": "Ballett og dans",
-     "punkter": [
-      [
-       1991,
-       8
-      ],
-      [
-       1994,
-       9
-      ],
-      [
-       1997,
-       8
-      ],
-      [
-       2000,
-       11
-      ],
-      [
-       2004,
-       12
-      ],
-      [
-       2008,
-       13
-      ],
-      [
-       2012,
-       14
-      ],
-      [
-       2016,
-       14
-      ],
-      [
-       2021,
-       5
-      ],
-      [
-       2023,
-       13
-      ],
-      [
-       2025,
-       14
-      ]
-     ]
-    },
-    {
-     "navn": "Opera",
-     "punkter": [
-      [
-       1991,
-       5
-      ],
-      [
-       1994,
-       5
-      ],
-      [
-       1997,
-       6
-      ],
-      [
-       2000,
-       6
-      ],
-      [
-       2004,
-       5
-      ],
-      [
-       2008,
-       7
-      ],
-      [
-       2012,
-       8
-      ],
-      [
-       2016,
-       8
-      ],
-      [
-       2021,
-       3
-      ],
-      [
-       2023,
-       7
-      ],
-      [
-       2025,
-       8
-      ]
-     ]
-    }
-   ]
-  },
-  "status": {
-   "type": "kortgalleri",
-   "tittel": "Kulturåret 2025",
-   "undertekst": "andel som brukte tilbudet siste 12 måneder",
-   "kort": [
-    {
-     "overtittel": "Kino",
-     "verdi": "62 %",
-     "detalj": "mot 58 % i 1991"
-    },
-    {
-     "overtittel": "Konsert",
-     "verdi": "60 %",
-     "detalj": "mot 48 % i 1991"
-    },
-    {
-     "overtittel": "Folkebibliotek",
-     "verdi": "49 %",
-     "detalj": "mot 49 % i 1991"
-    },
-    {
-     "overtittel": "Idrettsarrangement",
-     "verdi": "49 %",
-     "detalj": "mot 57 % i 1991"
-    },
-    {
-     "overtittel": "Museum",
-     "verdi": "46 %",
-     "detalj": "mot 41 % i 1991"
-    },
-    {
-     "overtittel": "Teater og revy",
-     "verdi": "37 %",
-     "detalj": "mot 44 % i 1991"
-    },
-    {
-     "overtittel": "Kulturfestival",
-     "verdi": "32 %",
-     "detalj": "mot 28 % i 2004"
-    },
-    {
-     "overtittel": "Tros-/livssynsmøte",
-     "verdi": "28 %",
-     "detalj": "mot 39 % i 1994"
-    },
-    {
-     "overtittel": "Kunstutstilling",
-     "verdi": "26 %",
-     "detalj": "mot 41 % i 1991"
-    },
-    {
-     "overtittel": "Ballett og dans",
-     "verdi": "14 %",
-     "detalj": "mot 8 % i 1991"
-    },
-    {
-     "overtittel": "Opera",
-     "verdi": "8 %",
-     "detalj": "mot 5 % i 1991"
-    }
-   ]
   }
- }
 }

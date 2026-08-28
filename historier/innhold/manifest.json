@@ -1,6 +1,24 @@
 {
-  "generert": "2026-08-27",
+  "generert": "2026-08-28",
   "historier": [
+    {
+      "id": "hundre-ar-til-kina",
+      "tittel": "Hundre år til Kina",
+      "kilde": "IbsenStage, Universitetet i Oslo",
+      "dato_hentet": "2026-08-28",
+      "geografi": "115 land",
+      "beskrivelse": "Norden spilte Ibsen året han utga — resten av verden brukte i median 116 år på det samme, og Kina ventet i 116.",
+      "demo": false
+    },
+    {
+      "id": "verden-vil-se-folkefienden",
+      "tittel": "Verden vil se folkefienden",
+      "kilde": "IbsenStage, Universitetet i Oslo",
+      "dato_hentet": "2026-08-28",
+      "geografi": "115 land",
+      "beskrivelse": "«En folkefiende» har tredoblet seg som andel av Ibsen-oppsetningene siden 2005 — og siden 2017 har tre stykker tatt tre av fire oppsetninger i verden.",
+      "demo": false
+    },
     {
       "id": "bygda-savner-barn",
       "tittel": "Bygda savner barn, ikke korps",
@@ -8,15 +26,6 @@
       "dato_hentet": "2026-08-27",
       "geografi": "Norge, fylker",
       "beskrivelse": "Skolekorpsene står tettest der folketallet faller — men i de 65 kommunegruppene med befolkningsnedgang er det ikke stiftet ett eneste nytt skolekorps siden 2009.",
-      "demo": false
-    },
-    {
-      "id": "kultur",
-      "tittel": "Folk går helst på kino eller konsert",
-      "kilde": "Statistisk sentralbyrå",
-      "dato_hentet": "2026-07-04",
-      "geografi": "Norge",
-      "beskrivelse": "Kulturbarometeret har målt hva vi går ut for å oppleve siden 1991. Kinoen topper fortsatt — men pandemien viste hvor fort alt kan stenge.",
       "demo": false
     },
     {
@@ -35,15 +44,6 @@
       "dato_hentet": "2026-07-04",
       "geografi": "Norge",
       "beskrivelse": "«Kultur» var et sjeldent ord i norske aviser. Så begynte det å vokse, og i Stortinget fulgte sakene etter. To kilder, én ordhistorie.",
-      "demo": false
-    },
-    {
-      "id": "befolkning",
-      "tittel": "Fem og en halv million",
-      "kilde": "Statistisk sentralbyrå",
-      "dato_hentet": "2026-07-02",
-      "geografi": "Norge, fylker",
-      "beskrivelse": "Norges befolkning har vokst med nesten to og en halv million siden 1951. Hvor bor vi nå — og hvor gikk veksten?",
       "demo": false
     },
     {
