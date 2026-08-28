@@ -57,6 +57,42 @@ Hver `data.json` har et `meta`-objekt med åtte påkrevde felt:
 Ny kode trengs bare hvis du vil ha en helt ny visualiseringstype: legg da til
 én funksjon i `komponenter.js` og registrer den i `REGISTER`-objektet nederst.
 
+## Slik redigerer du teksten uten å miste den
+
+Er `data.json` generert av et byggescript, er den ikke et sted å redigere: neste
+kjøring skriver over alt, uten et ord. Det gjelder også tittelen og beskrivelsen —
+altså akkurat det som står på forsiden.
+
+Arbeidsdelingen er derfor:
+
+| Fil | Eier | Trygg å redigere? |
+|---|---|---|
+| `tekst.md` | deg | **Ja.** Byggescriptene rører den aldri. |
+| `data.json` | byggescriptet | **Nei**, når historien har et byggescript. |
+| `redaksjon.json` | deg | **Ja.** Legges oppå `data.json` ved bygging. |
+
+`redaksjon.json` er valgfri og speiler strukturen i `data.json`. Skriv bare de
+feltene du vil overstyre:
+
+```json
+{
+  "meta": { "tittel": "Min tittel", "beskrivelse": "Det som står på forsiden." },
+  "visninger": { "hero": { "fotnote": "..." } }
+}
+```
+
+To ting den gjør med vilje:
+
+- **En nøkkel som ikke finnes, stopper bygget.** Overstyrer du `visninger.spredningen`
+  når figuren heter `spredning`, får du beskjed — i stedet for å redigere en tekst
+  som ikke vises noe sted.
+- **Avvik rapporteres.** Er den håndskrevne teksten blitt en annen enn den scriptet
+  nå ville laget, skrives begge ut ved bygging. Din tekst vinner, men en beskrivelse
+  som sier «median 114 år» etter at tallet er blitt 116, skal ikke få stå upåaktet.
+
+Historier uten byggescript — der `data.json` er skrevet for hånd fra starten —
+trenger ingen `redaksjon.json`. Der er `data.json` allerede din.
+
 ## Visualiseringstypene
 
 | Type | Bruk | Viktigste felt |

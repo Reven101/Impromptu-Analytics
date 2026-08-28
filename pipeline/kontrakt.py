@@ -50,7 +50,7 @@ PAKREVDE_METAFELT = [
     "beskrivelse",
 ]
 
-GYLDIGE_VISNINGSTYPER = {"hero", "tidslinje", "kart", "kortgalleri"}
+GYLDIGE_VISNINGSTYPER = {"hero", "tidslinje", "kart", "verdenskart", "kortgalleri"}
 
 INNHOLD_DIR = Path(__file__).resolve().parent.parent / "historier" / "innhold"
 
@@ -84,6 +84,57 @@ def valider_snapshot(data: dict, slug: str = "?") -> list[str]:
                     f"{sorted(GYLDIGE_VISNINGSTYPER)}, fikk {viz.get('type')!r}"
                 )
     return feil
+
+
+def flett_redaksjon(data: dict, slug: str) -> tuple[dict, list[str]]:
+    """Legger håndskrevet tekst fra `redaksjon.json` oppå det byggescriptet regnet ut.
+
+    Problemet den løser: `data.json` er generert, men inneholder både tall og tekst
+    — tittel, ingressbeskrivelsen som står på forsiden, figurtitler, hero-etiketter.
+    Redigerer man den direkte, forsvinner endringen neste gang scriptet kjøres, uten
+    et ord. `tekst.md` har aldri hatt det problemet; byggescriptene rører den ikke.
+
+    Med denne er arbeidsdelingen: **byggescriptet eier tallene, `redaksjon.json` eier
+    ordene.** Fila er valgfri, og speiler strukturen i data.json:
+
+        {
+          "meta": {"tittel": "Min tittel", "beskrivelse": "..."},
+          "visninger": {"hero": {"fotnote": "..."}}
+        }
+
+    To ting den gjør med vilje:
+
+    - **Ukjente nøkler er en feil, ikke en no-op.** Overstyrer du `visninger.spredning`
+      etter at figuren har byttet navn, skal du få vite det. Ellers redigerer du en
+      tekst som ikke vises noe sted, og tror den virker.
+    - **Divergens rapporteres.** Endrer tallene seg slik at den genererte teksten blir
+      en annen enn den håndskrevne, skrives begge ut. Den håndskrevne vinner — men
+      «median 114 år» som er blitt 116 skal ikke få stå upåaktet.
+    """
+    fil = INNHOLD_DIR / slug / "redaksjon.json"
+    if not fil.exists():
+        return data, []
+    overstyring = json.loads(fil.read_text(encoding="utf-8"))
+    notater: list[str] = []
+
+    def flett(mål: dict, ny: dict, sti: str) -> None:
+        for nøkkel, verdi in ny.items():
+            full = f"{sti}.{nøkkel}" if sti else nøkkel
+            if nøkkel not in mål:
+                raise SystemExit(
+                    f"redaksjon.json for {slug}: «{full}» finnes ikke i det "
+                    f"byggescriptet lager. Har figuren byttet navn?"
+                )
+            if isinstance(verdi, dict) and isinstance(mål[nøkkel], dict):
+                flett(mål[nøkkel], verdi, full)
+            else:
+                if mål[nøkkel] != verdi:
+                    notater.append(f"{full}\n      generert:    {mål[nøkkel]!r}"
+                                   f"\n      håndskrevet: {verdi!r}")
+                mål[nøkkel] = verdi
+
+    flett(data, overstyring, "")
+    return data, notater
 
 
 def er_utkast(data: dict) -> bool:
