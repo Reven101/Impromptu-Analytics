@@ -201,6 +201,9 @@ def main() -> None:
             "geografi": "115 land",
             "enhet": "år",
             "oppdateringsfrekvens": "Løpende",
+            # Tatt av forsiden 2026-08-28 til fordel for Nora-historien. Saken er
+            # uendret og nås fortsatt på sin egen URL.
+            "utkast": True,
             "beskrivelse": (
                 "Norden spilte Ibsen året han utga — for verden som helhet er "
                 "medianen 114 år fra utgivelse til første kjente oppsetning, "

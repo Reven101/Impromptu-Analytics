@@ -17,10 +17,10 @@ Tre valg:
   et koroplettkart vekter etter areal, og «hvor mange Noraer» ville gjort Russland
   til hovedpersonen. «Året Nora først gikk ut» er derimot et tidspunkt, der
   arealet ikke lyver.
-- **Rollefiguren er normalisert.** Kilden skriver både «Nora» og «Nora Helmer»,
-  og noen ganger med stykketittel i parentes. Vi teller bare den rene formen
-  «Nora» — den dekker 4 832 av krediteringene, mot 4 977 med varianter, og
-  variantene kan skjule andre roller (det finnes en «Nora» i andre stykker også).
+- **Rollefiguren er ført konsekvent.** Vi matcher strengt på «Nora» i tilfelle
+  kilden også bruker varianter som «Nora Helmer». Den gjør ikke det: samtlige
+  4 832 krediteringer står som nøyaktig «Nora». En løsere match ville plukket
+  opp figurer som heter Nora i andre stykker; sjekk på nytt hvis arkivet endrer praksis.
 - **Kjønnet er korrigert mot rollefigur først.** Før korreksjonen sto 59 av
   Nora-spillerne som menn, fordi fornavn som «Tore» normalt er mannsnavn på norsk.
   Etterpå står to igjen — og begge er ekte: Andrus Vaarik spilte også Osvald
@@ -101,6 +101,16 @@ def main() -> None:
     # Samme grep som i bygda-savner-barn, av samme grunn.
     tiar_punkter = [[t, per_tiar[t]] for t in sorted(per_tiar) if 1880 <= t <= 2010]
 
+    # Andel av ALL Ibsen. Uten denne kontrollen leser den absolutte kurven som en
+    # gjenoppblomstring, men Ibsen som helhet vokser like mye: 2 505 oppsetninger på
+    # 1900-tallet mot 4 723 på 2000-tallet. Nora-kurven ER Dukkehjem-kurven, og
+    # spørsmålet er om stykket tar mer eller mindre plass — ikke om tallet er større.
+    analyse = json.loads((RAADATA_DIR / "ibsenstage_analyse.json")
+                         .read_text(encoding="utf-8"))["oppsetninger"]
+    alle_tiar = collections.Counter(r["aar"] // 10 * 10 for r in analyse if r["aar"])
+    andel_punkter = [[t, round(per_tiar[t] / alle_tiar[t] * 100, 1)]
+                     for t in sorted(per_tiar) if 1880 <= t <= 2010 and alle_tiar[t]]
+
     # Hero: velg tiår, få vite hvor mange, hvor mange kvinner, og hvem som spilte mest.
     oppslag = {}
     for t in sorted(per_tiar):
@@ -138,10 +148,14 @@ def main() -> None:
     for pid, antall in personer.most_common(4):
         i = [n for n in noraer if n["pid"] == pid]
         aa = [n["aar"] for n in i if n["aar"]]
-        land = collections.Counter(n["land"] for n in i if n["land"]).most_common(1)[0][0]
+        # Antall land, ikke det hyppigste landet. Monna Tandberg har 51 av sine 69
+        # krediteringer i Norge og resten på turné i sju land; «Norge» alene ville
+        # lest som om alle var der — og kollidert med at Norge har 51 i tiåret.
+        n_land = len({n["land"] for n in i if n["land"]})
         spenn = f"{min(aa)}" if min(aa) == max(aa) else f"{min(aa)}–{max(aa)}"
+        detalj = f"{spenn}, {n_land} land" if n_land > 1 else f"{spenn}, ett land"
         kort.append({"overtittel": navn_av_pid[pid], "verdi": f"{antall} ganger",
-                     "detalj": f"{spenn}, {NORSK_LAND.get(land, land)}"})
+                     "detalj": detalj})
 
     en_gang = sum(1 for v in personer.values() if v == 1)
     kvinner = sum(1 for pid in personer
@@ -161,8 +175,6 @@ def main() -> None:
             "geografi": "90 land",
             "enhet": "krediteringer",
             "oppdateringsfrekvens": "Løpende",
-            # Holdes utenfor forsiden til DATANOTAT.md og redaktorsjekk.py er gjort.
-            "utkast": True,
             "beskrivelse": (
                 f"{len(personer)} skuespillere har spilt Nora i {len({n['land'] for n in noraer if n['land']})} "
                 f"land siden 1879 — og {round(en_gang / len(personer) * 100)} prosent av dem "
@@ -201,6 +213,14 @@ def main() -> None:
                 "enhet": "ganger",
                 "x_navn": "Tiår",
                 "serier": [{"navn": "Nora", "punkter": tiar_punkter}],
+            },
+            "andel": {
+                "type": "tidslinje",
+                "tittel": "Men andelen var størst da stykket var nytt",
+                "undertekst": "Nora-krediteringer som andel av alle Ibsen-oppsetninger",
+                "enhet": "%",
+                "x_navn": "Tiår",
+                "serier": [{"navn": "Nora", "punkter": andel_punkter}],
             },
             "flest": {
                 "type": "kortgalleri",

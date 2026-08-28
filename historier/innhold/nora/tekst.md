@@ -1,16 +1,24 @@
 [[viz:hero]]
 
-Den 21. desember 1879 gikk Betty Hennings ut av en dør på Det Kongelige Teater i København, og lukket den bak seg. Siden har 1 936 andre kvinner gjort det samme, i 90 land. De fleste av dem bare én gang.
+Den 21. desember 1879 gikk Betty Hennings ut av en dør på Det Kongelige Teater i København, og lukket den bak seg. Siden har 1 936 andre kvinner gjort det samme, i 90 land. De fleste av dem bare én gang. (Fire av de 1 941 som har spilt rollen, er ikke kvinner: to menn og to der navnet ikke lot seg bestemme.)
 
-## To topper, hundre år fra hverandre
+## Flest i vår tid, størst da hun var ny
 
 [[viz:tiar]]
 
-Rollen har hatt to storhetstider, og det er nøyaktig hundre år mellom dem. Den første kom med stykket selv: 489 Noraer på 1900-tallets første tiår, da «Et dukkehjem» var samtidsdrama og skandale. Så faller kurven i fire tiår — nedturen bunner på 1940-tallet med 78.
+I rene tall er vår egen tid Noras storhetstid. 899 krediteringer på 2000-tallet, mot 489 på 1900-tallets første tiår og bare 78 på 1940-tallet. Kurven ser ut som en gjenoppblomstring.
 
-Den andre toppen er vår egen. **899 Noraer på 2000-tallet, nesten dobbelt så mange som hundre år før.** Stykket ble ikke gammelt; det ble aktuelt igjen.
+Men den kurven måler noe annet enn den ser ut til. Hver oppsetning av «Et dukkehjem» har én Nora, så kurven er stykkets egen — og Ibsen som helhet har vokst like mye. Det ble registrert 2 505 Ibsen-oppsetninger på 1900-tallet og 4 723 på 2000-tallet.
 
-Grafen stopper ved 2010-tallet med vilje. Vi er i 2026, og et halvt tiår ved siden av fulle tiår ville lest som et fall. Så langt teller 2020-tallet 245 Noraer.
+Regner man Nora som andel av all Ibsen, snur bildet.
+
+[[viz:andel]]
+
+**Nora tok størst plass da stykket var nytt: 32,7 prosent av alle Ibsen-oppsetninger på 1880-tallet, mot 19,0 prosent på 2000-tallet.** Bunnen kom på 1920-tallet med 12,4. Det nærmeste vi kommer en ekte gjenoppblomstring er 1990-tallet, med 25,9 prosent.
+
+Stykket har altså ikke blitt mer aktuelt enn det var. Det har holdt stand — i et repertoar som har blitt mye større.
+
+Søylegrafen stopper ved 2010-tallet med vilje. Vi er i 2026, og et halvt tiår ved siden av fulle tiår ville lest som et fall. Så langt teller 2020-tallet 245 Noraer.
 
 ## Nora reiser
 
@@ -30,4 +38,4 @@ Marit Østbye spilte Nora 74 ganger mellom 1983 og 1990. Agnes Sorma holdt på i
 
 To menn har spilt Nora i materialet: Andrus Vaarik i Estland i 1995 og Burton W. James i USA i 1932. Begge spilte også mannsroller — Osvald Alving og Peer Gynt — så det er rollebytte, ikke registreringsfeil.
 
-**Metodenotat:** Tallene teller *krediteringer*, ikke forestillinger: en skuespiller som spilte Nora hundre kvelder i samme oppsetning teller én gang. Vi teller bare rollefiguren skrevet som «Nora», ikke varianter som «Nora Helmer» — det gir 4 832 krediteringer mot 4 977 med varianter, og varianter kan skjule andre roller. Skuespillernes kjønn er ikke registrert i kilden, men utledet av fornavn med en språkmodell og deretter korrigert mot rollefigur. Før korreksjonen sto 59 Nora-spillere som menn, deriblant Tore Segelcke; etterpå står to igjen, og begge er ekte rollebytter. Kartet viser årstall og ikke antall, fordi et koroplettkart vekter etter areal. Alle tall og forbehold er dokumentert i datanotatet som følger historien.
+**Metodenotat:** Tallene teller *krediteringer*, ikke forestillinger: en skuespiller som spilte Nora hundre kvelder i samme oppsetning teller én gang. Kilden bruker rollenavnet konsekvent: samtlige 4 832 krediteringer står som nøyaktig «Nora», uten varianter som «Nora Helmer». Skuespillernes kjønn er ikke registrert i kilden, men utledet av fornavn med en språkmodell og deretter korrigert mot rollefigur. Før korreksjonen sto 59 Nora-spillere som menn, deriblant Tore Segelcke; etterpå står to igjen, og begge er ekte rollebytter. Kartet viser årstall og ikke antall, fordi et koroplettkart vekter etter areal. Alle tall og forbehold er dokumentert i datanotatet som følger historien.

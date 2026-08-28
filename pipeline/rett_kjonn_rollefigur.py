@@ -19,8 +19,8 @@ Fire valg som avgjør om korreksjonen er til å stole på:
 
 - **Rollelista er håndskrevet.** Den kunne vært utledet — «Mrs.» og «Miss» er
   sterke signaler — men da ville regelen bommet på «Mother Aase», «Solveig» og
-  «Anitra», og trukket «Mr.» ut av intet. 61 roller dekker 62 % av krediteringene,
-  og resten står som ukjent framfor å gjettes.
+  «Anitra», og trukket «Mr.» ut av intet. 55 roller dekker 104 572 av de 187 064
+  krediteringene med rollefigur, altså 56 %; resten står som ukjent framfor å gjettes.
 - **Vi måler før vi retter.** Uenigheten mellom navn og rolle er det beste
   estimatet vi har på hvor gal kolonnen egentlig er, og det tallet forsvinner i
   det øyeblikket vi overskriver. Det rapporteres derfor først.
