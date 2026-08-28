@@ -1,0 +1,685 @@
+{
+  "meta": {
+    "tittel": "1 937 kvinner, én dør",
+    "kilde": "IbsenStage, Universitetet i Oslo",
+    "kilde_url": "https://ibsenstage.hf.uio.no/",
+    "dato_hentet": "2026-08-28",
+    "geografi": "90 land",
+    "enhet": "krediteringer",
+    "oppdateringsfrekvens": "Løpende",
+    "utkast": true,
+    "beskrivelse": "1941 skuespillere har spilt Nora i 90 land siden 1879 — og 73 prosent av dem gjorde det bare én gang."
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "4832 ganger, 1879–2026",
+      "kontroll": {
+        "etikett": "Velg tiår",
+        "standard": "2000-tallet"
+      },
+      "oppslag": {
+        "1880-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "164",
+              "detalj": "av 69 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Helvig Johansen",
+              "detalj": "12 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Sverige",
+              "detalj": "30 av 164"
+            }
+          ]
+        },
+        "1890-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "410",
+              "detalj": "av 125 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Janet Achurch",
+              "detalj": "39 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Tyskland",
+              "detalj": "120 av 410"
+            }
+          ]
+        },
+        "1900-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "489",
+              "detalj": "av 134 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Jenny Toresen",
+              "detalj": "42 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Danmark",
+              "detalj": "88 av 489"
+            }
+          ]
+        },
+        "1910-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "247",
+              "detalj": "av 117 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Octavia Kenmore",
+              "detalj": "22 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Tyskland",
+              "detalj": "62 av 247"
+            }
+          ]
+        },
+        "1920-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "189",
+              "detalj": "av 84 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Mária Mágori",
+              "detalj": "50 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Ungarn",
+              "detalj": "61 av 189"
+            }
+          ]
+        },
+        "1930-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "137",
+              "detalj": "av 79 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Ludmilla Pitoëff",
+              "detalj": "12 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "USA",
+              "detalj": "27 av 137"
+            }
+          ]
+        },
+        "1940-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "78",
+              "detalj": "av 58 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Dale Melbourne",
+              "detalj": "4 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Tyskland",
+              "detalj": "14 av 78"
+            }
+          ]
+        },
+        "1950-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "180",
+              "detalj": "av 108 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Liv Strømsted",
+              "detalj": "40 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Norge",
+              "detalj": "37 av 180"
+            }
+          ]
+        },
+        "1960-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "168",
+              "detalj": "av 86 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Monna Tandberg",
+              "detalj": "69 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Norge",
+              "detalj": "51 av 168"
+            }
+          ]
+        },
+        "1970-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "187",
+              "detalj": "av 124 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Ingerid Vardund",
+              "detalj": "18 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Tyskland",
+              "detalj": "34 av 187"
+            }
+          ]
+        },
+        "1980-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "176",
+              "detalj": "av 111 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Marit Østbye",
+              "detalj": "45 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Norge",
+              "detalj": "48 av 176"
+            }
+          ]
+        },
+        "1990-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "474",
+              "detalj": "av 185 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Margareta Hjern",
+              "detalj": "42 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Norge",
+              "detalj": "124 av 474"
+            }
+          ]
+        },
+        "2000-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "899",
+              "detalj": "av 343 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Ulrikke Hansen Døvigen",
+              "detalj": "49 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "Tyskland",
+              "detalj": "134 av 899"
+            }
+          ]
+        },
+        "2010-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "788",
+              "detalj": "av 371 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "Valentina Sperlì",
+              "detalj": "42 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "USA",
+              "detalj": "114 av 788"
+            }
+          ]
+        },
+        "2020-tallet": {
+          "rader": [
+            {
+              "etikett": "Ganger spilt",
+              "verdi": "245",
+              "detalj": "av 136 ulike skuespillere"
+            },
+            {
+              "etikett": "Flest ganger",
+              "verdi": "María León",
+              "detalj": "19 ganger"
+            },
+            {
+              "etikett": "Flest oppsetninger",
+              "verdi": "USA",
+              "detalj": "41 av 245"
+            }
+          ]
+        }
+      },
+      "fotnote": "Rollefiguren er ført av arkivarene ved Senter for Ibsen-studier. Skuespillernes kjønn er utledet av fornavn og korrigert mot rollefigur; se datanotatet."
+    },
+    "kart": {
+      "type": "verdenskart",
+      "tittel": "Året Nora først gikk ut",
+      "undertekst": "Første registrerte oppsetning med rollen i landet",
+      "enhet": "",
+      "verdier": {
+        "DK": 1879,
+        "NO": 1880,
+        "SE": 1880,
+        "DE": 1880,
+        "FI": 1880,
+        "PL": 1880,
+        "AT": 1881,
+        "US": 1882,
+        "UA": 1883,
+        "RU": 1883,
+        "CZ": 1888,
+        "HR": 1888,
+        "GB": 1889,
+        "AU": 1889,
+        "HU": 1889,
+        "BE": 1889,
+        "NL": 1889,
+        "CH": 1889,
+        "IT": 1889,
+        "RO": 1889,
+        "RS": 1889,
+        "SK": 1889,
+        "NZ": 1890,
+        "IN": 1891,
+        "LK": 1891,
+        "FR": 1891,
+        "EG": 1892,
+        "SI": 1892,
+        "EE": 1892,
+        "LV": 1893,
+        "ES": 1893,
+        "BG": 1897,
+        "IE": 1897,
+        "UY": 1898,
+        "GE": 1898,
+        "PT": 1899,
+        "BR": 1899,
+        "GR": 1899,
+        "TR": 1900,
+        "CY": 1903,
+        "MX": 1904,
+        "IS": 1905,
+        "LT": 1907,
+        "CA": 1908,
+        "JP": 1911,
+        "BA": 1922,
+        "MK": 1923,
+        "CN": 1924,
+        "CL": 1926,
+        "PE": 1927,
+        "ZA": 1929,
+        "AR": 1943,
+        "TH": 1954,
+        "CO": 1955,
+        "IL": 1959,
+        "IR": 1959,
+        "IQ": 1975,
+        "LU": 1976,
+        "PK": 1992,
+        "PH": 1993,
+        "BD": 1993,
+        "LI": 1995,
+        "FO": 1999,
+        "ME": 2000,
+        "SY": 2000,
+        "VE": 2000,
+        "HK": 2001,
+        "NG": 2002,
+        "ZW": 2003,
+        "NP": 2003,
+        "AZ": 2004,
+        "TW": 2004,
+        "KR": 2005,
+        "AO": 2005,
+        "MW": 2006,
+        "VN": 2006,
+        "ZM": 2006,
+        "MZ": 2006,
+        "KE": 2006,
+        "GH": 2006,
+        "SG": 2007,
+        "ER": 2009,
+        "ID": 2011,
+        "AE": 2017,
+        "MY": 2018,
+        "TM": 2025,
+        "MD": 2025
+      },
+      "navn": {
+        "RU": "Russland",
+        "GB": "Storbritannia",
+        "CH": "Sveits",
+        "DE": "Tyskland",
+        "NO": "Norge",
+        "SE": "Sverige",
+        "DK": "Danmark",
+        "FI": "Finland",
+        "AT": "Østerrike",
+        "PL": "Polen",
+        "HU": "Ungarn",
+        "CZ": "Tsjekkia",
+        "RS": "Serbia",
+        "US": "USA",
+        "RO": "Romania",
+        "UA": "Ukraina",
+        "NL": "Nederland",
+        "HR": "Kroatia",
+        "IT": "Italia",
+        "BE": "Belgia",
+        "AU": "Australia",
+        "LV": "Latvia",
+        "SK": "Slovakia",
+        "FR": "Frankrike",
+        "NZ": "New Zealand",
+        "LK": "Sri Lanka",
+        "IN": "India",
+        "IS": "Island",
+        "EG": "Egypt",
+        "SI": "Slovenia",
+        "ES": "Spania",
+        "EE": "Estland",
+        "IE": "Irland",
+        "GR": "Hellas",
+        "MX": "Mexico",
+        "UY": "Uruguay",
+        "BG": "Bulgaria",
+        "CY": "Cyprus",
+        "GE": "Georgia",
+        "PT": "Portugal",
+        "TR": "Tyrkia",
+        "BR": "Brasil",
+        "JP": "Japan",
+        "CA": "Canada",
+        "AR": "Argentina",
+        "LT": "Litauen",
+        "CN": "Kina",
+        "MK": "Macedonia",
+        "BA": "Bosnia and Herzegovina",
+        "KR": "Sør-Korea",
+        "CL": "Chile",
+        "PE": "Peru",
+        "ZA": "Sør-Afrika",
+        "MD": "Moldova",
+        "IL": "Israel",
+        "TH": "Thailand",
+        "CO": "Colombia",
+        "IQ": "Iraq",
+        "IR": "Iran",
+        "HK": "Hong Kong",
+        "LU": "Luxembourg",
+        "PK": "Pakistan",
+        "BD": "Bangladesh",
+        "PH": "Philippines",
+        "LI": "Liechtenstein",
+        "VE": "Venezuela",
+        "FO": "Faroe Islands",
+        "SY": "Syria",
+        "ME": "Montenegro",
+        "SG": "Singapore",
+        "NG": "Nigeria",
+        "AZ": "Azerbaijan",
+        "NP": "Nepal",
+        "ZW": "Zimbabwe",
+        "TW": "Taiwan",
+        "VN": "Vietnam",
+        "KE": "Kenya",
+        "AO": "Angola",
+        "MZ": "Mozambique",
+        "GH": "Ghana",
+        "MW": "Malawi",
+        "ZM": "Zambia",
+        "ID": "Indonesia",
+        "ER": "Eritrea",
+        "AE": "United Arab Emirates",
+        "MY": "Malaysia",
+        "TM": "Turkmenistan"
+      },
+      "antall": {
+        "DK": 226,
+        "NO": 505,
+        "SE": 178,
+        "DE": 689,
+        "FI": 53,
+        "PL": 93,
+        "AT": 109,
+        "US": 538,
+        "UA": 18,
+        "RU": 67,
+        "CZ": 84,
+        "HR": 17,
+        "GB": 325,
+        "AU": 50,
+        "HU": 215,
+        "BE": 68,
+        "NL": 88,
+        "CH": 82,
+        "IT": 265,
+        "RO": 136,
+        "RS": 30,
+        "SK": 28,
+        "NZ": 13,
+        "IN": 6,
+        "LK": 8,
+        "FR": 116,
+        "EG": 12,
+        "SI": 12,
+        "EE": 8,
+        "LV": 18,
+        "ES": 180,
+        "BG": 28,
+        "IE": 28,
+        "UY": 9,
+        "GE": 1,
+        "PT": 21,
+        "BR": 26,
+        "GR": 128,
+        "TR": 38,
+        "CY": 4,
+        "MX": 6,
+        "IS": 8,
+        "LT": 4,
+        "CA": 38,
+        "JP": 48,
+        "BA": 4,
+        "MK": 11,
+        "CN": 51,
+        "CL": 12,
+        "PE": 1,
+        "ZA": 7,
+        "AR": 7,
+        "TH": 1,
+        "CO": 3,
+        "IL": 5,
+        "IR": 4,
+        "IQ": 5,
+        "LU": 4,
+        "PK": 3,
+        "PH": 1,
+        "BD": 20,
+        "LI": 1,
+        "FO": 1,
+        "ME": 1,
+        "SY": 1,
+        "VE": 4,
+        "HK": 4,
+        "NG": 4,
+        "ZW": 1,
+        "NP": 5,
+        "AZ": 1,
+        "TW": 2,
+        "KR": 4,
+        "AO": 1,
+        "MW": 22,
+        "VN": 1,
+        "ZM": 2,
+        "MZ": 1,
+        "KE": 1,
+        "GH": 1,
+        "SG": 2,
+        "ER": 1,
+        "ID": 1,
+        "AE": 1,
+        "MY": 2,
+        "TM": 2,
+        "MD": 1
+      },
+      "antall_navn": "Ganger spilt",
+      "tom_etikett": "ingen registrert Nora",
+      "skala": "kvantil"
+    },
+    "tiar": {
+      "type": "tidslinje",
+      "stil": "søyle",
+      "tittel": "To topper, hundre år fra hverandre",
+      "undertekst": "Krediteringer i rollen som Nora, hele tiår",
+      "enhet": "ganger",
+      "x_navn": "Tiår",
+      "serier": [
+        {
+          "navn": "Nora",
+          "punkter": [
+            [
+              1880,
+              164
+            ],
+            [
+              1890,
+              410
+            ],
+            [
+              1900,
+              489
+            ],
+            [
+              1910,
+              247
+            ],
+            [
+              1920,
+              189
+            ],
+            [
+              1930,
+              137
+            ],
+            [
+              1940,
+              78
+            ],
+            [
+              1950,
+              180
+            ],
+            [
+              1960,
+              168
+            ],
+            [
+              1970,
+              187
+            ],
+            [
+              1980,
+              176
+            ],
+            [
+              1990,
+              474
+            ],
+            [
+              2000,
+              899
+            ],
+            [
+              2010,
+              788
+            ]
+          ]
+        }
+      ]
+    },
+    "flest": {
+      "type": "kortgalleri",
+      "tittel": "De som gikk ut igjen og igjen",
+      "undertekst": "Flest krediteringer i rollen",
+      "kort": [
+        {
+          "overtittel": "Marit Østbye",
+          "verdi": "74 ganger",
+          "detalj": "1983–1990, Norge"
+        },
+        {
+          "overtittel": "Monna Tandberg",
+          "verdi": "69 ganger",
+          "detalj": "1966–1967, Norge"
+        },
+        {
+          "overtittel": "Agnes Sorma",
+          "verdi": "56 ganger",
+          "detalj": "1892–1913, Tyskland"
+        },
+        {
+          "overtittel": "Mária Mágori",
+          "verdi": "52 ganger",
+          "detalj": "1924–1943, Ungarn"
+        }
+      ]
+    }
+  }
+}
