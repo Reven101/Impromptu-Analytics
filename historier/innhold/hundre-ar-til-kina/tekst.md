@@ -1,6 +1,5 @@
 [[viz:hero]]
 
-> **Utkast.** Tallene under er ikke faktasjekket, og de hviler på ett arkiv med kjent skjevhet: IbsenStage er drevet fra Oslo, og dekningen av tidlig ikke-europeisk teater er dårligere enn av europeisk. Se [DATANOTAT.md](DATANOTAT.md).
 
 Ibsen ga ut tolv skuespill mellom 1877 og 1899. I Norge, Sverige, Danmark og Finland sto de på scenen innen året var omme. Målt over de 112 landene som har spilt ham, er medianen 114 år.
 

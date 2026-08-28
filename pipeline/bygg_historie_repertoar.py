@@ -47,6 +47,20 @@ RAADATA_DIR = Path(
 )
 SLUG = "verden-vil-se-folkefienden"
 SISTE_AAR = 2025  # 2026 er annonserte oppsetninger, ikke spilte
+FOLKEFIENDE = "An Enemy Of The People"
+
+# Landnavn på norsk for kartet. Håndskrevet; land utenfor lista beholder kildens navn.
+NORSK_LAND = {
+    "Turkey": "Tyrkia", "Poland": "Polen", "Spain": "Spania", "Germany": "Tyskland",
+    "Austria": "Østerrike", "United States of America": "USA", "Czech Republic": "Tsjekkia",
+    "Switzerland": "Sveits", "Romania": "Romania", "Argentina": "Argentina",
+    "England": "England", "Canada": "Canada", "France": "Frankrike", "Italy": "Italia",
+    "Norway": "Norge", "Sweden": "Sverige", "Denmark": "Danmark", "Finland": "Finland",
+    "Netherlands": "Nederland", "Hungary": "Ungarn", "Russia": "Russland",
+    "Japan": "Japan", "China": "Kina", "India": "India", "Brazil": "Brasil",
+    "Greece": "Hellas", "Belgium": "Belgia", "Ireland": "Irland", "Mexico": "Mexico",
+    "Australia": "Australia", "South Korea": "Sør-Korea", "Portugal": "Portugal",
+}
 
 NORSK = {
     "A Doll's House": "Et dukkehjem", "An Enemy Of The People": "En folkefiende",
@@ -107,6 +121,26 @@ def main() -> None:
         key=lambda t: t[2] - t[1])
     kort = [endring[-1], endring[-2], endring[0], endring[1]]
 
+    # Geografi: hvor stor del av hvert lands EGET Ibsen-repertoar «En folkefiende»
+    # utgjør. Absolutte tall ville bare rangert store teaternasjoner på nytt —
+    # USA og Tyskland spiller mest Ibsen og dermed mest av alt. Andelen sier noe
+    # annet: i Tyrkia er dette ene stykket over halvparten av all Ibsen.
+    #
+    # Terskelen på 15 oppsetninger holder land med to-tre registreringer ute; en
+    # median på «100 %» av én oppsetning er ikke en observasjon.
+    kode = {r["land"]: r["landkode"] for r in rader if r["land"] and r["landkode"]}
+    nylig = [r for r in rader if r["aar"] and 2015 <= r["aar"] <= SISTE_AAR]
+    land_tot = collections.Counter(kode[r["land"]] for r in nylig if r["land"] in kode)
+    land_fi = collections.Counter(kode[r["land"]] for r in nylig
+                                  if FOLKEFIENDE in r["verk"] and r["land"] in kode)
+    TERSKEL = 15
+    andel_land = {k: round(land_fi[k] / land_tot[k] * 100)
+                  for k in land_tot if land_tot[k] >= TERSKEL}
+    navn_land = {}
+    for land, k in kode.items():
+        if k in andel_land:
+            navn_land.setdefault(k, {"GB": "Storbritannia"}.get(k, NORSK_LAND.get(land, land)))
+
     def pst(verk: str) -> str:
         return f"{round(ett_c[verk] / ett_t * 100)} %"
 
@@ -165,6 +199,17 @@ def main() -> None:
                 "undertekst": "Andel av oppsetningene som er ett av de tre mest spilte verkene",
                 "enhet": "%",
                 "serier": [{"navn": "Topp tre", "punkter": konsentrasjon}],
+            },
+            "geografi": {
+                "type": "verdenskart",
+                "tittel": "Hvor mye av landets Ibsen er «En folkefiende»?",
+                "undertekst": "Andel av oppsetningene 2015–2025, land med minst 15 oppsetninger",
+                "enhet": "%",
+                "verdier": andel_land,
+                "navn": navn_land,
+                "antall": {k: land_tot[k] for k in andel_land},
+                "antall_navn": "Ibsen-oppsetninger",
+                "tom_etikett": "under 15 oppsetninger",
             },
             "endring": {
                 "type": "kortgalleri",
