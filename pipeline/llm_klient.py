@@ -1,4 +1,4 @@
-"""Tynn OpenRouter-klient for berikingssteg i pipelinen.
+"""Tynn LLM-klient for berikingssteg i pipelinen.
 
 Brukes av hentescripts som trenger en språkmodell til å strukturere eller normalisere
 rotete kildedata. Modellen kalles **kun ved bygging** — snapshotene som sjekkes inn er
@@ -6,10 +6,20 @@ statiske, og nettsiden gjør aldri et API-kall. Se CLAUDE.md.
 
 Kun standardbibliotek (urllib), i tråd med husregelen om minst mulig avhengigheter.
 
-API-nøkkelen leses i denne rekkefølgen:
+Standardveien er OpenRouter. API-nøkkelen leses i denne rekkefølgen:
   1. miljøvariabelen OPENROUTER_API_KEY
   2. fila OPENROUTER_ENV_FIL peker på
   3. ../openrouter/.env (der nøkkelen ligger på utviklingsmaskinen)
+
+Andre leverandører nås med prefiks i modellnavnet, f.eks.
+`nvidia:openai/gpt-oss-120b` for NVIDIAs eget endepunkt (build.nvidia.com).
+Se LEVERANDORER. Nøkkelen deres leses fra sin egen miljøvariabel eller fra
+`.env` på nivået over repoet — aldri fra en fil inne i repoet, som serveres
+statisk av Vercel.
+
+Merk at kostnadsrapporteringen bare virker for OpenRouter, som oppgir faktisk
+pris i `usage.cost`. Kjører du mot en leverandør som ikke gjør det, sier
+`forbruk_oppsummert()` «pris ikke oppgitt» framfor å vise null.
 """
 
 from __future__ import annotations
@@ -24,6 +34,32 @@ import urllib.request
 from pathlib import Path
 
 BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+# Andre leverandører enn OpenRouter. Modellnavn med prefiks «nvidia:» går direkte
+# til NVIDIAs eget endepunkt (build.nvidia.com), som er OpenAI-kompatibelt.
+# Kolon er valgt som skilletegn nettopp fordi OpenRouter selv har modeller som
+# heter «nvidia/...» — «nvidia:openai/gpt-oss-120b» kan ikke forveksles med dem.
+#
+# MERK: NVIDIA rapporterer ikke pris i svaret. forbruk_oppsummert() sier derfor
+# «pris ikke oppgitt» framfor «$0,0000», som ville lest som gratis.
+LEVERANDORER = {
+    "nvidia": {
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "nokkel": "NVIDIA_API_KEY",
+        "hjelp": "Hent nøkkel på https://build.nvidia.com/ (starter med «nvapi-»)",
+        "oppgir_pris": False,
+    },
+}
+
+
+def _del_modell(modell: str) -> tuple[str, str, dict | None]:
+    """«nvidia:openai/gpt-oss-120b» -> (url, modellnavn, leverandørkonfig)."""
+    if ":" in modell:
+        prefiks, resten = modell.split(":", 1)
+        if prefiks in LEVERANDORER:
+            k = LEVERANDORER[prefiks]
+            return k["url"], resten, k
+    return BASE_URL, modell, None
 
 # Standardmodell for bulk-beriking, valgt på målte tall (ICNPO-fasittest, n=300, og
 # faktisk pris per 1000 tekster fra usage.cost — se DATANOTAT for historien):
@@ -74,21 +110,49 @@ class TomForKreditt(Exception):
 
 # Forbruket akkumuleres på tvers av kall så scriptene kan skrive ut hva en kjøring kostet.
 # OpenRouter oppgir faktisk pris per kall i usage.cost — vi anslår ikke.
-forbruk = {"kall": 0, "kostnad": 0.0, "inn": 0, "ut": 0, "resonnering": 0}
+forbruk = {"kall": 0, "kostnad": 0.0, "inn": 0, "ut": 0, "resonnering": 0,
+           "pris_ukjent": False}
 _forbrukslas = threading.Lock()
 
 
 def nullstill_forbruk() -> None:
     with _forbrukslas:
         for k in forbruk:
-            forbruk[k] = 0 if k != "kostnad" else 0.0
+            forbruk[k] = {"kostnad": 0.0, "pris_ukjent": False}.get(k, 0)
 
 
 def forbruk_oppsummert() -> str:
+    pris = ("pris ikke oppgitt av leverandøren" if forbruk["pris_ukjent"]
+            else f"${forbruk['kostnad']:.4f}")
     return (
-        f"{forbruk['kall']} kall, ${forbruk['kostnad']:.4f} — "
+        f"{forbruk['kall']} kall, {pris} — "
         f"{forbruk['inn']:,} tokens inn, {forbruk['ut']:,} ut "
         f"(hvorav {forbruk['resonnering']:,} resonnering)"
+    )
+
+
+def hent_leverandornokkel(konfig: dict) -> str:
+    """Nøkkel for en annen leverandør enn OpenRouter, fra miljøvariabel eller .env.
+
+    Samme regel som ellers: nøkler bor utenfor repoet. .env-filer er sperret i
+    .gitignore, fordi alt i repoet serveres statisk av Vercel.
+    """
+    navn = konfig["nokkel"]
+    if os.environ.get(navn, "").strip():
+        return os.environ[navn].strip()
+    for sti in (Path(os.environ["OPENROUTER_ENV_FIL"]) if os.environ.get("OPENROUTER_ENV_FIL")
+                else None,
+                Path(__file__).resolve().parents[2] / ".env"):
+        if sti and sti.exists():
+            for linje in sti.read_text(encoding="utf-8").splitlines():
+                if linje.strip().startswith(navn):
+                    return linje.split("=", 1)[1].strip().strip('"').strip("'")
+    envsti = Path(__file__).resolve().parents[2] / ".env"
+    raise SystemExit(
+        f"Fant ingen {navn}.\n"
+        f"  {konfig['hjelp']}\n"
+        f"  Sett miljøvariabelen, eller legg linja {navn}=... i\n"
+        f"  {envsti} (utenfor repoet)."
     )
 
 
@@ -132,24 +196,28 @@ def kall_modell(
     gratis = modell.endswith(":free")
     if forsok is None:
         forsok = 8 if gratis else 5
+
+    url, modellnavn, leverandor = _del_modell(modell)
     payload = json.dumps(
         {
-            "model": modell,
+            "model": modellnavn,
             "messages": meldinger,
             "temperature": temperatur,
             "max_tokens": maks_tokens,
         }
     ).encode("utf-8")
 
+    nokkel = (hent_leverandornokkel(leverandor) if leverandor
+              else hent_api_nokkel())
     hodefelt = {
-        "Authorization": f"Bearer {hent_api_nokkel()}",
+        "Authorization": f"Bearer {nokkel}",
         "Content-Type": "application/json",
         "X-Title": "Impromptu Analytics",
     }
 
     siste_feil = ""
     for n in range(forsok):
-        req = urllib.request.Request(BASE_URL, data=payload, headers=hodefelt, method="POST")
+        req = urllib.request.Request(url, data=payload, headers=hodefelt, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=tidsavbrudd) as svar:
                 data = json.loads(svar.read())
@@ -205,6 +273,10 @@ def kall_modell(
     bruk = data.get("usage") or {}
     with _forbrukslas:
         forbruk["kall"] += 1
+        # Oppgir ikke leverandøren pris, skal det ikke leses som null. Uten dette
+        # ville en NVIDIA-kjøring rapportert «$0,0000» og sett gratis ut.
+        if leverandor and not leverandor.get("oppgir_pris", True):
+            forbruk["pris_ukjent"] = True
         forbruk["kostnad"] += float(bruk.get("cost") or 0)
         forbruk["inn"] += int(bruk.get("prompt_tokens") or 0)
         forbruk["ut"] += int(bruk.get("completion_tokens") or 0)
