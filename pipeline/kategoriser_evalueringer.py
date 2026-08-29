@@ -53,10 +53,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kontrakt  # noqa: F401  -- setter utf-8 på stdout (se CLAUDE.md)
 from llm_klient import (
+    LEVERANDORER,
     STANDARDMODELL,
     TomForKreditt,
     forbruk_oppsummert,
+    hent_api_nokkel,
     hent_json_liste,
+    hent_leverandornokkel,
     kall_modell,
 )
 
@@ -103,6 +106,25 @@ SYSTEMPROMPT = (
 )
 
 _las = threading.Lock()
+
+
+def sjekk_nokler(modeller: list[str]) -> None:
+    """Verifiserer at nøklene finnes FØR første kall.
+
+    Uten dette oppdages en manglende nøkkel av fire tråder samtidig, midt i en
+    kjøring som allerede har lest korpuset — fire like feilmeldinger og ingen
+    anelse om hvilken modell som manglet hva.
+    """
+    for modell in dict.fromkeys(modeller):
+        prefiks = modell.split(":", 1)[0] if ":" in modell else None
+        try:
+            if prefiks in LEVERANDORER:
+                hent_leverandornokkel(LEVERANDORER[prefiks])
+            else:
+                hent_api_nokkel()
+        except SystemExit as e:
+            raise SystemExit(f"Modellen «{modell}» mangler nøkkel.\n{e}") from e
+        print(f"  ✓ nøkkel funnet for {modell}")
 
 
 # ---------------------------------------------------------------- kilde
@@ -328,9 +350,13 @@ def main() -> int:
     ap.add_argument("--grense", type=int, help="kjør bare de N første (måling)")
     ap.add_argument("--sammenlign", type=int, metavar="N",
                     help="kjør to modeller på N tilfeldige tekster og mål enighet")
-    ap.add_argument("--modell", default=STANDARDMODELL)
+    ap.add_argument("--modell", default=STANDARDMODELL,
+                    help=f"standard: {STANDARDMODELL} (OpenRouter). Kjør alt på "
+                         "NVIDIA med nvidia:openai/gpt-oss-120b")
     ap.add_argument("--mot", default="nvidia:openai/gpt-oss-20b",
-                    help="modell nummer to i --sammenlign")
+                    help="modell nummer to i --sammenlign. To modeller fra samme "
+                         "leverandør er greit — poenget er at de er uavhengige, "
+                         "ikke at de er fra hver sin tjeneste")
     ap.add_argument("--resonnering", choices=("low", "medium", "high"),
                     help="reasoning_effort; «low» for resonnerende modeller "
                          "som gpt-oss — svaret er ett ord, ikke et resonnement")
@@ -347,10 +373,12 @@ def main() -> int:
     print(f"{len(dokumenter)} evalueringer, {len(tekster)} med tekst")
 
     if args.sammenlign:
+        sjekk_nokler([args.modell, args.mot])
         random.seed(42)  # samme utvalg hver gang, så to kjøringer kan sammenlignes
         utvalg = random.sample(tekster, min(args.sammenlign, len(tekster)))
         return sammenlign(utvalg, args.modell, args.mot, args.bunt, args.resonnering)
 
+    sjekk_nokler([args.modell])
     valgte = tekster if args.alle else tekster[:args.grense]
     print(f"Kategoriserer {len(valgte)} med {args.modell}"
           + (f", reasoning_effort={args.resonnering}" if args.resonnering else ""))

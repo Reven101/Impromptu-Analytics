@@ -104,7 +104,12 @@ jobs:
             fi
             if [ "$VALG" = "kudos-temaer" ]; then
               echo "########## KUDOS — temaklassifisering, måling først ##########"
+              # To modeller fra samme leverandør. Poenget med sammenligningen er
+              # at modellene er uavhengige av hverandre, ikke at de er fra hver
+              # sin tjeneste — og NVIDIA-nøkkelen alene rekker dermed.
               python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
+                --modell nvidia:openai/gpt-oss-120b \
+                --mot nvidia:openai/gpt-oss-20b \
                 --resonnering low
             fi
             if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
