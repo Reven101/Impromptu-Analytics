@@ -37,6 +37,21 @@ etter noe som står helt stille. `?` betyr hverken bekreftet eller avkreftet
 antall `✗`, eller 1 om kjøringen bare var uten nett; 0 kommer kun når alt
 faktisk er grønt.
 
+### Eller la GitHub gjøre det
+
+`.github/workflows/api-atlas.yml` kjører den samme testen den 1. hver
+måned, og ellers når du trykker **Run workflow** under Actions-fanen — det
+virker fra telefon og nettbrett, uten Codespace. Tabellen legges i
+kjøringssammendraget, så du slipper å grave i loggen. Feiler en kilde,
+feiler jobben, og GitHub sender deg e-post; ingen e-post betyr grønt.
+
+Vil du ha Frost testet i tillegg til de seksten andre, legg
+`FROST_CLIENT_ID` inn under Settings → Secrets and variables → Actions.
+Uten den hopper den kilden over seg selv, som lokalt.
+
+Merk at GitHub slår av planlagte workflows i repoer uten aktivitet på 60
+dager. Skjer det, får du en e-post om det, og en knapp for å slå den på.
+
 ## Kildene
 
 | Kilde | Hva | Nøkkel | Script |
