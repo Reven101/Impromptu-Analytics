@@ -382,13 +382,14 @@ def main() -> int:
                           ("vedtak", "Nivå 3  vedtak")):
         print(f"  {'✓' if funn.get(nivå) else '✗'} {etikett}")
 
+    # Hvert funn får sin egen if/else. Da jeg klemte vedtaks-meldingen inn
+    # mellom fulltekst-if-en og dens else, bandt else-en seg til FEIL if:
+    # en kjøring med vedtak=True skrev ut «ingen tekst passerte terskelen»
+    # rett under «✓ Nivå 2 fulltekst». En rapport som motsier seg selv er
+    # verre enn ingen rapport — det er hele produktet til dette skriptet.
     if funn.get("fulltekst"):
         print("\n  Akt 2 kan bygges som planlagt: verbatim navngiving av rapporttitler")
         print("  i stortingsdokumenter, rapportert som en NEDRE grense.")
-    if not funn.get("vedtak"):
-        print("\n  Uten nivå 3 mister trakten sitt siste trinn: vi kan telle")
-        print("  «navngitt» og «behandlet», men ikke «vedtatt». Trakten blir da")
-        print("  tre trinn i stedet for fire — ikke umulig, bare kortere.")
     else:
         print("\n  Ingen enkelttekst passerte terskelen på "
               f"{FULLTEKST_TERSKEL} tegn.")
@@ -403,6 +404,11 @@ def main() -> int:
         print("    c) skrive akt 2 om til «dette lar seg ikke måle med åpne")
         print("       data», som også er et funn")
         print("  Ikke velg for meg — lim utskriften inn, så tar vi det sammen.")
+
+    if not funn.get("vedtak"):
+        print("\n  Uten nivå 3 mister trakten sitt siste trinn: vi kan telle")
+        print("  «navngitt» og «behandlet», men ikke «vedtatt». Trakten blir da")
+        print("  tre trinn i stedet for fire — ikke umulig, bare kortere.")
     return 0
 
 
