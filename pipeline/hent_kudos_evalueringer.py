@@ -38,7 +38,6 @@ from __future__ import annotations
 
 import argparse
 import collections
-import http.client
 import json
 import os
 import re
@@ -49,6 +48,7 @@ import urllib.request
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+import nett
 import kontrakt  # noqa: F401  -- setter utf-8 på stdout/stderr (Windows-konsollen er cp1252)
 
 API = "https://kudos.dfo.no/api/v0/documents"
@@ -61,23 +61,12 @@ PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page 
                         # be greater than 50.» Gir ~143 sider på evalueringskorpuset.
 PAUSE = 0.5             # atlaset bruker 0,3; vi tar litt mer, fordi 143 sider på rad
                         # er en helt annen belastning enn atlasets håndfull kall
-FORSOK = 4              # med eksponentiell backoff: 2, 4, 8 sekunder
 
 # Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
 # viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
 # HTTPException og ValueError — ikke fra URLError. Den gikk derfor rett forbi
 # retry-løkka og drepte en kjøring på side 10 av 143.
 # OSError dekker ConnectionReset og TimeoutError, som begge er OSError-subklasser.
-# 4xx som likevel betyr «prøv igjen»: 408 Request Timeout, 425 Too Early,
-# 429 Too Many Requests. Alt annet under 500 er vår feil og skal boble opp.
-PROV_IGJEN_STATUS = {408, 425, 429}
-
-FORBIGAENDE = (
-    urllib.error.URLError,
-    http.client.HTTPException,
-    json.JSONDecodeError,
-    OSError,
-)
 
 # Rimelighetsgrenser. Atlaset målte ~7 000 evalueringer i juli 2026 og smoke-testen
 # der krever minst 1 000. Vi er strengere: faller totalen under 5 000 eller stiger
@@ -122,54 +111,22 @@ def les_per_side_tak(kropp: str) -> int | None:
 
 
 def hent_json(url: str, timeout: int = 30) -> dict:
-    """GET med retry.
+    """Kudos-laget over nett.hent_json.
 
-    Nettverksfeil, 5xx og de tre 4xx-ene som betyr «prøv igjen» (408/425/429)
-    prøves på nytt med eksponentiell backoff. Alle andre 4xx er vår feil og
-    bobler opp med kroppen, siden de ikke blir bedre av flere forsøk.
+    Retry-reglene ligger i nett.py, delt med de andre hentescriptene. Det ene
+    Kudos legger på: en 422 om per_page er ikke en feil, men en beskjed om
+    sidestørrelsen — den oversettes til PerSideTak, som hent_side forhandler på.
     """
-    siste = None
-    for forsok in range(FORSOK):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": BRUKERAGENT})
-            with urllib.request.urlopen(req, timeout=timeout) as svar:
-                return json.loads(svar.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            # 429 og 408 er 4xx, men de betyr «for fort» og «prøv igjen» — ikke
-            # «du spurte feil». Å behandle dem som fatale er nettopp feilen som
-            # dreper en paginering over 143 sider, for det er da en server
-            # begynner å strupe. Retry-After respekteres hvis den er satt.
-            if e.code in PROV_IGJEN_STATUS:
-                vent = e.headers.get("Retry-After") if e.headers else None
-                if vent and str(vent).strip().isdigit():
-                    print(f"  ⚠ HTTP {e.code}, Retry-After {vent} s — venter",
-                          flush=True)
-                    time.sleep(min(int(vent), 120))
-            # 422 røper gyldige parametre i kroppen — vis den, ikke bare koden.
-            elif e.code < 500:
-                kropp = e.read().decode("utf-8", errors="replace")[:800]
-                tak = les_per_side_tak(kropp)
-                if tak is not None:
-                    raise PerSideTak(tak) from e
-                raise SystemExit(
-                    f"FEIL: Kudos svarte HTTP {e.code} på\n  {url}\n{kropp}\n"
-                    "Har filternavnene endret seg? API-ets 422 lister de gyldige."
-                ) from e
-            siste = e
-        except FORBIGAENDE as e:
-            siste = e
-        if forsok < FORSOK - 1:
-            # Retry som ikke sier fra, skjuler at kilden er i ferd med å bli
-            # dårligere. Én linje per forsøk er nok til å se raten i loggen.
-            # «except ... as e» avbinder e når blokken går ut, så her er det
-            # siste som bærer feilen — ikke e.
-            print(f"  ⚠ {type(siste).__name__} på forsøk {forsok + 1}/{FORSOK} "
-                  f"({siste}) — prøver igjen om {2 ** (forsok + 1)} s", flush=True)
-            time.sleep(2 ** (forsok + 1))
-    raise SystemExit(
-        f"FEIL: ga opp {url} etter {FORSOK} forsøk.\n"
-        f"  Siste feil: {type(siste).__name__}: {siste}"
-    )
+    try:
+        return nett.hent_json(url, BRUKERAGENT, timeout)
+    except nett.HttpFeil as e:
+        tak = les_per_side_tak(e.kropp)
+        if tak is not None:
+            raise PerSideTak(tak) from e
+        raise SystemExit(
+            f"FEIL: Kudos svarte HTTP {e.kode} på\n  {url}\n{e.kropp}\n"
+            "Har filternavnene endret seg? API-ets 422 lister de gyldige."
+        ) from e
 
 
 def hent_side(side: int, **filtre) -> dict:

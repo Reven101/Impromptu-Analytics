@@ -28,6 +28,7 @@ on:
           - kudos
           - kudos-full
           - stortinget
+          - stortinget-fulltekst
           - statsregnskapet
           - alle
 
@@ -81,6 +82,7 @@ jobs:
           PYTHONUNBUFFERED: "1"
           # Rådata utenfor repo-treet, så et uhell ikke kan commite dem.
           KUDOS_DIR: ${{ runner.temp }}/raadata/kudos
+          STORTINGET_DIR: ${{ runner.temp }}/raadata/stortinget
           STATSREGNSKAP_DIR: ${{ runner.temp }}/raadata/statsregnskapet
           VALG: ${{ inputs.kilde }}
         run: |
@@ -99,6 +101,10 @@ jobs:
               echo
               echo "########## STORTINGET — hvilket koblingsnivå finnes? ##########"
               python3 pipeline/sonder_stortinget.py
+            fi
+            if [ "$VALG" = "stortinget-fulltekst" ]; then
+              echo "########## STORTINGET — fulltekst, 10 sesjoner ##########"
+              python3 pipeline/hent_stortinget_publikasjoner.py
             fi
             if [ "$VALG" = "statsregnskapet" ] || [ "$VALG" = "alle" ]; then
               echo
