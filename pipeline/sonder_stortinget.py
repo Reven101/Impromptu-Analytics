@@ -159,13 +159,41 @@ def main() -> int:
     ider = [s.get("id") for s in sesjonsliste if isinstance(s, dict) and s.get("id")]
     print(f"    {len(ider)} sesjoner, nyeste: {ider[:3]}")
 
-    sesjon = args.sesjon or ider[0]
-    _, saker = vis(f"Saker i sesjon {sesjon}", "saker", sesjonid=sesjon, format="json")
-    saksliste = forste_liste(saker)
+    # Registeret lister også sesjoner som ikke har begynt ennå — i august 2026
+    # står 2028-2029 der, tom. Å ta den nyeste id-en blindt gir null saker og
+    # ser ut som at API-et er borte. Svaret oppgir «innevaerende_sesjon» selv,
+    # så vi bruker den, og faller ellers bakover gjennom lista til vi finner en
+    # sesjon som faktisk har saker.
+    inneværende = (sesjoner or {}).get("innevaerende_sesjon") if isinstance(sesjoner, dict) else None
+    if inneværende:
+        print(f"    API-et oppgir inneværende sesjon: {inneværende}")
+
+    if args.sesjon:
+        kandidater = [args.sesjon]
+    else:
+        kandidater = ([inneværende] if inneværende else []) + [
+            i for i in ider if i != inneværende
+        ]
+
+    saksliste: list = []
+    sesjon = None
+    for kandidat in kandidater[:8]:
+        _, saker = vis(f"Saker i sesjon {kandidat}", "saker",
+                       sesjonid=kandidat, format="json")
+        saksliste = forste_liste(saker)
+        if saksliste:
+            sesjon = kandidat
+            break
+        print(f"    · {kandidat} har ingen saker — prøver forrige sesjon")
+
     funn["saksmetadata"] = bool(saksliste)
     if not saksliste:
-        print("    ✗ ingen saker — nivå 1 er ikke tilgjengelig, og da faller alt")
+        print(f"    ✗ ingen av de prøvde sesjonene har saker "
+              f"({', '.join(str(k) for k in kandidater[:8])}).")
+        print("      Sjekk sesjons-id-formatet mot dokumentasjonen, eller kjør")
+        print("      med --sesjon <id> for en du vet er avsluttet.")
         return 1
+    print(f"    → sonderer videre på sesjon {sesjon}")
 
     felt = sorted({k for s in saksliste[:50] if isinstance(s, dict) for k in s})
     print(f"    {len(saksliste)} saker. Felt på radnivå: {', '.join(felt)}")
