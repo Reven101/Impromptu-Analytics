@@ -241,27 +241,62 @@ def kartlegg(dokumenter: list[dict]) -> None:
             print("  (ingen felt med disse ordene i navnet)")
             return
         for k in sorted(traff):
-            # Ligger feltet som en liste av objekter (aktørlista er den sannsynlige
-            # formen), er «<objekt: name, role>» ubrukelig som svar. Vi pakker derfor
-            # ut ett nivå og teller hver undernøkkel for seg — det er rolleverdiene
-            # og organisasjonsnumrene vi faktisk trenger å se.
+            # Ligger feltet som en liste av objekter (aktørlista gjør det), er
+            # «<objekt: name, org_number>» ubrukelig som svar. Vi pakker derfor ut
+            # ett nivå og teller hver undernøkkel for seg.
+            #
+            # Og vi teller to forskjellige ting, fordi de svarer på hvert sitt
+            # spørsmål: hvor mange *dokumenter* som har feltet (dekning — det er
+            # den som avgjør om en kobling bærer), og hvor mange *forekomster*
+            # hver verdi har (fordeling). Et dokument kan ha flere aktører, så de
+            # to tallene er ikke like, og det er nettopp forskjellen som er
+            # interessant.
             verdier: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
-            for d in dokumenter:
+            dekning: dict[str, set[int]] = collections.defaultdict(set)
+            for i, d in enumerate(dokumenter):
                 for v in _flat_verdier(d.get(k)):
                     if isinstance(v, dict):
                         for undernokkel, underverdi in v.items():
                             if underverdi not in (None, "", [], {}):
-                                verdier[f"{k}.{undernokkel}"][str(underverdi)[:60]] += 1
+                                sti = f"{k}.{undernokkel}"
+                                verdier[sti][str(underverdi)[:60]] += 1
+                                dekning[sti].add(i)
                     elif v not in (None, ""):
                         verdier[k][str(v)[:60]] += 1
+                        dekning[k].add(i)
             for felt, teller in sorted(verdier.items()):
-                print(f"  {felt} — {len(teller)} unike verdier. De 12 vanligste:")
+                har = len(dekning[felt])
+                print(f"  {felt} — {har}/{n} dokumenter ({100 * har / n:.1f} %), "
+                      f"{len(teller)} unike verdier. De 12 vanligste:")
                 for verdi, antall in teller.most_common(12):
                     print(f"      {antall:>6}  {verdi}")
 
     gruppe("TEMA — finnes det et emnefelt? (avgjør om LLM-klassifisering trengs)", TEMA_HINT)
     gruppe("AKTØR — hvor ligger oppdragsgiveren, og hvilken rolle betyr «bestilte denne»?", AKTOR_HINT)
     gruppe("ÅR — finnes publiseringsår på radnivå?", AAR_HINT)
+
+    # Koblingen mot statsregnskapet går på organisasjonsnummer. Om den bærer,
+    # er ikke noe man skal måtte slutte seg til fra en liste over unike verdier —
+    # så vi regner det ut og sier det rett fram.
+    print("\n" + "=" * 72)
+    print("KOBLINGSGRUNNLAGET — organisasjonsnummer per dokument")
+    for felt in ("owners", "authoring_actors"):
+        # Finnes feltet i det hele tatt? Spørres bare dokument 0, forsvinner hele
+        # avsnittet den dagen det første dokumentet tilfeldigvis mangler det.
+        if not any(d.get(felt) for d in dokumenter):
+            print(f"  {felt}: finnes ikke i dette uttrekket")
+            continue
+        med = [d for d in dokumenter
+               if any(isinstance(a, dict) and a.get("org_number")
+                      for a in _flat_verdier(d.get(felt)))]
+        orgnr = {a.get("org_number") for d in dokumenter
+                 for a in _flat_verdier(d.get(felt))
+                 if isinstance(a, dict) and a.get("org_number")}
+        print(f"  {felt}: {len(med)}/{n} dokumenter ({100 * len(med) / n:.1f} %) "
+              f"har minst ett org.nr — {len(orgnr)} unike virksomheter")
+        typer = {type(o).__name__ for o in orgnr}
+        print(f"    datatype i JSON: {', '.join(sorted(typer))} "
+              f"(statsregnskapets Virksomhet_id er tekst — må castes ved kobling)")
 
     print("\n" + "=" * 72)
     print("Fire spørsmål utskriften over skal svare på:")
