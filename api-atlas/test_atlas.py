@@ -87,6 +87,8 @@ def main() -> int:
     print(f"Tester {len(filer)} datakilder …\n")
     feil = 0
     uten_nett = 0
+    hoppet = 0
+    svarer = 0
     bredde = max(len(f.stem) for f in filer) + 2
 
     for fil in filer:
@@ -95,10 +97,12 @@ def main() -> int:
         try:
             modul = last_modul(fil)
             status, melding = "✓", modul.smoke()
+            svarer += 1
         except Exception as e:
             aarsak = nettverksaarsak(e)
             if type(e).__name__ == "ManglerNokkel":
                 status, melding = "–", f"hoppet over: {e}"
+                hoppet += 1
             elif aarsak is not None:
                 status, melding = "?", f"nådde ikke kilden: {aarsak}"
                 uten_nett += 1
@@ -119,8 +123,14 @@ def main() -> int:
               "forbindelsen herfra, ikke kilden: sjekk nett, brannmur eller "
               "proxy, og kjør på nytt. Disse er hverken bekreftet eller "
               "avkreftet.")
+    # Sluttlinjen skal ikke påstå mer enn kjøringen viste. En hoppet over
+    # kilde er hverken bekreftet eller avkreftet, og «alle» dekker den ikke.
     if not feil and not uten_nett:
-        print("Alle kilder svarer. Atlaset er ferskt.")
+        if hoppet:
+            print(f"{svarer} av {len(filer)} kilder svarer, {hoppet} hoppet over "
+                  "uten API-nøkkel. Atlaset er ferskt så langt det er testet.")
+        else:
+            print(f"Alle {len(filer)} kilder svarer. Atlaset er ferskt.")
     elif not feil:
         print("Ingen kilder er bekreftet endret, men kjøringen er ikke konklusiv.")
     return feil or (1 if uten_nett else 0)
