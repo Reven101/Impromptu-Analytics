@@ -64,11 +64,14 @@ PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page 
 # på sekunder, og så timet side 5 ut fire ganger på 30 sekunder hver. Det er ikke
 # 429 — tjeneren tar imot forbindelsen og sender ingenting. Vi går derfor
 # betydelig saktere fra start, og bremser ytterligere når det først skjer.
-# Kudos bruker rundt 90 sekunder på en forespørsel under vedvarende bruk. 143
-# sider sekvensielt blir da fire-fem timer, og ventetiden er hele kostnaden.
-# Vi henter derfor flere sider samtidig. Den adaptive bremsen under gjelder
-# fortsatt: struper kilden, senker vi farten selv.
-TRADER = 3
+# Sekvensielt, og det er målt. Parallell henting ble prøvd — fire og tre
+# samtidige — og gjorde kjøringen TREGERE: fem skiver på femti minutter, mot
+# halvannet minutt per år sekvensielt. Kudos straffer samtidige forespørsler
+# hardere enn den belønner dem, så her er én tråd raskeste vei.
+#
+# --trader finnes fortsatt, for det kan endre seg. Men standarden skal være
+# det som er målt, ikke det som burde virket.
+TRADER = 1
 PAUSE = 2.0             # mellom hver bunt, ikke mellom hver side
 PAUSE_TAK = 15.0        # aldri saktere enn dette
 PAUSE_FAKTOR = 1.6      # ganges på ved hver feil
