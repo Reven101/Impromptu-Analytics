@@ -18,6 +18,8 @@ Endepunkt:
       tekst i svarkroppen. Arkene heter «Tilskuddsordninger» og
       «Enkeltstående tilskudd». NB: filen har ødelagte dimensjoner —
       openpyxl i read_only-modus trenger ws.reset_dimensions().
+      NB2: nedlastingen svarer med Content-Type «application/json», men
+      kroppen er en xlsx. Stol på PK-signaturen, ikke på headeren.
 
 Full pipeline med parsing, normalisering og statistikk finnes i
 tilskuddskompasset/hent_bulk_tildelinger.py (krever requests + openpyxl).
@@ -70,9 +72,31 @@ def sjekk_aar(aar: int) -> tuple[str, int]:
     raise AssertionError("uoppnåelig")
 
 
+# Nyeste år først. Inneværende budsjettår finnes ikke før det er publisert,
+# så testen faller bakover framfor å låse seg til ett år som blir stående og
+# svare grønt lenge etter at de nye har sluttet å virke.
+AAR_A_PROVE = (2026, 2025, 2024)
+
+
 def smoke() -> str:
-    ctype, _ = sjekk_aar(2024)
-    return f"budsjettår 2024 leverer gyldig Excel-fil ({ctype})"
+    feil = []
+    siste_unntak: Exception | None = None
+    for aar in AAR_A_PROVE:
+        try:
+            ctype, _ = sjekk_aar(aar)
+        except Exception as e:
+            feil.append(f"{aar}: {e}")
+            siste_unntak = e
+            continue
+        # Serveren merker xlsx-fila som application/json. Det er dens feil,
+        # ikke vår, og PK-signaturen er det som faktisk er verifisert — så
+        # si det, framfor å vise fram en content-type som ser gal ut.
+        riktig_merket = "spreadsheet" in ctype or "excel" in ctype
+        merknad = "" if riktig_merket else f"; serveren merker den feil som {ctype}"
+        return f"budsjettår {aar}: gyldig xlsx, PK-signatur bekreftet{merknad}"
+    raise ValueError(
+        "ingen av budsjettårene ga en gyldig fil: " + "; ".join(feil)
+    ) from siste_unntak
 
 
 def main() -> int:

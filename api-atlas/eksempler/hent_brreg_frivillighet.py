@@ -18,6 +18,15 @@ Endepunkter:
   GET /frivillighetsregisteret/api/frivillige-organisasjoner/<orgnr>
       enkeltoppslag
 
+Registeret gir deg IKKE organisasjonsnavnet. En post har organisasjons-
+nummer, status, kontonummer, ICNPO-kategorier og datoer — ingenting mer.
+Navnet slår du opp på orgnr i Enhetsregisteret (hent_brreg_enheter.py);
+det er den koblingen som gjør de to scriptene til et par.
+
+Kategoriens «navn» er også null i listesvaret. Selve teksten ligger i
+«kategori» som enum-streng («ICNPOKategori.kulturOgRekreasjon»), eller
+bak /icnpo-kategorier?spraak=NOB om du vil ha den offisielle ordlyden.
+
 Gull å grave i:
   - Andel tilskuddsmottakere som står i Frivillighetsregisteret
   - Kulturfrivillighetens geografi: ICNPO «kunst og kultur» per kommune
@@ -56,20 +65,38 @@ def hent_side(antall: int = 5, search_after: str | None = None) -> list[dict]:
     return data if isinstance(data, list) else []
 
 
+def icnpo(org: dict) -> str:
+    """Første ICNPO-kategori som lesbar tekst, uten et ekstra oppslag."""
+    kategorier = org.get("icnpoKategorier") or []
+    if not kategorier:
+        return "uten kategori"
+    k = kategorier[0]
+    # «navn» er null her; enum-strengen bærer den samme opplysningen.
+    tekst = (k.get("kategori") or "").rsplit(".", 1)[-1] or "?"
+    return f"ICNPO {k.get('icnpoNummer', '?')} ({tekst})"
+
+
 def smoke() -> str:
     orgs = hent_side(3)
     if not orgs:
         raise ValueError("fikk ingen organisasjoner — sjekk endepunktet i Swagger-dok")
     forste = orgs[0]
-    orgnr = forste.get("organisasjonsnummer", "?")
-    navn = (forste.get("navn") or forste.get("organisasjonsnavn") or "?")
-    return f"{len(orgs)} organisasjoner hentet; første: {navn} ({orgnr})"
+    orgnr = forste.get("organisasjonsnummer")
+    if not orgnr:
+        # Orgnr er hele koblingsnøkkelen mot de andre registrene. Faller den
+        # bort, er svarformatet endret, og da skal testen si fra framfor å
+        # skrive «?» og se grønn ut.
+        raise ValueError(
+            f"første post mangler organisasjonsnummer — nøklene er {sorted(forste)}"
+        )
+    return f"{len(orgs)} organisasjoner; første: {orgnr}, {icnpo(forste)}"
 
 
 def main() -> int:
     print(f"{KILDE} — {DOK}")
+    print("Navn står ikke i dette registeret — slå opp orgnr i Enhetsregisteret.")
     for o in hent_side(5):
-        print(f"  {o.get('organisasjonsnummer', '?')}  {o.get('navn') or o.get('organisasjonsnavn', '?')}")
+        print(f"  {o.get('organisasjonsnummer', '?')}  {icnpo(o)}")
     print(f"✓ {smoke()}")
     return 0
 
