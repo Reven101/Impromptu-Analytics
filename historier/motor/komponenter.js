@@ -564,6 +564,121 @@ function lagKortgalleri(spec) {
 }
 
 /* ============================================================
+   6. RANGERING — liggende sorterte søyler for kategorisammenligning.
+      Tidslinjen er numerisk x/y og kortgalleriet er tekst; en rangert
+      sammenligning av kategorier (oppdragsgivere, temaer, trinnene i en
+      trakt) hadde ingen form før denne.
+
+      Én farge for alle søyler. Fargen følger entiteten, aldri rangen —
+      en gradient nedover lista ville kodet rekkefølgen to ganger, og
+      lengden gjør allerede den jobben. `fremhev` maler navngitte rader
+      i serie 2: det er identitet («dette er saken vår»), ikke rang.
+
+      Fargevalidering av paret serie-1/serie-2 mot kortflaten (#FBF8F0):
+      lyshet, kroma og kontrast passerer; CVD-separasjonen er ΔE 7,7 for
+      protanopi — i gulvbåndet 6–8, som er lovlig BARE med en annen
+      kanal ved siden av fargen. Den har vi: hver søyle bærer sitt eget
+      kategorinavn til venstre og sin egen verdi til høyre, så identitet
+      hviler aldri på farge alene. Fjernes direktelabelene, faller den
+      begrunnelsen bort.
+   ============================================================ */
+function kutt(tekst, n) {
+  const t = String(tekst ?? "");
+  return t.length > n ? t.slice(0, n - 1) + "…" : t;
+}
+
+function lagRangering(spec, meta) {
+  const fig = figurRamme({ ...spec, undertekst: spec.undertekst || spec.enhet || meta.enhet });
+
+  /* Sorteres synkende som standard. En trakt (publisert → navngitt → vedtatt)
+     har semantisk rekkefølge og setter "sorter": false — der er rekkefølgen
+     poenget, ikke størrelsen. */
+  const rader = [...(spec.rader || [])];
+  if (spec.sorter !== false) rader.sort((a, b) => (b.verdi ?? 0) - (a.verdi ?? 0));
+
+  const fremhev = new Set(spec.fremhev || []);
+  const enhet = spec.enhet || meta.enhet || "";
+
+  const B = 760, RAD = 30, SOYLE = 18;   /* 30 − 18 = 12px luft mellom søylene */
+  const M = { topp: 10, hoyre: 84, bunn: 34, venstre: 232 };
+  const H = M.topp + rader.length * RAD + M.bunn;
+  const pb = B - M.venstre - M.hoyre;
+
+  const maks = Math.max(1, ...rader.map((r) => r.verdi ?? 0));
+  /* fineTicks legger øverste gridlinje PÅ eller OVER maksverdien. Skalerer vi mot
+     datamaksimum, havner den siste tikkmerkelappen utenfor plottet og blir klippet.
+     Skalaen går derfor til øverste tikk, ikke til største søyle. */
+  const ticks = fineTicks(maks);
+  const skalaMaks = Math.max(maks, ...ticks);
+  const sx = (v) => M.venstre + (Math.max(0, v) / skalaMaks) * pb;
+  const sy = (i) => M.topp + i * RAD + (RAD - SOYLE) / 2;
+
+  const svg = svgEl("svg", { viewBox: `0 0 ${B} ${H}`, class: "viz-svg", role: "img" });
+  svg.appendChild(svgEl("title")).textContent = spec.tittel || "Rangering";
+
+  /* loddrette gridlinjer — recessive, og de eneste akse-hjelpemidlene figuren har */
+  for (const t of ticks) {
+    svg.appendChild(svgEl("line", {
+      x1: sx(t), x2: sx(t), y1: M.topp, y2: H - M.bunn, class: "viz-grid",
+    }));
+    const lbl = svgEl("text", { x: sx(t), y: H - M.bunn + 20, class: "viz-akse", "text-anchor": "middle" });
+    lbl.textContent = kompakt(t);
+    svg.appendChild(lbl);
+  }
+
+  const beholder = el("div", "viz-plott viz-rangering");
+  beholder.appendChild(svg);
+  const tooltip = lagTooltip(beholder);
+
+  rader.forEach((rad, i) => {
+    const verdi = rad.verdi ?? 0;
+    const farge = fremhev.has(rad.navn) ? SERIE_FARGER[1] : SERIE_FARGER[0];
+    const y = sy(i), x0 = M.venstre, x1 = sx(verdi);
+    const r = Math.min(4, SOYLE / 2, Math.max(0, x1 - x0));
+
+    /* 4px avrundet data-ende, kvadratisk mot grunnlinjen — samme grep som søylene
+       i tidslinjen, speilvendt fordi søyla ligger. */
+    const bane = svgEl("path", {
+      d: `M ${x0} ${y} H ${x1 - r} Q ${x1} ${y} ${x1} ${y + r} V ${y + SOYLE - r} `
+       + `Q ${x1} ${y + SOYLE} ${x1 - r} ${y + SOYLE} H ${x0} Z`,
+      fill: farge, class: "viz-soyle", tabindex: "0",
+    });
+    const visT = () => tooltip.vis(
+      (x1 / B) * beholder.clientWidth, ((y + SOYLE) / H) * beholder.clientHeight,
+      [{ verdi: formatVerdi(verdi, enhet), etikett: rad.navn, farge },
+       ...(rad.detalj ? [{ verdi: "", etikett: rad.detalj }] : [])]);
+    bane.addEventListener("pointerenter", visT);
+    bane.addEventListener("focus", visT);
+    bane.addEventListener("pointerleave", tooltip.skjul);
+    bane.addEventListener("blur", tooltip.skjul);
+    svg.appendChild(bane);
+
+    /* Kategorinavnet står som etikett til venstre, ikke i en legend: én serie,
+       og et navn per søyle er direktelabeling, ikke støy. SVG bryter ikke tekst,
+       så lange virksomhetsnavn kuttes — hele navnet ligger i tooltip og tabell. */
+    const navn = svgEl("text", {
+      x: M.venstre - 10, y: y + SOYLE / 2 + 4, class: "viz-akse", "text-anchor": "end",
+    });
+    navn.textContent = kutt(rad.navn, 30);
+    navn.appendChild(svgEl("title")).textContent = rad.navn || "";
+    svg.appendChild(navn);
+
+    const tall = svgEl("text", {
+      x: x1 + 8, y: y + SOYLE / 2 + 4, class: "viz-direkte", "text-anchor": "start",
+    });
+    tall.textContent = kompakt(verdi);
+    svg.appendChild(tall);
+  });
+
+  fig.appendChild(beholder);
+  fig.appendChild(lagTabell(
+    [spec.x_navn || "Kategori", enhet || "Verdi", ...(rader.some((r) => r.detalj) ? ["Merknad"] : [])],
+    rader.map((r) => [r.navn, r.verdi ?? "–", ...(rader.some((x) => x.detalj) ? [r.detalj || "–"] : [])])
+  ));
+  return fig;
+}
+
+/* ============================================================
    REGISTER + fabrikk
    ============================================================ */
 const REGISTER = {
@@ -572,6 +687,7 @@ const REGISTER = {
   kart: lagKart,
   verdenskart: lagVerdenskart,
   kortgalleri: lagKortgalleri,
+  rangering: lagRangering,
 };
 
 export function lagVisning(spec, meta) {

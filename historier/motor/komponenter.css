@@ -19,6 +19,12 @@
 }
 
 .viz-plott { position: relative; }
+
+/* Rangeringen bruker 232px av viewBoxen til kategorinavn. Skaleres 760px ned til
+   en mobilbredde, blir de navnene uleselige — figuren får derfor rulle vannrett i
+   sin egen boks. Selve siden skal aldri rulle sidelengs. */
+.viz-rangering { overflow-x: auto; }
+.viz-rangering .viz-svg { min-width: 560px; }
 .viz-svg { width: 100%; height: auto; display: block; }
 
 /* -- SVG-detaljer -------------------------------------------- */
