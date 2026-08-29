@@ -452,19 +452,27 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     samlet: dict[str, dict] = {}
     per_aar: dict[str, int] = {}
 
-    for aar in range(FORSTE_AAR, date.today().year + 1):
+    def hent_aar(aar: int) -> bool:
+        """Én årsskive inn i `samlet`. False hvis kilden ikke svarte."""
         filtre = {"published_year_from": aar, "published_year_to": aar}
-        merkelapp = f"aar_{aar}"
         try:
-            dokumenter, meta = _sveip(filtre, merkelapp, bruk_sjekkpunkt)
+            dokumenter, _ = _sveip(filtre, f"aar_{aar}", bruk_sjekkpunkt)
         except nett.HttpFeil as e:
             raise SystemExit(
                 f"FEIL: årsfilteret ble avvist for {aar}: HTTP {e.kode}\n"
                 f"{e.kropp[:400]}\n"
                 "Har filternavnene endret seg? API-ets 422 lister de gyldige."
             ) from e
+        except nett.NettFeil as e:
+            # Side 1 i en skive hentes utenfor løkkas retry, så en treg spørring
+            # her ville ellers drept hele kjøringen. Ett år som ikke svarer er
+            # ikke en grunn til å kaste de seksten andre — vi noterer det og
+            # prøver igjen når kilden har fått puste.
+            print(f"  ⚠ {aar} svarte ikke ({e}) — tas i ny runde til slutt",
+                  flush=True)
+            return False
         if not dokumenter:
-            continue
+            return True
         før = len(samlet)
         for d in dokumenter:
             if d.get("uuid"):
@@ -472,6 +480,25 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
         per_aar[str(aar)] = len(dokumenter)
         print(f"  {aar}: {len(dokumenter)} dokumenter, {len(samlet) - før} nye "
               f"— {len(samlet)}/{total} totalt", flush=True)
+        return True
+
+    feilede_aar = [a for a in range(FORSTE_AAR, date.today().year + 1)
+                   if not hent_aar(a)]
+
+    if feilede_aar:
+        print(f"\n  Ny runde på {len(feilede_aar)} år som ikke svarte: "
+              f"{feilede_aar}", flush=True)
+        fortsatt = []
+        for aar in feilede_aar:
+            time.sleep(PAUSE_TAK)
+            if not hent_aar(aar):
+                fortsatt.append(aar)
+        if fortsatt:
+            raise SystemExit(
+                f"FEIL: årene {fortsatt} lot seg ikke hente.\n"
+                "  Alt annet er lagret, så en ny kjøring henter bare det som\n"
+                "  mangler — de ferdige årene koster ingen nye kall."
+            )
 
     # Dokumenter uten publiseringsår fanges ikke av noen årsskive. Er summen
     # kortere enn fasiten, henter vi resten ufiltrert og slår sammen.
