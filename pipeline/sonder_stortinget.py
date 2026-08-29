@@ -28,6 +28,11 @@ degraderer til en svakere match enn den vi har lovet i teksten. Det er verre enn
 
 Alle endepunkter prøves i JSON (`format=json`); svarer de bare XML, rapporteres det,
 for da må koblingsscriptet parse XML i stedet.
+
+RESULTAT (kjørt 2026-08-29): alle tre nivåene er bekreftet. Fulltekstene ligger
+i `publikasjon`, som svarer XML uansett format-parameter. `publikasjoner` krever
+`publikasjontype`, og de gyldige verdiene er referat, innstilling, dok8, dok12,
+lovvedtak og innberetning — se api-atlas/eksempler/hent_stortinget.py.
 """
 
 from __future__ import annotations
