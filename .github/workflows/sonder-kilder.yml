@@ -56,7 +56,15 @@ jobs:
       # Sjekkpunktene per side overlever mellom kjøringer her. Uten dette
       # begynner en avbrutt kjøring på side 1 igjen, siden kjøreren er fersk.
       - name: Hent sjekkpunkter fra forrige kjøring
-        uses: actions/cache@v4
+        # v4 kjørte på Node 20 og ble tvunget over på Node 24 med et varsel;
+        # v5 deklarerer node24 selv, slik atlas-workflowen allerede gjør for
+        # checkout og setup-python.
+        #
+        # continue-on-error fordi cachen er en optimalisering, ikke et krav:
+        # den sparer oss for å hente 143 sider på nytt, men en henting som
+        # virker skal aldri kunne velte av at mellomlagringen ikke gjør det.
+        uses: actions/cache@v5
+        continue-on-error: true
         with:
           path: ${{ runner.temp }}/raadata
           key: raadata-${{ inputs.kilde }}-${{ github.run_id }}

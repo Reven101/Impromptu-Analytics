@@ -33,6 +33,7 @@ for da må koblingsscriptet parse XML i stedet.
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import re
 import time
@@ -164,7 +165,15 @@ def main() -> int:
     # ser ut som at API-et er borte. Svaret oppgir «innevaerende_sesjon» selv,
     # så vi bruker den, og faller ellers bakover gjennom lista til vi finner en
     # sesjon som faktisk har saker.
-    inneværende = (sesjoner or {}).get("innevaerende_sesjon") if isinstance(sesjoner, dict) else None
+    # «innevaerende_sesjon» er et objekt, ikke en streng — id-en ligger inni.
+    # Sendt rått som sesjonid ga en URL-enkodet dict og HTTP 400.
+    rå_inneværende = (sesjoner or {}).get("innevaerende_sesjon") if isinstance(sesjoner, dict) else None
+    if isinstance(rå_inneværende, dict):
+        inneværende = rå_inneværende.get("id")
+    elif isinstance(rå_inneværende, str):
+        inneværende = rå_inneværende
+    else:
+        inneværende = None
     if inneværende:
         print(f"    API-et oppgir inneværende sesjon: {inneværende}")
 
@@ -201,44 +210,105 @@ def main() -> int:
                    "dokumentgruppe", "behandlet_sesjon_id"):
         print(f"      {'✓' if ventet in felt else '·'} {ventet}")
 
-    sak = next((s for s in saksliste if isinstance(s, dict) and s.get("id")), None)
-    sakid = sak.get("id")
-    print(f"    Sonderer videre på sak {sakid}: {str(sak.get('tittel'))[:70]}")
-    vis("Saksdetaljer", "sak", sakid=sakid, format="json")
+    statuser = collections.Counter(str(s.get("status")) for s in saksliste
+                                   if isinstance(s, dict))
+    print(f"    status-verdier: {dict(statuser)}")
+
+    # Nivå 2 og 3 måler feil ting på en sak som ikke er ferdig: en sak under
+    # behandling har hverken vedtak eller innstilling ennå. Vi leter derfor
+    # etter en ferdigbehandlet sak med publikasjonsreferanser, og bruker den.
+    sak_detalj = None
+    sakid = None
+    for kandidat in saksliste[:40]:
+        if not (isinstance(kandidat, dict) and kandidat.get("id")):
+            continue
+        _, detalj = vis(f"Saksdetaljer for {kandidat['id']}", "sak",
+                        sakid=kandidat["id"], format="json")
+        if not isinstance(detalj, dict):
+            continue
+        ferdig = detalj.get("ferdigbehandlet")
+        refs = detalj.get("publikasjon_referanse_liste") or []
+        print(f"    ferdigbehandlet={ferdig}, {len(refs)} publikasjonsreferanser")
+        if ferdig in (True, "true") and refs:
+            sak_detalj, sakid = detalj, kandidat["id"]
+            print(f"    → bruker sak {sakid}: {str(kandidat.get('tittel'))[:60]}")
+            break
+    if sak_detalj is None:
+        # Ingen ferdig sak blant de første — ta den første vi fikk detaljer på,
+        # og si fra at nivå 3 da måler en sak som ikke er avgjort.
+        forste = next((k for k in saksliste if isinstance(k, dict) and k.get("id")), None)
+        sakid = forste["id"]
+        _, sak_detalj = vis(f"Saksdetaljer for {sakid} (ingen ferdigbehandlet funnet)",
+                            "sak", sakid=sakid, format="json")
+        print("    ⚠ fant ingen ferdigbehandlet sak med publikasjoner — nivå 3")
+        print("      måler da en sak som kanskje ikke er votert over ennå")
 
     # ---------------------------------------------------------- nivå 2
     print("\n" + "=" * 72)
     print("NIVÅ 2 — FULLTEKST  (dette avgjør akt 2)")
-    form, publikasjoner = vis("Publikasjoner for saken", "publikasjoner",
-                              sakid=sakid, format="json")
-    publiste = forste_liste(publikasjoner) if form == "json" else []
     funn["fulltekst"] = False
 
-    if not publiste:
-        print("    ✗ ingen publikasjonsliste for denne saken — prøver referatene i stedet")
-    else:
-        pfelt = sorted({k for p in publiste[:20] if isinstance(p, dict) for k in p})
-        print(f"    {len(publiste)} publikasjoner. Felt: {', '.join(pfelt)}")
-        pid = next((p.get("id") for p in publiste
-                    if isinstance(p, dict) and p.get("id")), None)
-        if pid:
-            form, publikasjon = vis(f"Publikasjonen {pid} — har den tekstkropp?",
-                                    "publikasjon", publikasjonid=pid, format="json")
-            if form == "json":
-                tegn = tekstmengde(publikasjon)
-                print(f"    tekstmengde i svaret: {tegn} tegn "
-                      f"(terskel for «fulltekst»: {FULLTEKST_TERSKEL})")
-                funn["fulltekst"] = tegn >= FULLTEKST_TERSKEL
-            elif form == "xml":
-                # XML-svaret er kroppen selv; strip tagger for et grovt tegnestimat.
-                _, _, kropp = hent("publikasjon", publikasjonid=pid)
-                bar = re.sub(r"<[^>]+>", " ", kropp)
-                print(f"    XML, ca. {len(bar.split())} ord tekst utenfor taggene")
-                funn["fulltekst"] = len(bar) >= FULLTEKST_TERSKEL
+    # 1) Saksdetaljene bærer tekst selv. innstillingstekst og kortvedtak sto i
+    #    toppnøklene på forrige kjøring — de måles her framfor å antas.
+    print("\n  Tekst i saksdetaljene")
+    for felt in ("innstillingstekst", "kortvedtak", "parentestekst", "henvisning"):
+        verdi = (sak_detalj or {}).get(felt)
+        if isinstance(verdi, str) and verdi.strip():
+            ren = re.sub(r"<[^>]+>", " ", verdi)
+            print(f"    {felt}: {len(ren)} tegn")
+            print(f"      «{ren.strip()[:180]}…»")
+            if len(ren) >= FULLTEKST_TERSKEL:
+                funn["fulltekst"] = True
+        else:
+            print(f"    {felt}: tomt")
 
-    if not funn["fulltekst"]:
-        vis("Referatoversikt (alternativ tekstkilde)", "publikasjoner",
-            sesjonid=sesjon, format="json")
+    # 2) publikasjon_referanse_liste gir eksport_id og lenke_url per publikasjon.
+    #    Det er veien inn til selve dokumentet — ikke publikasjoner-endepunktet,
+    #    som krever en PublikasjonType vi ikke hadde (derav HTTP 400 sist, som
+    #    var vår feil og ikke et bevis på at fulltekst mangler).
+    referanser = (sak_detalj or {}).get("publikasjon_referanse_liste") or []
+    print(f"\n  Publikasjonsreferanser på saken: {len(referanser)}")
+    for ref in referanser[:5]:
+        if isinstance(ref, dict):
+            print(f"    type={ref.get('type')}/{ref.get('undertype')} "
+                  f"eksport_id={ref.get('eksport_id')}")
+            print(f"      {ref.get('lenke_tekst')} → {ref.get('lenke_url')}")
+
+    eksport_id = next((r.get("eksport_id") for r in referanser
+                       if isinstance(r, dict) and r.get("eksport_id")), None)
+    if eksport_id:
+        form, publikasjon = vis(f"Publikasjonen {eksport_id} — har den tekstkropp?",
+                                "publikasjon", publikasjonid=eksport_id, format="json")
+        if form == "json":
+            tegn = tekstmengde(publikasjon)
+            print(f"    tekstmengde: {tegn} tegn (terskel: {FULLTEKST_TERSKEL})")
+            funn["fulltekst"] = funn["fulltekst"] or tegn >= FULLTEKST_TERSKEL
+        elif form in ("xml", "ukjent"):
+            _, _, kropp = hent("publikasjon", publikasjonid=eksport_id)
+            bar = re.sub(r"<[^>]+>", " ", kropp)
+            print(f"    ikke JSON, men {len(bar)} tegn tekst utenfor taggene "
+                  f"(terskel: {FULLTEKST_TERSKEL})")
+            print(f"      «{' '.join(bar.split())[:200]}…»")
+            funn["fulltekst"] = funn["fulltekst"] or len(bar) >= FULLTEKST_TERSKEL
+    else:
+        print("    · ingen eksport_id å slå opp")
+
+    # 3) publikasjoner-endepunktet krever publikasjontype. Feilmeldingen lister
+    #    ikke de gyldige verdiene, så vi prøver kandidatene og rapporterer hvilke
+    #    som svarer — det er raskere enn å lete i dokumentasjonen, og svaret blir
+    #    stående i loggen for neste gang.
+    print("\n  Hvilke publikasjontype-verdier godtas?")
+    for kandidat in ("referat", "innstilling", "innstillinger", "dok8", "dok12",
+                     "lovvedtak", "innberetning", "sporretime", "alle"):
+        time.sleep(PAUSE)
+        status, _, kropp = hent("publikasjoner", publikasjontype=kandidat,
+                                sesjonid=sesjon, format="json")
+        if status == 200:
+            data = som_json(kropp)
+            antall = len(forste_liste(data)) if data else 0
+            print(f"    ✓ {kandidat}: HTTP 200, {antall} publikasjoner")
+        else:
+            print(f"    · {kandidat}: HTTP {status}")
 
     # ---------------------------------------------------------- nivå 3
     print("\n" + "=" * 72)
@@ -270,13 +340,18 @@ def main() -> int:
         print("\n  Akt 2 kan bygges som planlagt: verbatim navngiving av rapporttitler")
         print("  i stortingsdokumenter, rapportert som en NEDRE grense.")
     else:
-        print("\n  Fulltekst ble ikke bekreftet. Da kan akt 2 IKKE telle navngiving,")
-        print("  og alternativene er:")
-        print("    a) søke i sakstitler og korttitler alene — mye lavere rekkevidde,")
-        print("       som i så fall må oppgis eksplisitt i teksten")
-        print("    b) hente innstillingstekstene fra stortinget.no utenfor eksport-API-et")
-        print("    c) skrive akt 2 om til «dette lar seg ikke måle med åpne data»,")
-        print("       som også er et funn")
+        print("\n  Ingen enkelttekst passerte terskelen på "
+              f"{FULLTEKST_TERSKEL} tegn.")
+        print("  Se på tallene over før du konkluderer: en innstillingstekst på")
+        print("  1500 tegn er ikke fulltekst, men den kan godt være nok til å")
+        print("  bære en rapporttittel — det er navngivingen vi teller, ikke")
+        print("  lengden. Alternativene:")
+        print("    a) bruke innstillingstekst + kortvedtak som søkeflate, med")
+        print("       rekkevidden oppgitt eksplisitt i historien")
+        print("    b) følge lenke_url fra publikasjonsreferansene ut til")
+        print("       selve dokumentet, utenfor eksport-API-et")
+        print("    c) skrive akt 2 om til «dette lar seg ikke måle med åpne")
+        print("       data», som også er et funn")
         print("  Ikke velg for meg — lim utskriften inn, så tar vi det sammen.")
     return 0
 
