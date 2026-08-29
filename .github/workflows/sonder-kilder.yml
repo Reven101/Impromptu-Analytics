@@ -1,0 +1,97 @@
+# Sonderer de tre kildene evalueringshistorien bygger på, og legger utskriften
+# i kjøringssammendraget.
+#
+# Poenget er det samme som for api-atlas.yml: du skal kunne kjøre dette fra en
+# telefon eller iPad, uten Codespace og uten Python på maskinen. Actions → denne
+# workflowen → «Run workflow». Utskriften havner i sammendraget, som er lesbart
+# i nettleseren.
+#
+# Ingen tidsplan: dette er ikke overvåking, det er en engangsmåling vi tar når
+# vi trenger å vite hva kildene faktisk inneholder.
+#
+# Ingenting commites. Rådataene lastes ned til den midlertidige kjøreren og
+# forsvinner med den — de skal ikke inn i repoet (SIKKERHET.md). Det vi trenger
+# herfra er utskriften, ikke filene.
+name: Sonder kildene
+
+on:
+  workflow_dispatch:
+    inputs:
+      kilde:
+        description: "Hvilken kilde"
+        required: true
+        default: kudos
+        type: choice
+        options:
+          - kudos
+          - kudos-full
+          - stortinget
+          - statsregnskapet
+          - alle
+
+permissions:
+  contents: read
+
+jobs:
+  sonder:
+    name: Se hva kildene inneholder
+    runs-on: ubuntu-latest
+    # Statsregnskapets fullhistorikk er på hundrevis av megabyte og tar tid å
+    # både laste ned og strømme gjennom. De andre er ferdige på minutter.
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          # Pipelinen er stdlib-only. Ingenting å installere.
+          python-version: "3.11"
+
+      - name: Kjør sonderingen
+        env:
+          # Rådata utenfor repo-treet, så et uhell ikke kan commite dem.
+          KUDOS_DIR: ${{ runner.temp }}/raadata/kudos
+          STATSREGNSKAP_DIR: ${{ runner.temp }}/raadata/statsregnskapet
+          VALG: ${{ inputs.kilde }}
+        run: |
+          # pipefail, ellers spiser tee exit-koden og alt ser grønt ut.
+          set -o pipefail
+          {
+            if [ "$VALG" = "kudos" ] || [ "$VALG" = "alle" ]; then
+              echo "########## KUDOS — feltkartlegging (én side) ##########"
+              python3 pipeline/hent_kudos_evalueringer.py --kartlegg
+            fi
+            if [ "$VALG" = "kudos-full" ]; then
+              echo "########## KUDOS — hele korpuset ##########"
+              python3 pipeline/hent_kudos_evalueringer.py
+            fi
+            if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
+              echo
+              echo "########## STORTINGET — hvilket koblingsnivå finnes? ##########"
+              python3 pipeline/sonder_stortinget.py
+            fi
+            if [ "$VALG" = "statsregnskapet" ] || [ "$VALG" = "alle" ]; then
+              echo
+              echo "########## STATSREGNSKAPET — kolonner og årssummer ##########"
+              python3 pipeline/hent_statsregnskapet.py
+            fi
+          } 2>&1 | tee kjoring.txt
+
+      - name: Legg utskriften i kjøringssammendraget
+        # Kjører også når sonderingen feilet — det er nettopp da du vil lese den.
+        if: always()
+        run: |
+          {
+            echo "## Sondering — $(date -u '+%d.%m.%Y %H:%M UTC')"
+            echo
+            if [ -f kjoring.txt ]; then
+              echo '```'
+              # Sammendraget har et tak på 1 MB. Feltkartleggingen er godt under,
+              # men statsregnskapet kan skrive mye — kutt heller enn å miste alt.
+              head -c 900000 kjoring.txt
+              echo '```'
+            else
+              echo "Sonderingen kom aldri i gang — se loggen for steget over."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

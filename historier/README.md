@@ -16,7 +16,8 @@ pipeline/                      DATALAG (Python, kjøres manuelt ved behov)
 
 historier/motor/               FRONTEND-LAG (delt av alle historier)
   tokens.css                   designtokens: farger, typografi, avstand
-  komponenter.css / .js        4 komponenter: hero, tidslinje, kart, kortgalleri
+  komponenter.css / .js        hero, tidslinje, kart, verdenskart,
+                               kortgalleri, rangering
   markdown.js                  mini-markdown for tekstfilene
   historie.js                  malen: hero → tekst → grafer → kildekort
 
@@ -100,7 +101,9 @@ trenger ingen `redaksjon.json`. Der er `data.json` allerede din.
 | `hero` | stort oppslag øverst | `rader` (statisk) eller `kontroll` + `oppslag` (interaktiv) |
 | `tidslinje` | linje- eller søylegraf | `serier[{navn, punkter[[x,y]]}]`, valgfri `stil: "søyle"` |
 | `kart` | fylkeskart (rutenett) | `verdier: {fylkesnavn eller -nr: tall}` |
+| `verdenskart` | verdenskart (koroplett) | `verdier: {ISO-landkode: tall}`, valgfri `navn`, `antall`, `skala: "log"` / `"kvantil"` |
 | `kortgalleri` | fakta-kort i rutenett | `kort[{overtittel, verdi, detalj}]` |
+| `rangering` | liggende sorterte søyler | `rader[{navn, verdi, detalj}]`, valgfri `fremhev[]` og `sorter: false` |
 
 Alle får automatisk tooltip, tastaturtilgang og «vis som tabell»-tvilling.
 Seriefargene og karturampen er validert for fargeblindhet og kontrast

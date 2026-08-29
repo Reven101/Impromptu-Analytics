@@ -21,7 +21,7 @@ pipeline/                      1. DATALAG (Python, kjøres manuelt)
 
 historier/motor/               2. FRONTEND-LAG (delt av alle historier)
   tokens.css                   designtokens (farger, typografi, avstand)
-  komponenter.css / .js        hero, tidslinje, kart, kortgalleri
+  komponenter.css / .js        hero, tidslinje, kart, verdenskart, kortgalleri, rangering
   markdown.js, historie.js     tekstrendring og historie-mal
 
 historier/innhold/             3. INNHOLDSLAG (én mappe per historie)
