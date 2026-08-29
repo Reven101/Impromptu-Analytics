@@ -45,6 +45,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -63,7 +64,12 @@ PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page 
 # på sekunder, og så timet side 5 ut fire ganger på 30 sekunder hver. Det er ikke
 # 429 — tjeneren tar imot forbindelsen og sender ingenting. Vi går derfor
 # betydelig saktere fra start, og bremser ytterligere når det først skjer.
-PAUSE = 2.0             # utgangspunkt; 143 sider ≈ 5 minutter i ren venting
+# Kudos bruker rundt 90 sekunder på en forespørsel under vedvarende bruk. 143
+# sider sekvensielt blir da fire-fem timer, og ventetiden er hele kostnaden.
+# Vi henter derfor flere sider samtidig. Den adaptive bremsen under gjelder
+# fortsatt: struper kilden, senker vi farten selv.
+TRADER = 4
+PAUSE = 2.0             # mellom hver bunt, ikke mellom hver side
 PAUSE_TAK = 15.0        # aldri saktere enn dette
 PAUSE_FAKTOR = 1.6      # ganges på ved hver feil
 GJENVINN_ETTER = 15     # etter så mange sider på rad uten feil, øk farten litt
@@ -81,6 +87,14 @@ SORTERINGSKANDIDATER = ("uuid", "id", "published_date", "publish_date",
 # begynne tidlig — og et dokument fra 1994 som faller utenfor ville vært et
 # stille hull i basen.
 FORSTE_AAR = 1990
+
+# Fra og med dette året hentes hvert år for seg. Før det slås årene sammen i
+# bolker: din kjøring viste 1 dokument i 1990 og 9 i 1996, og en spørring koster
+# det samme enten den gir ett dokument eller femti. Bolkene er små nok til at
+# pagineringen ikke rekker å forskyve seg — det er lengden på spørringen som
+# skaper drift, ikke bredden på filteret.
+AAR_ENKELTVIS_FRA = 2008
+BOLKSTORRELSE = 6
 
 # Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
 # viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
@@ -253,7 +267,7 @@ def skriv_side(side: int, data: list[dict]) -> None:
 
 
 def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
-           ved_side=None) -> tuple[list[dict], dict]:
+           ved_side=None, trader: int = TRADER) -> tuple[list[dict], dict]:
     """Ett gjennomløp av pagineringen for én skive av korpuset.
 
     `filtre` går rett inn i spørringen — tomt for hele korpuset, eller
@@ -320,62 +334,88 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
     sett_uuid: set[str] = {d.get("uuid") for d in sider_data[1] if d.get("uuid")}
     dubletter = 0
 
+    # Lagrede sider først: de koster ingenting og avgjør hva som må hentes.
+    å_hente: list[int] = []
+    stopp = False
     for side in range(2, sider + 1):
         lagret = les_lagret_side(side) if bruk_sjekkpunkt else None
-        if lagret is not None:
-            sider_data[side] = lagret
-            gjenbrukt += 1
-            if ved_side and ved_side(lagret):
-                print(f"  alt vi lette etter er funnet — stopper på side {side}",
-                      flush=True)
-                break
+        if lagret is None:
+            å_hente.append(side)
             continue
-        time.sleep(pause)
-        side_start = time.monotonic()
+        sider_data[side] = lagret
+        gjenbrukt += 1
+        if ved_side and ved_side(lagret):
+            print("  alt vi lette etter lå i sjekkpunktene", flush=True)
+            stopp = True
+            break
+
+    def hent_en(side: int) -> tuple[int, list[dict] | None]:
+        """Én side, i sin egen tråd. None betyr at den ga opp."""
         try:
-            rader = hent_side(side, type=DOKUMENTTYPE, **ekstra).get("data") or []
-        except nett.NettFeil as e:
-            # Én gjenstridig side skal ikke koste alt det andre. Vi noterer den
-            # og tar den i en ny runde til slutt, når kilden har fått puste.
-            print(f"  ⚠ side {side} ga opp ({e}) — tas i ny runde til slutt",
-                  flush=True)
-            feilede.append(side)
+            return side, hent_side(side, type=DOKUMENTTYPE, **ekstra).get("data") or []
+        except nett.NettFeil:
+            return side, None
+
+    plassert = 0
+    while plassert < len(å_hente) and not stopp:
+        bunt = å_hente[plassert:plassert + trader]
+        plassert += len(bunt)
+        time.sleep(pause)
+        bunt_start = time.monotonic()
+        with ThreadPoolExecutor(max_workers=len(bunt)) as pool:
+            resultater = sorted(pool.map(hent_en, bunt))
+        brukt = time.monotonic() - bunt_start
+
+        feil_i_bunten = False
+        for side, rader in resultater:
+            if rader is None:
+                # Én gjenstridig side skal ikke koste alt det andre. Vi noterer
+                # den og tar den i en ny runde til slutt, når kilden har pustet.
+                print(f"  ⚠ side {side} ga opp — tas i ny runde til slutt", flush=True)
+                feilede.append(side)
+                feil_i_bunten = True
+                continue
+            # Tiden fordeles på bunten: det er den effektive kostnaden per side,
+            # og det er den som skal styre anslaget.
+            siste_tider.append(brukt / len(bunt))
+            for d in rader:
+                u = d.get("uuid")
+                if u in sett_uuid:
+                    dubletter += 1
+                elif u:
+                    sett_uuid.add(u)
+            sider_data[side] = rader
+            if bruk_sjekkpunkt:
+                skriv_side(side, rader)
+            if ved_side and ved_side(rader):
+                print(f"  alt vi lette etter er funnet — stopper på side {side} "
+                      f"av {sider}", flush=True)
+                stopp = True
+                break
+
+        if feil_i_bunten:
             pause = min(pause * PAUSE_FAKTOR, PAUSE_TAK)
             uten_feil = 0
-            print(f"    bremser til {pause:.1f} s mellom sidene", flush=True)
-            continue
-        siste_tider.append(time.monotonic() - side_start)
-        for d in rader:
-            u = d.get("uuid")
-            if u in sett_uuid:
-                dubletter += 1
-            elif u:
-                sett_uuid.add(u)
-        sider_data[side] = rader
-        if bruk_sjekkpunkt:
-            skriv_side(side, rader)
-        uten_feil += 1
-        if ved_side and ved_side(rader):
-            print(f"  alt vi lette etter er funnet — stopper på side {side} "
-                  f"av {sider}", flush=True)
-            break
-        if uten_feil >= GJENVINN_ETTER and pause > PAUSE:
-            pause = max(PAUSE, pause / PAUSE_FAKTOR)
-            uten_feil = 0
-            print(f"    går bra igjen — øker farten til {pause:.1f} s", flush=True)
+            print(f"    bremser til {pause:.1f} s mellom buntene", flush=True)
+        else:
+            uten_feil += len(bunt)
+            if uten_feil >= GJENVINN_ETTER and pause > PAUSE:
+                pause = max(PAUSE, pause / PAUSE_FAKTOR)
+                uten_feil = 0
+                print(f"    går bra igjen — {pause:.1f} s mellom buntene", flush=True)
 
-        if side % 10 == 0 or side == sider:
-            # Farten er selve diagnosen når en kjøring går på tidsgrensa. Uten
-            # sekundene i utskriften kan vi ikke skille «kilden er treg» fra
-            # «vi prøver på nytt hele tiden», og da gjetter vi på neste fiks.
+        ferdig = plassert + gjenbrukt + 1
+        if ferdig % 20 < trader or plassert >= len(å_hente):
+            # Farten er selve diagnosen når en kjøring drar ut. Uten sekundene i
+            # utskriften kan vi ikke skille «kilden er treg» fra «vi prøver på
+            # nytt hele tiden», og da gjetter vi på neste fiks.
             gått = time.monotonic() - start
             nylig = (sum(siste_tider) / len(siste_tider)) if siste_tider else 0.0
-            igjen = (sider - side) * (nylig + pause)
-            print(f"  side {side}/{sider} — {gått / 60:.0f} min brukt, "
-                  f"{nylig:.0f} s/side siste ti, ~{igjen / 60:.0f} min igjen"
-                  + (f", {dubletter} dubletter" if dubletter else ""),
-                  flush=True)
-
+            igjen = (len(å_hente) - plassert) * nylig
+            print(f"  {plassert}/{len(å_hente)} hentede sider — "
+                  f"{gått / 60:.0f} min brukt, {nylig:.0f} s/side effektivt "
+                  f"({trader} i parallell), ~{igjen / 60:.0f} min igjen"
+                  + (f", {dubletter} dubletter" if dubletter else ""), flush=True)
 
     if gjenbrukt:
         print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "
@@ -421,7 +461,8 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
     return dokumenter, meta
 
 
-def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
+def hent_alle(bruk_sjekkpunkt: bool = True,
+              trader: int = TRADER) -> tuple[list[dict], dict]:
     """Hele korpuset, hentet år for år og satt sammen.
 
     Hvorfor år for år, og ikke ett langt sveip: Kudos serverer nyeste først og
@@ -452,11 +493,13 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     samlet: dict[str, dict] = {}
     per_aar: dict[str, int] = {}
 
-    def hent_aar(aar: int) -> bool:
-        """Én årsskive inn i `samlet`. False hvis kilden ikke svarte."""
-        filtre = {"published_year_from": aar, "published_year_to": aar}
+    def hent_aar(fra: int, til: int) -> bool:
+        """Én skive inn i `samlet`. False hvis kilden ikke svarte."""
+        aar = fra if fra == til else f"{fra}-{til}"
+        filtre = {"published_year_from": fra, "published_year_to": til}
         try:
-            dokumenter, _ = _sveip(filtre, f"aar_{aar}", bruk_sjekkpunkt)
+            dokumenter, _ = _sveip(filtre, f"aar_{aar}", bruk_sjekkpunkt,
+                                   trader=trader)
         except nett.HttpFeil as e:
             raise SystemExit(
                 f"FEIL: årsfilteret ble avvist for {aar}: HTTP {e.kode}\n"
@@ -482,20 +525,28 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
               f"— {len(samlet)}/{total} totalt", flush=True)
         return True
 
-    feilede_aar = [a for a in range(FORSTE_AAR, date.today().year + 1)
-                   if not hent_aar(a)]
+    skiver: list[tuple[int, int]] = []
+    aar = FORSTE_AAR
+    while aar < AAR_ENKELTVIS_FRA:
+        skiver.append((aar, min(aar + BOLKSTORRELSE - 1, AAR_ENKELTVIS_FRA - 1)))
+        aar += BOLKSTORRELSE
+    skiver += [(a, a) for a in range(AAR_ENKELTVIS_FRA, date.today().year + 1)]
+    print(f"  {len(skiver)} skiver: {skiver[0][0]}–{skiver[-1][1]}, "
+          f"bolker fram til {AAR_ENKELTVIS_FRA}, deretter år for år", flush=True)
+
+    feilede_aar = [sk for sk in skiver if not hent_aar(*sk)]
 
     if feilede_aar:
-        print(f"\n  Ny runde på {len(feilede_aar)} år som ikke svarte: "
+        print(f"\n  Ny runde på {len(feilede_aar)} skiver som ikke svarte: "
               f"{feilede_aar}", flush=True)
         fortsatt = []
-        for aar in feilede_aar:
+        for skive in feilede_aar:
             time.sleep(PAUSE_TAK)
-            if not hent_aar(aar):
-                fortsatt.append(aar)
+            if not hent_aar(*skive):
+                fortsatt.append(skive)
         if fortsatt:
             raise SystemExit(
-                f"FEIL: årene {fortsatt} lot seg ikke hente.\n"
+                f"FEIL: skivene {fortsatt} lot seg ikke hente.\n"
                 "  Alt annet er lagret, så en ny kjøring henter bare det som\n"
                 "  mangler — de ferdige årene koster ingen nye kall."
             )
@@ -516,7 +567,8 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             return len(samlet) >= total
 
         før = len(samlet)
-        _sveip({}, "uten_aarsfilter", bruk_sjekkpunkt, ved_side=samle)
+        _sveip({}, "uten_aarsfilter", bruk_sjekkpunkt, ved_side=samle,
+               trader=trader)
         print(f"  restsveipet ga {len(samlet) - før} nye "
               f"— {len(samlet)}/{total}", flush=True)
 
@@ -655,6 +707,10 @@ def main() -> int:
                     help="hent bare første side og kartlegg feltene (ingen skriving)")
     ap.add_argument("--frisk", action="store_true",
                     help="ignorer lagrede sider og hent alt på nytt")
+    ap.add_argument("--trader", type=int, default=TRADER,
+                    help=f"sider hentet samtidig (standard {TRADER}). Kudos "
+                         "bruker ~90 s per foresp\u00f8rsel, s\u00e5 dette er "
+                         "forskjellen p\u00e5 en time og fem")
     ap.add_argument("--sorteringer", action="store_true",
                     help="prøv bare sorteringskandidatene og vis API-ets svar "
                          "(sekunder — bruk denne før du starter en lang henting)")
@@ -680,7 +736,8 @@ def main() -> int:
         return 0
 
     print(f"Henter alle dokumenter av typen «{DOKUMENTTYPE}» …")
-    dokumenter, meta = hent_alle(bruk_sjekkpunkt=not args.frisk)
+    dokumenter, meta = hent_alle(bruk_sjekkpunkt=not args.frisk,
+                                 trader=args.trader)
 
     RAADATA_DIR.mkdir(parents=True, exist_ok=True)
     UTFIL.write_text(json.dumps({
