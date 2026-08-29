@@ -50,14 +50,23 @@ def post_json(url: str, body: dict, timeout: int = 60):
 
 def sok(sokeord: str, antall: int = 5) -> list[dict]:
     body = {"query": sokeord, "pagination": {"page": 0, "size": antall}}
+    svarte = False
+    siste_feil: Exception | None = None
     for endepunkt in (f"{API}/search", f"{API}/search/datasets"):
         try:
             data = post_json(endepunkt, body)
-        except Exception:
+        except Exception as e:
+            siste_feil = e
             continue
+        svarte = True
         treff = data.get("hits") or data.get("searchHits") or []
         if treff:
             return treff
+    # Skill «kilden svarte feil» fra «vi nådde aldri kilden»: uten dette blir en
+    # blokkert proxy eller nede nett rapportert som en API-endring, og du leter i
+    # dokumentasjonen etter noe som aldri har flyttet seg.
+    if not svarte:
+        raise ValueError(f"nådde ikke søkeendepunktene på {API}: {siste_feil}") from siste_feil
     raise ValueError("ingen av søkeendepunktene ga treff — sjekk API-dokumentasjonen")
 
 
