@@ -186,6 +186,7 @@ def kall_modell(
     modell: str = STANDARDMODELL,
     temperatur: float = 0.0,
     maks_tokens: int = 4000,
+    resonnering: str | None = None,
     forsok: int | None = None,
     tidsavbrudd: int = 120,
     _doblinger: int = 0,
@@ -193,7 +194,9 @@ def kall_modell(
     """Returnerer modellens svartekst. Feiler hardt framfor å returnere noe tvilsomt."""
     # Gratismodellene ligger i en delt pulje og rate-limites oppstrøms. De trenger flere
     # og lengre forsøk enn en betalt modell — ellers gir de opp før puljen frigjøres.
-    gratis = modell.endswith(":free")
+    # OpenRouters gratismodeller heter «...:free». NVIDIAs gratislag gjør ikke
+    # det, men rate-limites like fullt, så leverandøren regnes med her.
+    gratis = modell.endswith(":free") or modell.startswith("nvidia:")
     if forsok is None:
         forsok = 8 if gratis else 5
 
@@ -204,6 +207,12 @@ def kall_modell(
             "messages": meldinger,
             "temperature": temperatur,
             "max_tokens": maks_tokens,
+            # gpt-oss og andre resonnerende modeller tenker som standard, og
+            # tenketokens faktureres og telles som output. På en klassifisering
+            # med fast kategoriliste er det bortkastet: valget er ett ord, ikke
+            # et resonnement. «low» kutter forbruket kraftig uten å endre svaret
+            # nevneverdig — men mål det med --fasittest før du stoler på det.
+            **({"reasoning_effort": resonnering} if resonnering else {}),
         }
     ).encode("utf-8")
 
@@ -300,7 +309,8 @@ def kall_modell(
                 f"dobler til {maks_tokens * 2}"
             )
             return kall_modell(
-                meldinger, modell, temperatur, maks_tokens * 2, forsok, tidsavbrudd,
+                meldinger, modell, temperatur, maks_tokens * 2, resonnering,
+                forsok, tidsavbrudd,
                 _doblinger + 1,
             )
         raise SystemExit(
