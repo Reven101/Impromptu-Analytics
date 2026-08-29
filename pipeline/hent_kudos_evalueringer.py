@@ -193,11 +193,20 @@ def hent_side(side: int, **filtre) -> dict:
     raise SystemExit("FEIL: Kudos avviste sidestørrelsen to ganger på rad.")
 
 
-SIDER_DIR = RAADATA_DIR / "sider"
+# Sjekkpunktene legges under sorteringen de ble hentet med. En side hentet uten
+# stabil sortering er ikke den samme siden som en hentet med — den kan inneholde
+# dokumenter som nå ligger på en annen side, og gjenbruk ville arvet nøyaktig det
+# duplikatproblemet sorteringen er der for å fjerne. Skifter sorteringen, finnes
+# de gamle sidene rett og slett ikke, og hentingen starter friskt av seg selv.
+_sortering: str | None = None
+
+
+def sider_dir() -> Path:
+    return RAADATA_DIR / f"sider_{_sortering or 'usortert'}"
 
 
 def _sidefil(side: int) -> Path:
-    return SIDER_DIR / f"side_{side:04d}.json"
+    return sider_dir() / f"side_{side:04d}.json"
 
 
 def les_lagret_side(side: int) -> list[dict] | None:
@@ -218,7 +227,7 @@ def skriv_side(side: int, data: list[dict]) -> None:
     Uten rename-trikset kan en kjøring som blir drept midt i en skriving legge
     igjen en halv fil som ser gyldig ut på neste kjøring.
     """
-    SIDER_DIR.mkdir(parents=True, exist_ok=True)
+    sider_dir().mkdir(parents=True, exist_ok=True)
     tmp = _sidefil(side).with_suffix(".tmp")
     tmp.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     tmp.replace(_sidefil(side))
@@ -231,8 +240,11 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
     for å betale for de samme 143 kallene på nytt.
     """
-    sortering = finn_sortering()
+    global _sortering
+    _sortering = finn_sortering()
+    sortering = _sortering
     ekstra = {"sort": sortering} if sortering else {}
+    print(f"  sjekkpunkter: {sider_dir().name}", flush=True)
     forste = hent_side(1, type=DOKUMENTTYPE, **ekstra)
     meta = forste.get("meta") or {}
     total = meta.get("total")
