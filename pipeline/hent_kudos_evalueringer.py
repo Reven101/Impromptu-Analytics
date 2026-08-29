@@ -34,6 +34,7 @@ import argparse
 import collections
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -69,6 +70,33 @@ UTFIL = RAADATA_DIR / "evalueringer.json"
 
 # ---------------------------------------------------------------- henting
 
+class PerSideTak(Exception):
+    """API-et avviste sidestørrelsen og oppga sitt eget tak i feilkroppen."""
+
+    def __init__(self, tak: int):
+        super().__init__(f"per_page-tak: {tak}")
+        self.tak = tak
+
+
+def les_per_side_tak(kropp: str) -> int | None:
+    """Plukker per_page-taket ut av en 422-kropp, hvis den oppgir et.
+
+    Kudos svarer f.eks.
+        {"error": {"details": {"per_page": ["The per page may not be greater than 50."]}}}
+    Vi leser tallet ut av meldingen framfor å hardkode det: taket er API-ets å
+    bestemme, og det kan endres uten at vi får beskjed.
+    """
+    try:
+        detaljer = (json.loads(kropp).get("error") or {}).get("details") or {}
+    except (json.JSONDecodeError, AttributeError):
+        return None
+    for melding in detaljer.get("per_page") or []:
+        funn = re.search(r"(\d+)", str(melding))
+        if funn:
+            return int(funn.group(1))
+    return None
+
+
 def hent_json(url: str, timeout: int = 60) -> dict:
     """GET med retry. Nettverksfeil og 5xx prøves igjen; 4xx er vår feil og bobler opp."""
     siste = None
@@ -81,6 +109,9 @@ def hent_json(url: str, timeout: int = 60) -> dict:
             # 422 røper gyldige parametre i kroppen — vis den, ikke bare koden.
             if e.code < 500:
                 kropp = e.read().decode("utf-8", errors="replace")[:800]
+                tak = les_per_side_tak(kropp)
+                if tak is not None:
+                    raise PerSideTak(tak) from e
                 raise SystemExit(
                     f"FEIL: Kudos svarte HTTP {e.code} på\n  {url}\n{kropp}\n"
                     "Har filternavnene endret seg? API-ets 422 lister de gyldige."
@@ -94,8 +125,29 @@ def hent_json(url: str, timeout: int = 60) -> dict:
 
 
 def hent_side(side: int, **filtre) -> dict:
-    params = {"page": side, "per_page": PER_SIDE, **filtre}
-    return hent_json(f"{API}?{urllib.parse.urlencode(params)}")
+    """Én side. Retter seg etter API-ets per_page-tak hvis det avviser vårt.
+
+    Sidestørrelsen påvirker bare pagineringen, ikke ett eneste tall vi henter ut,
+    så her er det riktig å bøye seg framfor å stoppe. Men justeringen skrives ut:
+    en stille tilpasning ville skjult at kilden har endret seg, og da ville neste
+    person lurt på hvorfor kjøringen plutselig tar dobbelt så mange kall.
+    """
+    global PER_SIDE
+    for _ in range(2):
+        params = {"page": side, "per_page": PER_SIDE, **filtre}
+        try:
+            return hent_json(f"{API}?{urllib.parse.urlencode(params)}")
+        except PerSideTak as e:
+            if e.tak >= PER_SIDE or e.tak < 1:
+                raise SystemExit(
+                    f"FEIL: Kudos avviste per_page={PER_SIDE} og oppga taket "
+                    f"{e.tak}, som ikke er lavere. Da har vi misforstått "
+                    f"feilmeldingen — sjekk {KILDE_URL}."
+                ) from e
+            print(f"  ⚠ Kudos oppgir et per_page-tak på {e.tak} (vi ba om "
+                  f"{PER_SIDE}). Justerer ned og fortsetter.")
+            PER_SIDE = e.tak
+    raise SystemExit("FEIL: Kudos avviste sidestørrelsen to ganger på rad.")
 
 
 def hent_alle() -> tuple[list[dict], dict]:
