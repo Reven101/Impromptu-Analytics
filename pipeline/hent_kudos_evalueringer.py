@@ -77,6 +77,11 @@ GJENVINN_ETTER = 15     # etter så mange sider på rad uten feil, øk farten li
 SORTERINGSKANDIDATER = ("uuid", "id", "published_date", "publish_date",
                         "title", "created_at")
 
+# Årsskivene starter her. Tomme år koster ett kall hver, så det er billig å
+# begynne tidlig — og et dokument fra 1994 som faller utenfor ville vært et
+# stille hull i basen.
+FORSTE_AAR = 1990
+
 # Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
 # viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
 # HTTPException og ValueError — ikke fra URLError. Den gikk derfor rett forbi
@@ -212,11 +217,11 @@ def hent_side(side: int, **filtre) -> dict:
 # dokumenter som nå ligger på en annen side, og gjenbruk ville arvet nøyaktig det
 # duplikatproblemet sorteringen er der for å fjerne. Skifter sorteringen, finnes
 # de gamle sidene rett og slett ikke, og hentingen starter friskt av seg selv.
-_sortering: str | None = None
+_merkelapp: str = "alt"
 
 
 def sider_dir() -> Path:
-    return RAADATA_DIR / f"sider_{_sortering or 'usortert'}"
+    return RAADATA_DIR / f"sider_{_merkelapp}"
 
 
 def _sidefil(side: int) -> Path:
@@ -247,8 +252,13 @@ def skriv_side(side: int, data: list[dict]) -> None:
     tmp.replace(_sidefil(side))
 
 
-def _sveip(sortering: str | None, bruk_sjekkpunkt: bool) -> tuple[list[dict], dict]:
-    """Ett gjennomløp av hele pagineringen med én bestemt sortering.
+def _sveip(filtre: dict, merkelapp: str,
+           bruk_sjekkpunkt: bool) -> tuple[list[dict], dict]:
+    """Ett gjennomløp av pagineringen for én skive av korpuset.
+
+    `filtre` går rett inn i spørringen — tomt for hele korpuset, eller
+    published_year_from/to for ett år. `merkelapp` navngir sjekkpunktmappa, så
+    to skiver aldri leser hverandres sider.
 
     Hver side lagres til disk etter hvert. En avbrutt kjøring — tidsgrense i
     Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
@@ -257,11 +267,9 @@ def _sveip(sortering: str | None, bruk_sjekkpunkt: bool) -> tuple[list[dict], di
     Duplikater telles og rapporteres, men stopper ikke sveipet: et sveip med
     duplikater bidrar fortsatt med dokumenter, og kalleren slår sveipene sammen.
     """
-    global _sortering
-    _sortering = sortering
-    ekstra = {"sort": sortering} if sortering else {}
-    print(f"  sortering: {sortering or 'ingen'} — "
-          f"sjekkpunkter i {sider_dir().name}", flush=True)
+    global _merkelapp
+    _merkelapp = merkelapp
+    ekstra = dict(filtre)
     forste = hent_side(1, type=DOKUMENTTYPE, **ekstra)
     meta = forste.get("meta") or {}
     total = meta.get("total")
@@ -271,15 +279,12 @@ def _sveip(sortering: str | None, bruk_sjekkpunkt: bool) -> tuple[list[dict], di
             "FEIL: svaret mangler meta.total / meta.last_page. Kudos v0 var "
             f"Laravel-paginert — har formatet endret seg?\n{json.dumps(meta)[:400]}"
         )
-    if not MIN_RIMELIG <= total <= MAKS_RIMELIG:
-        raise SystemExit(
-            f"FEIL: Kudos oppgir {total} dokumenter av typen «{DOKUMENTTYPE}». "
-            f"Vi ventet mellom {MIN_RIMELIG} og {MAKS_RIMELIG}.\n"
-            "Enten har type-filteret byttet betydning, eller basen er endret. "
-            f"Sjekk {KILDE_URL} før du justerer grensene."
-        )
+    # Rimelighetssjekken på korpusstørrelsen hører hjemme i hent_alle, ikke her:
+    # en årsskive kan godt være tom, og skal da bare returnere ingenting.
+    if total == 0:
+        return [], meta
 
-    print(f"  {total} evalueringer fordelt på {sider} sider à {PER_SIDE}", flush=True)
+    print(f"  {merkelapp}: {total} dokumenter på {sider} sider", flush=True)
 
     # Sidene samles i en dict framfor å appendes underveis. Da blir resultatet
     # det samme enten en side ble hentet nå, gjenbrukt fra sjekkpunkt, eller
@@ -398,77 +403,83 @@ def _sveip(sortering: str | None, bruk_sjekkpunkt: bool) -> tuple[list[dict], di
 
 
 def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
-    """Hele korpuset, satt sammen av så mange sveip som trengs.
+    """Hele korpuset, hentet år for år og satt sammen.
 
-    Ett sveip med stabil sortering skal holde. Men holder ikke sorteringen
-    rekkefølgen, glipper en skive dokumenter — og da er svaret å hente resten,
-    ikke å gi opp. Hvert sveip legges til i samme uuid-oppslag, og duplikater
-    på tvers av sveip er gratis: det er nettopp overlappet som gjør at et nytt
-    sveip kan tette hull i det forrige.
+    Hvorfor år for år, og ikke ett langt sveip: Kudos serverer nyeste først og
+    godtar ingen sortering (alle seks kandidatene ga 422, og feilkroppen lister
+    ikke gyldige verdier). Publiseres et dokument mens vi henter, skyves alt
+    nedover — og et dokument på en sidegrense blir servert to ganger mens et
+    annet aldri blir servert. Over halvannen time ga det 363 duplikater og like
+    mange tapte dokumenter.
 
-    Fasiten er API-ets egen `meta.total`. Når vi har så mange unike, ER basen
-    komplett — uansett hvor mange sveip det tok. Kommer vi ikke dit, stopper vi
-    framfor å skrive et snapshot som ser komplett ut og ikke er det.
+    En årsskive er ferdig på sekunder, og et nytt dokument i 2026 rører ikke
+    2019. Driften følger tid, ikke sidetall, så korte spørringer fjerner den
+    nesten helt. At summen av årene må møte API-ets egen `meta.total` er
+    dessuten en strengere kontroll enn før: den fanger både hull i et enkelt år
+    og dokumenter som mangler årstall.
     """
+    fasit = hent_side(1, type=DOKUMENTTYPE).get("meta") or {}
+    total = fasit.get("total")
+    if not isinstance(total, int):
+        raise SystemExit(f"FEIL: mangler meta.total.\n{json.dumps(fasit)[:300]}")
+    if not MIN_RIMELIG <= total <= MAKS_RIMELIG:
+        raise SystemExit(
+            f"FEIL: Kudos oppgir {total} dokumenter av typen «{DOKUMENTTYPE}». "
+            f"Vi ventet mellom {MIN_RIMELIG} og {MAKS_RIMELIG}.\n"
+            f"Sjekk {KILDE_URL} før du justerer grensene."
+        )
+    print(f"\nFasit fra API-et: {total} evalueringer\n", flush=True)
+
     samlet: dict[str, dict] = {}
-    total: int | None = None
-    meta: dict = {}
-    prøvd: list[str] = []
+    per_aar: dict[str, int] = {}
 
-    # Den oppdagede sorteringen først, så de andre kandidatene, og til slutt
-    # usortert. Rekkefølgen er «mest sannsynlig stabil» først.
-    beste = finn_sortering()
-    rekkefølge = ([beste] if beste else []) + \
-                 [k for k in SORTERINGSKANDIDATER if k != beste] + [None]
-
-    for forsok, sortering in enumerate(rekkefølge, 1):
-        if total is not None and len(samlet) >= total:
-            break
-        etikett = sortering or "ingen sortering"
-        print(f"\nSveip {forsok}: {etikett}", flush=True)
+    for aar in range(FORSTE_AAR, date.today().year + 1):
+        filtre = {"published_year_from": aar, "published_year_to": aar}
+        merkelapp = f"aar_{aar}"
         try:
-            dokumenter, meta = _sveip(sortering, bruk_sjekkpunkt)
-        except (SystemExit, PerSideTak) as e:
-            # En avvist sort-parameter er ikke en grunn til å stoppe alt.
-            if "422" in str(e) or isinstance(e, PerSideTak):
-                print(f"  ✗ {etikett} avvist av API-et — prøver neste", flush=True)
-                prøvd.append(f"{etikett}: avvist")
-                continue
-            raise
-
-        total = meta.get("total", total)
+            dokumenter, meta = _sveip(filtre, merkelapp, bruk_sjekkpunkt)
+        except nett.HttpFeil as e:
+            raise SystemExit(
+                f"FEIL: årsfilteret ble avvist for {aar}: HTTP {e.kode}\n"
+                f"{e.kropp[:400]}\n"
+                "Har filternavnene endret seg? API-ets 422 lister de gyldige."
+            ) from e
+        if not dokumenter:
+            continue
         før = len(samlet)
         for d in dokumenter:
             if d.get("uuid"):
                 samlet.setdefault(d["uuid"], d)
-        nye = len(samlet) - før
-        prøvd.append(f"{etikett}: +{nye}")
-        print(f"  sveipet ga {len(dokumenter)} rader, {nye} nye — "
-              f"{len(samlet)}/{total} unike totalt", flush=True)
+        per_aar[str(aar)] = len(dokumenter)
+        print(f"  {aar}: {len(dokumenter)} dokumenter, {len(samlet) - før} nye "
+              f"— {len(samlet)}/{total} totalt", flush=True)
 
-        if total is not None and len(samlet) >= total:
-            break
-        if nye == 0:
-            print("  ingen nye dokumenter fra dette sveipet — gir seg", flush=True)
-            break
-
-    if total is None:
-        raise SystemExit("FEIL: fikk aldri et gyldig svar fra Kudos.")
+    # Dokumenter uten publiseringsår fanges ikke av noen årsskive. Er summen
+    # kortere enn fasiten, henter vi resten ufiltrert og slår sammen.
+    if len(samlet) < total:
+        mangler = total - len(samlet)
+        print(f"\n  {mangler} dokumenter fanget ikke av årsskivene — de mangler")
+        print("  trolig publiseringsår. Henter ufiltrert og slår sammen.", flush=True)
+        dokumenter, _ = _sveip({}, "uten_aarsfilter", bruk_sjekkpunkt)
+        før = len(samlet)
+        for d in dokumenter:
+            if d.get("uuid"):
+                samlet.setdefault(d["uuid"], d)
+        print(f"  det ufiltrerte sveipet ga {len(samlet) - før} nye "
+              f"— {len(samlet)}/{total}", flush=True)
 
     if len(samlet) < total:
         raise SystemExit(
-            f"FEIL: {len(samlet)} unike dokumenter etter {len(prøvd)} sveip, "
-            f"men API-et oppgir {total}.\n"
-            f"  Sveipene: {'; '.join(prøvd)}\n"
+            f"FEIL: {len(samlet)} unike dokumenter, men API-et oppgir {total}.\n"
+            f"  Per år: {per_aar}\n"
             f"  {total - len(samlet)} dokumenter ble aldri servert. Et snapshot\n"
-            f"  på {len(samlet)} ville sett komplett ut og vært det ikke — alle\n"
-            f"  andeler regnet på det blir feil, og feilen er usynlig.\n"
-            f"  Si fra med denne meldingen."
+            f"  som ser komplett ut og ikke er det, gir feil i alle andeler —\n"
+            f"  og feilen er usynlig i ettertid. Si fra med denne meldingen."
         )
 
-    print(f"\n✓ {len(samlet)} unike dokumenter etter {len(prøvd)} sveip "
-          f"({'; '.join(prøvd)})", flush=True)
-    return list(samlet.values()), meta
+    print(f"\n✓ {len(samlet)} unike dokumenter, fordelt på "
+          f"{len(per_aar)} årganger", flush=True)
+    return list(samlet.values()), {**fasit, "per_aar": per_aar}
 
 
 # ---------------------------------------------------------------- kartlegging

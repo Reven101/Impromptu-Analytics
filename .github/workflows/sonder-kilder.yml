@@ -26,7 +26,6 @@ on:
         type: choice
         options:
           - kudos
-          - kudos-sortering
           - kudos-full
           - kudos-temaer
           - stortinget
@@ -98,10 +97,6 @@ jobs:
             if [ "$VALG" = "kudos" ] || [ "$VALG" = "alle" ]; then
               echo "########## KUDOS — feltkartlegging (én side) ##########"
               python3 pipeline/hent_kudos_evalueringer.py --kartlegg
-            fi
-            if [ "$VALG" = "kudos-sortering" ]; then
-              echo "########## KUDOS — hvilke sorteringsfelt godtas? ##########"
-              python3 pipeline/hent_kudos_evalueringer.py --sorteringer
             fi
             if [ "$VALG" = "kudos-full" ]; then
               echo "########## KUDOS — hele korpuset ##########"
