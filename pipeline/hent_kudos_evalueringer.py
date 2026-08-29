@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import http.client
 import json
 import os
 import re
@@ -52,8 +53,21 @@ DOKUMENTTYPE = "Evaluering"
 
 PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page may not
                         # be greater than 50.» Gir ~143 sider på evalueringskorpuset.
-PAUSE = 0.3             # samme høflighetspause som atlaset bruker
+PAUSE = 0.5             # atlaset bruker 0,3; vi tar litt mer, fordi 143 sider på rad
+                        # er en helt annen belastning enn atlasets håndfull kall
 FORSOK = 4              # med eksponentiell backoff: 2, 4, 8 sekunder
+
+# Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
+# viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
+# HTTPException og ValueError — ikke fra URLError. Den gikk derfor rett forbi
+# retry-løkka og drepte en kjøring på side 10 av 143.
+# OSError dekker ConnectionReset og TimeoutError, som begge er OSError-subklasser.
+FORBIGAENDE = (
+    urllib.error.URLError,
+    http.client.HTTPException,
+    json.JSONDecodeError,
+    OSError,
+)
 
 # Rimelighetsgrenser. Atlaset målte ~7 000 evalueringer i juli 2026 og smoke-testen
 # der krever minst 1 000. Vi er strengere: faller totalen under 5 000 eller stiger
@@ -117,11 +131,20 @@ def hent_json(url: str, timeout: int = 60) -> dict:
                     "Har filternavnene endret seg? API-ets 422 lister de gyldige."
                 ) from e
             siste = e
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as e:
+        except FORBIGAENDE as e:
             siste = e
         if forsok < FORSOK - 1:
+            # Retry som ikke sier fra, skjuler at kilden er i ferd med å bli
+            # dårligere. Én linje per forsøk er nok til å se raten i loggen.
+            # «except ... as e» avbinder e når blokken går ut, så her er det
+            # siste som bærer feilen — ikke e.
+            print(f"  ⚠ {type(siste).__name__} på forsøk {forsok + 1}/{FORSOK} "
+                  f"({siste}) — prøver igjen om {2 ** (forsok + 1)} s")
             time.sleep(2 ** (forsok + 1))
-    raise SystemExit(f"FEIL: ga opp {url} etter {FORSOK} forsøk — siste feil: {siste}")
+    raise SystemExit(
+        f"FEIL: ga opp {url} etter {FORSOK} forsøk.\n"
+        f"  Siste feil: {type(siste).__name__}: {siste}"
+    )
 
 
 def hent_side(side: int, **filtre) -> dict:
