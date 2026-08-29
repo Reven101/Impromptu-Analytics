@@ -4,6 +4,7 @@ Kjøring (krever nett mot kudos.dfo.no):
 
     python pipeline/hent_kudos_evalueringer.py
     python pipeline/hent_kudos_evalueringer.py --kartlegg   # bare feltkartlegging, 1 side
+    python pipeline/hent_kudos_evalueringer.py --frisk      # ignorer lagrede sider
 
 Kudos er DFØs base over kunnskapsdokumenter i offentlig sektor — evalueringer,
 utredninger, årsrapporter, tildelingsbrev. Vi henter én type: `Evaluering`.
@@ -15,7 +16,12 @@ Rådata skrives UTENFOR repoet (jf. SIKKERHET.md / .gitignore): sett KUDOS_DIR,
 ellers brukes ../impromptu_raadata/kudos/ ved siden av repoet. Alt i dette repoet
 serveres statisk av Vercel, så en innsjekket kopi av basen blir offentlig nedlastbar.
 
-To ting scriptet gjør med vilje:
+Korpuset er 143 sider som må hentes sekvensielt, og kilden er merkbart tregere
+under vedvarende paginering enn ved enkeltkall. Derfor lagres hver side til disk
+etter hvert: blir kjøringen avbrutt — tidsgrense i Actions, et lukket lokk —
+fortsetter neste kjøring der den slapp i stedet for å betale for alt på nytt.
+
+Tre ting scriptet gjør med vilje:
 
 - **Det teller mot API-ets egen fasit.** `meta.total` sier hvor mange dokumenter som
   finnes. Får vi færre rader enn det, stopper vi. En halv base er verre enn ingen
@@ -62,6 +68,10 @@ FORSOK = 4              # med eksponentiell backoff: 2, 4, 8 sekunder
 # HTTPException og ValueError — ikke fra URLError. Den gikk derfor rett forbi
 # retry-løkka og drepte en kjøring på side 10 av 143.
 # OSError dekker ConnectionReset og TimeoutError, som begge er OSError-subklasser.
+# 4xx som likevel betyr «prøv igjen»: 408 Request Timeout, 425 Too Early,
+# 429 Too Many Requests. Alt annet under 500 er vår feil og skal boble opp.
+PROV_IGJEN_STATUS = {408, 425, 429}
+
 FORBIGAENDE = (
     urllib.error.URLError,
     http.client.HTTPException,
@@ -111,8 +121,13 @@ def les_per_side_tak(kropp: str) -> int | None:
     return None
 
 
-def hent_json(url: str, timeout: int = 60) -> dict:
-    """GET med retry. Nettverksfeil og 5xx prøves igjen; 4xx er vår feil og bobler opp."""
+def hent_json(url: str, timeout: int = 30) -> dict:
+    """GET med retry.
+
+    Nettverksfeil, 5xx og de tre 4xx-ene som betyr «prøv igjen» (408/425/429)
+    prøves på nytt med eksponentiell backoff. Alle andre 4xx er vår feil og
+    bobler opp med kroppen, siden de ikke blir bedre av flere forsøk.
+    """
     siste = None
     for forsok in range(FORSOK):
         try:
@@ -120,8 +135,18 @@ def hent_json(url: str, timeout: int = 60) -> dict:
             with urllib.request.urlopen(req, timeout=timeout) as svar:
                 return json.loads(svar.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
+            # 429 og 408 er 4xx, men de betyr «for fort» og «prøv igjen» — ikke
+            # «du spurte feil». Å behandle dem som fatale er nettopp feilen som
+            # dreper en paginering over 143 sider, for det er da en server
+            # begynner å strupe. Retry-After respekteres hvis den er satt.
+            if e.code in PROV_IGJEN_STATUS:
+                vent = e.headers.get("Retry-After") if e.headers else None
+                if vent and str(vent).strip().isdigit():
+                    print(f"  ⚠ HTTP {e.code}, Retry-After {vent} s — venter",
+                          flush=True)
+                    time.sleep(min(int(vent), 120))
             # 422 røper gyldige parametre i kroppen — vis den, ikke bare koden.
-            if e.code < 500:
+            elif e.code < 500:
                 kropp = e.read().decode("utf-8", errors="replace")[:800]
                 tak = les_per_side_tak(kropp)
                 if tak is not None:
@@ -139,7 +164,7 @@ def hent_json(url: str, timeout: int = 60) -> dict:
             # «except ... as e» avbinder e når blokken går ut, så her er det
             # siste som bærer feilen — ikke e.
             print(f"  ⚠ {type(siste).__name__} på forsøk {forsok + 1}/{FORSOK} "
-                  f"({siste}) — prøver igjen om {2 ** (forsok + 1)} s")
+                  f"({siste}) — prøver igjen om {2 ** (forsok + 1)} s", flush=True)
             time.sleep(2 ** (forsok + 1))
     raise SystemExit(
         f"FEIL: ga opp {url} etter {FORSOK} forsøk.\n"
@@ -173,8 +198,44 @@ def hent_side(side: int, **filtre) -> dict:
     raise SystemExit("FEIL: Kudos avviste sidestørrelsen to ganger på rad.")
 
 
-def hent_alle() -> tuple[list[dict], dict]:
-    """Alle dokumenter av typen Evaluering, med API-ets egen meta fra første side."""
+SIDER_DIR = RAADATA_DIR / "sider"
+
+
+def _sidefil(side: int) -> Path:
+    return SIDER_DIR / f"side_{side:04d}.json"
+
+
+def les_lagret_side(side: int) -> list[dict] | None:
+    """Én ferdighentet side fra disk, eller None hvis den mangler eller er ødelagt."""
+    fil = _sidefil(side)
+    if not fil.exists():
+        return None
+    try:
+        data = json.loads(fil.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None  # halvskrevet eller uleselig: hentes på nytt
+    return data if isinstance(data, list) else None
+
+
+def skriv_side(side: int, data: list[dict]) -> None:
+    """Lagrer én side atomisk: skriv til .tmp, så gi nytt navn.
+
+    Uten rename-trikset kan en kjøring som blir drept midt i en skriving legge
+    igjen en halv fil som ser gyldig ut på neste kjøring.
+    """
+    SIDER_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = _sidefil(side).with_suffix(".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(_sidefil(side))
+
+
+def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
+    """Alle dokumenter av typen Evaluering, med API-ets egen meta fra første side.
+
+    Hver side lagres til disk etter hvert. En avbrutt kjøring — tidsgrense i
+    Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
+    for å betale for de samme 143 kallene på nytt.
+    """
     forste = hent_side(1, type=DOKUMENTTYPE)
     meta = forste.get("meta") or {}
     total = meta.get("total")
@@ -192,13 +253,40 @@ def hent_alle() -> tuple[list[dict], dict]:
             f"Sjekk {KILDE_URL} før du justerer grensene."
         )
 
-    print(f"  {total} evalueringer fordelt på {sider} sider à {PER_SIDE}")
+    print(f"  {total} evalueringer fordelt på {sider} sider à {PER_SIDE}", flush=True)
+
+    if bruk_sjekkpunkt:
+        skriv_side(1, list(forste.get("data") or []))
     dokumenter = list(forste.get("data") or [])
+    gjenbrukt = 0
+    start = time.monotonic()
+
     for side in range(2, sider + 1):
-        time.sleep(PAUSE)
-        dokumenter += hent_side(side, type=DOKUMENTTYPE).get("data") or []
+        lagret = les_lagret_side(side) if bruk_sjekkpunkt else None
+        if lagret is not None:
+            dokumenter += lagret
+            gjenbrukt += 1
+        else:
+            time.sleep(PAUSE)
+            rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
+            if bruk_sjekkpunkt:
+                skriv_side(side, rader)
+            dokumenter += rader
+
         if side % 10 == 0 or side == sider:
-            print(f"  side {side}/{sider} — {len(dokumenter)} dokumenter")
+            # Farten er selve diagnosen når en kjøring går på tidsgrensa. Uten
+            # sekundene i utskriften kan vi ikke skille «kilden er treg» fra
+            # «vi prøver på nytt hele tiden», og da gjetter vi på neste fiks.
+            gått = time.monotonic() - start
+            per_side = gått / max(1, side - 1 - gjenbrukt)
+            igjen = (sider - side) * per_side
+            print(f"  side {side}/{sider} — {len(dokumenter)} dokumenter, "
+                  f"{gått:.0f} s brukt, {per_side:.1f} s/side, "
+                  f"~{igjen / 60:.0f} min igjen", flush=True)
+
+    if gjenbrukt:
+        print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "
+              f"de kostet ingen nye kall)", flush=True)
 
     # Fasitsjekk mot API-ets eget tall. Duplikater over sidegrenser er en kjent
     # paginerings-felle når basen endres under kjøring, så vi teller unike uuid-er.
@@ -337,6 +425,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--kartlegg", action="store_true",
                     help="hent bare første side og kartlegg feltene (ingen skriving)")
+    ap.add_argument("--frisk", action="store_true",
+                    help="ignorer lagrede sider og hent alt på nytt")
     args = ap.parse_args()
 
     print(f"{KILDE} — {KILDE_URL}")
@@ -349,7 +439,7 @@ def main() -> int:
         return 0
 
     print(f"Henter alle dokumenter av typen «{DOKUMENTTYPE}» …")
-    dokumenter, meta = hent_alle()
+    dokumenter, meta = hent_alle(bruk_sjekkpunkt=not args.frisk)
 
     RAADATA_DIR.mkdir(parents=True, exist_ok=True)
     UTFIL.write_text(json.dumps({
