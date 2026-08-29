@@ -233,18 +233,21 @@ def skriv_side(side: int, data: list[dict]) -> None:
     tmp.replace(_sidefil(side))
 
 
-def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
-    """Alle dokumenter av typen Evaluering, med API-ets egen meta fra første side.
+def _sveip(sortering: str | None, bruk_sjekkpunkt: bool) -> tuple[list[dict], dict]:
+    """Ett gjennomløp av hele pagineringen med én bestemt sortering.
 
     Hver side lagres til disk etter hvert. En avbrutt kjøring — tidsgrense i
     Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
     for å betale for de samme 143 kallene på nytt.
+
+    Duplikater telles og rapporteres, men stopper ikke sveipet: et sveip med
+    duplikater bidrar fortsatt med dokumenter, og kalleren slår sveipene sammen.
     """
     global _sortering
-    _sortering = finn_sortering()
-    sortering = _sortering
+    _sortering = sortering
     ekstra = {"sort": sortering} if sortering else {}
-    print(f"  sjekkpunkter: {sider_dir().name}", flush=True)
+    print(f"  sortering: {sortering or 'ingen'} — "
+          f"sjekkpunkter i {sider_dir().name}", flush=True)
     forste = hent_side(1, type=DOKUMENTTYPE, **ekstra)
     meta = forste.get("meta") or {}
     total = meta.get("total")
@@ -280,10 +283,10 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     # sidene og 10 de neste, står anslaget og lyver lenge om at det er langt
     # igjen. Vi holder derfor de siste ti sidetidene og regner på dem.
     siste_tider: collections.deque[float] = collections.deque(maxlen=10)
-    # Duplikater telles UNDERVEIS, ikke bare til slutt. Sluttkontrollen fanget
-    # dem riktig, men først etter halvannen time — og med stabil sortering skal
-    # tallet være null fra første side. Er det ikke det, blir det ikke bedre av
-    # å hente 120 sider til, og da skal vi få vite det etter et par minutter.
+    # Duplikater telles og vises underveis, men avbryter ikke sveipet. Med
+    # stabil sortering skal tallet være null; er det ikke det, forteller det oss
+    # at rekkefølgen forskyver seg — og da er svaret å hente et sveip til og
+    # slå dem sammen, ikke å kaste det vi allerede har betalt for.
     sett_uuid: set[str] = {d.get("uuid") for d in sider_data[1] if d.get("uuid")}
     dubletter = 0
 
@@ -335,17 +338,6 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
                   + (f", {dubletter} dubletter" if dubletter else ""),
                   flush=True)
 
-        # Tidlig avbrudd. Med stabil sortering er null duplikater forventningen,
-        # ikke håpet. Dukker de opp allerede på de første tjue sidene, er
-        # pagineringen ustabil, og resten av kjøringen er bortkastet tid.
-        if side >= 20 and dubletter > 0:
-            raise SystemExit(
-                f"FEIL: {dubletter} duplikater alt etter {side} sider.\n"
-                f"  Sorteringen som ble valgt ({_sortering or 'ingen'}) gir ikke\n"
-                f"  stabil paginering. Resten av kjøringen ville arvet problemet,\n"
-                f"  så vi stopper nå framfor å bruke halvannen time på det.\n"
-                f"  Si fra med denne meldingen, så finner vi et annet sorteringsfelt."
-            )
 
     if gjenbrukt:
         print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "
@@ -382,21 +374,6 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
 
     # Fasitsjekk mot API-ets eget tall. Duplikater over sidegrenser er en kjent
     # paginerings-felle når basen endres under kjøring, så vi teller unike uuid-er.
-    unike = {d.get("uuid") for d in dokumenter if d.get("uuid")}
-    if len(unike) < total:
-        duplikater = len(dokumenter) - len(unike)
-        teller = collections.Counter(d.get("uuid") for d in dokumenter)
-        verstinger = [u for u, n in teller.most_common(3) if n > 1]
-        raise SystemExit(
-            f"FEIL: {len(dokumenter)} rader hentet, men bare {len(unike)} unike — "
-            f"API-et oppgir {total}.\n"
-            f"  {duplikater} rader er duplikater. Det betyr at pagineringen har\n"
-            f"  forskjøvet seg underveis: samme dokument ble servert på to sider,\n"
-            f"  og et annet ble aldri servert i det hele tatt.\n"
-            f"  Eksempler på gjengangere: {verstinger}\n"
-            f"  Kjør på nytt med --frisk. Sorteringen som velges ved oppstart\n"
-            f"  skal hindre dette; ble ingen godtatt, står det i loggen over."
-        )
     mangler_felt = [d for d in dokumenter if not d.get("uuid") or not d.get("title")]
     if mangler_felt:
         raise SystemExit(
@@ -404,6 +381,80 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             f"Første: {json.dumps(mangler_felt[0], ensure_ascii=False)[:300]}"
         )
     return dokumenter, meta
+
+
+def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
+    """Hele korpuset, satt sammen av så mange sveip som trengs.
+
+    Ett sveip med stabil sortering skal holde. Men holder ikke sorteringen
+    rekkefølgen, glipper en skive dokumenter — og da er svaret å hente resten,
+    ikke å gi opp. Hvert sveip legges til i samme uuid-oppslag, og duplikater
+    på tvers av sveip er gratis: det er nettopp overlappet som gjør at et nytt
+    sveip kan tette hull i det forrige.
+
+    Fasiten er API-ets egen `meta.total`. Når vi har så mange unike, ER basen
+    komplett — uansett hvor mange sveip det tok. Kommer vi ikke dit, stopper vi
+    framfor å skrive et snapshot som ser komplett ut og ikke er det.
+    """
+    samlet: dict[str, dict] = {}
+    total: int | None = None
+    meta: dict = {}
+    prøvd: list[str] = []
+
+    # Den oppdagede sorteringen først, så de andre kandidatene, og til slutt
+    # usortert. Rekkefølgen er «mest sannsynlig stabil» først.
+    beste = finn_sortering()
+    rekkefølge = ([beste] if beste else []) + \
+                 [k for k in SORTERINGSKANDIDATER if k != beste] + [None]
+
+    for forsok, sortering in enumerate(rekkefølge, 1):
+        if total is not None and len(samlet) >= total:
+            break
+        etikett = sortering or "ingen sortering"
+        print(f"\nSveip {forsok}: {etikett}", flush=True)
+        try:
+            dokumenter, meta = _sveip(sortering, bruk_sjekkpunkt)
+        except (SystemExit, PerSideTak) as e:
+            # En avvist sort-parameter er ikke en grunn til å stoppe alt.
+            if "422" in str(e) or isinstance(e, PerSideTak):
+                print(f"  ✗ {etikett} avvist av API-et — prøver neste", flush=True)
+                prøvd.append(f"{etikett}: avvist")
+                continue
+            raise
+
+        total = meta.get("total", total)
+        før = len(samlet)
+        for d in dokumenter:
+            if d.get("uuid"):
+                samlet.setdefault(d["uuid"], d)
+        nye = len(samlet) - før
+        prøvd.append(f"{etikett}: +{nye}")
+        print(f"  sveipet ga {len(dokumenter)} rader, {nye} nye — "
+              f"{len(samlet)}/{total} unike totalt", flush=True)
+
+        if total is not None and len(samlet) >= total:
+            break
+        if nye == 0:
+            print("  ingen nye dokumenter fra dette sveipet — gir seg", flush=True)
+            break
+
+    if total is None:
+        raise SystemExit("FEIL: fikk aldri et gyldig svar fra Kudos.")
+
+    if len(samlet) < total:
+        raise SystemExit(
+            f"FEIL: {len(samlet)} unike dokumenter etter {len(prøvd)} sveip, "
+            f"men API-et oppgir {total}.\n"
+            f"  Sveipene: {'; '.join(prøvd)}\n"
+            f"  {total - len(samlet)} dokumenter ble aldri servert. Et snapshot\n"
+            f"  på {len(samlet)} ville sett komplett ut og vært det ikke — alle\n"
+            f"  andeler regnet på det blir feil, og feilen er usynlig.\n"
+            f"  Si fra med denne meldingen."
+        )
+
+    print(f"\n✓ {len(samlet)} unike dokumenter etter {len(prøvd)} sveip "
+          f"({'; '.join(prøvd)})", flush=True)
+    return list(samlet.values()), meta
 
 
 # ---------------------------------------------------------------- kartlegging
