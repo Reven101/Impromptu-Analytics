@@ -150,20 +150,34 @@ def finn_sortering() -> str | None:
     Prøves én gang ved oppstart. Koster noen få kall og sparer oss for en
     kjøring der pagineringen har flyttet på seg underveis.
     """
+    forste_avvisning = None
     for kandidat in SORTERINGSKANDIDATER:
         params = {"page": 1, "per_page": 1, "type": DOKUMENTTYPE, "sort": kandidat}
+        url = f"{API}?{urllib.parse.urlencode(params)}"
         try:
-            hent_json(f"{API}?{urllib.parse.urlencode(params)}")
-        except (SystemExit, PerSideTak):
-            print(f"  · sort={kandidat} avvist", flush=True)
+            nett.hent_json(url, BRUKERAGENT)
+        except nett.HttpFeil as e:
+            # Kroppen er fasiten, ikke støy. Kudos' 422 oppga per_page-taket, og
+            # Stortingets 400 navnga parameteren som manglet — en avvisning som
+            # bare noteres som «avvist» kaster nettopp den opplysningen vi
+            # trenger for å finne den gyldige verdien.
+            print(f"  · sort={kandidat}: HTTP {e.kode}", flush=True)
+            if forste_avvisning is None:
+                forste_avvisning = e.kropp
             continue
         except nett.NettFeil:
             print(f"  · sort={kandidat} svarte ikke — hopper over", flush=True)
             continue
         print(f"  ✓ sorterer på «{kandidat}» — stabil paginering", flush=True)
         return kandidat
-    print("  ⚠ ingen sorteringsfelt ble godtatt. Pagineringen kan da forskyve", flush=True)
-    print("    seg underveis, og duplikater rapporteres til slutt.", flush=True)
+
+    print("  ⚠ ingen av kandidatene ble godtatt.", flush=True)
+    if forste_avvisning:
+        print("    API-ets egen feilkropp — her står som regel de gyldige "
+              "verdiene:", flush=True)
+        print(f"    {forste_avvisning[:600]}", flush=True)
+    print("    Uten stabil sortering kan pagineringen forskyve seg underveis.", flush=True)
+    print("    Kjøringen fortsetter, og henter et sveip til for å tette hull.", flush=True)
     return None
 
 
@@ -578,9 +592,22 @@ def main() -> int:
                     help="hent bare første side og kartlegg feltene (ingen skriving)")
     ap.add_argument("--frisk", action="store_true",
                     help="ignorer lagrede sider og hent alt på nytt")
+    ap.add_argument("--sorteringer", action="store_true",
+                    help="prøv bare sorteringskandidatene og vis API-ets svar "
+                         "(sekunder — bruk denne før du starter en lang henting)")
     args = ap.parse_args()
 
     print(f"{KILDE} — {KILDE_URL}")
+
+    if args.sorteringer:
+        print("Prøver sorteringskandidatene …")
+        valgt = finn_sortering()
+        print(f"\nResultat: {valgt or 'ingen sortering godtatt'}")
+        if not valgt:
+            print("Les feilkroppen over: står de gyldige verdiene der, legg dem")
+            print("inn i SORTERINGSKANDIDATER. Gjør de ikke det, må hentingen")
+            print("klare seg med flere sveip som slås sammen.")
+        return 0
 
     if args.kartlegg:
         print(f"Henter én side à {PER_SIDE} for feltkartlegging …")
