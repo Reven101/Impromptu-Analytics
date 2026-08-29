@@ -24,9 +24,11 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      # v4/v5 kjørte på Node 20, som GitHub har avviklet. De ble tvunget over
+      # på Node 24 med et varsel; disse deklarerer node24 selv.
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           # Atlaset er stdlib-only, så det er ingenting å installere.
           python-version: "3.11"
