@@ -49,11 +49,13 @@ def hent_valg(aar: int, valgtype: str) -> dict:
 
 def smoke() -> str:
     feil = []
+    siste_unntak: Exception | None = None
     for aar, valgtype in ((2025, "st"), (2023, "ko"), (2021, "st")):
         try:
             data = hent_valg(aar, valgtype)
         except Exception as e:
             feil.append(f"{aar}/{valgtype}: {e}")
+            siste_unntak = e
             continue
         partier = data.get("partier") or []
         if partier:
@@ -65,7 +67,10 @@ def smoke() -> str:
             prosent = storste.get("stemmer", {}).get("resultat", {}).get("prosent")
             return f"{aar}/{valgtype}: {len(partier)} partier; størst: {navn} ({prosent} %)"
         return f"{aar}/{valgtype}: svar mottatt med nøklene {sorted(data)[:6]}"
-    raise ValueError("ingen av valgene svarte — sjekk API-mønsteret: " + "; ".join(feil))
+    # `from siste_unntak` lar testkjøreren se om årsaken var nettverk eller API.
+    raise ValueError(
+        "ingen av valgene svarte — sjekk API-mønsteret: " + "; ".join(feil)
+    ) from siste_unntak
 
 
 def main() -> int:

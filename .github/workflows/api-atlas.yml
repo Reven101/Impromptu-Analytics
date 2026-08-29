@@ -1,0 +1,59 @@
+# Kjører api-atlas/test_atlas.py mot de ekte kildene.
+#
+# Den 1. hver måned, og ellers når du trykker «Run workflow» — det er hele
+# poenget: du skal kunne sjekke atlaset fra en telefon eller iPad uten å
+# starte en Codespace.
+#
+# Jobben feiler når en kilde ikke svarer som den skal, og GitHub sender deg
+# e-post om det. Ingen varsel = alt er grønt.
+name: API-atlas
+
+on:
+  schedule:
+    # 1. i måneden, 06:00 UTC (07:00/08:00 norsk tid).
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-atlas:
+    name: Sjekk at kildene lever
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Atlaset er stdlib-only, så det er ingenting å installere.
+          python-version: "3.11"
+
+      - name: Test alle kildene
+        env:
+          # Valgfri. Er den ikke satt, hopper Frost-scriptet over seg selv
+          # («–») i stedet for å feile. Legg den inn under
+          # Settings → Secrets and variables → Actions for å teste den også.
+          FROST_CLIENT_ID: ${{ secrets.FROST_CLIENT_ID }}
+        run: |
+          # pipefail, ellers spiser tee exit-koden og alt ser grønt ut.
+          set -o pipefail
+          python3 api-atlas/test_atlas.py 2>&1 | tee kjoring.txt
+
+      - name: Legg tabellen i kjøringssammendraget
+        # Kjører også når testen feilet — det er nettopp da du vil lese den.
+        if: always()
+        run: |
+          {
+            echo "## API-atlas — $(date -u '+%d.%m.%Y %H:%M UTC')"
+            echo
+            if [ -f kjoring.txt ]; then
+              echo '```'
+              cat kjoring.txt
+              echo '```'
+            else
+              echo "Testen kom aldri i gang — se loggen for steget over."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

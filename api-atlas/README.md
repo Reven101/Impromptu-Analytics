@@ -19,10 +19,38 @@ startpunkt, uten å dra med seg noe annet.
 python3 api-atlas/test_atlas.py
 ```
 
-Kjøreren gjør ett lite kall mot hver kilde og skriver en ✓/✗-tabell på
+Kjøreren gjør ett lite kall mot hver kilde og skriver en statustabell på
 under et minutt. Kjør den månedlig, og alltid før du starter et nytt
-prosjekt på en av kildene. Feiler en kilde: åpne `DOK`-lenken øverst i
-scriptet — API-er flytter seg, og scriptet sier hvor du skal lete.
+prosjekt på en av kildene.
+
+| | |
+|---|---|
+| ✓ | kilden svarer og dataene ser riktige ut |
+| – | hoppet over — API-nøkkel mangler (`FROST_CLIENT_ID`) |
+| ? | kilden ble aldri nådd: nett, brannmur eller proxy her hos deg |
+| ✗ | kilden svarte feil — åpne `DOK`-lenken øverst i scriptet og se hva som er endret |
+
+Skillet mellom `?` og `✗` er verdt å merke seg: uten nett ser alle sytten
+kildene ut som om de endret seg samtidig, og da leter du i dokumentasjonen
+etter noe som står helt stille. `?` betyr hverken bekreftet eller avkreftet
+— kjør på nytt fra et sted med åpen utgående forbindelse. Exit-koden er
+antall `✗`, eller 1 om kjøringen bare var uten nett; 0 kommer kun når alt
+faktisk er grønt.
+
+### Eller la GitHub gjøre det
+
+`.github/workflows/api-atlas.yml` kjører den samme testen den 1. hver
+måned, og ellers når du trykker **Run workflow** under Actions-fanen — det
+virker fra telefon og nettbrett, uten Codespace. Tabellen legges i
+kjøringssammendraget, så du slipper å grave i loggen. Feiler en kilde,
+feiler jobben, og GitHub sender deg e-post; ingen e-post betyr grønt.
+
+Vil du ha Frost testet i tillegg til de seksten andre, legg
+`FROST_CLIENT_ID` inn under Settings → Secrets and variables → Actions.
+Uten den hopper den kilden over seg selv, som lokalt.
+
+Merk at GitHub slår av planlagte workflows i repoer uten aktivitet på 60
+dager. Skjer det, får du en e-post om det, og en knapp for å slå den på.
 
 ## Kildene
 
