@@ -49,7 +49,8 @@ KILDE_URL = "https://kudos.dfo.no/apne-data"
 BRUKERAGENT = "Impromptu-Analytics/1.0 (kontakt@impromptu.no)"
 DOKUMENTTYPE = "Evaluering"
 
-PER_SIDE = 100          # API-ets maks er ikke dokumentert; 100 er trygt og gir ~72 kall
+PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page may not
+                        # be greater than 50.» Gir ~143 sider på evalueringskorpuset.
 PAUSE = 0.3             # samme høflighetspause som atlaset bruker
 FORSOK = 4              # med eksponentiell backoff: 2, 4, 8 sekunder
 
