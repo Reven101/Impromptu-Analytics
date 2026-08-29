@@ -68,7 +68,7 @@ PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page 
 # sider sekvensielt blir da fire-fem timer, og ventetiden er hele kostnaden.
 # Vi henter derfor flere sider samtidig. Den adaptive bremsen under gjelder
 # fortsatt: struper kilden, senker vi farten selv.
-TRADER = 4
+TRADER = 3
 PAUSE = 2.0             # mellom hver bunt, ikke mellom hver side
 PAUSE_TAK = 15.0        # aldri saktere enn dette
 PAUSE_FAKTOR = 1.6      # ganges på ved hver feil
@@ -349,6 +349,8 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
             stopp = True
             break
 
+    tak_trader = trader
+
     def hent_en(side: int) -> tuple[int, list[dict] | None]:
         """Én side, i sin egen tråd. None betyr at den ga opp."""
         try:
@@ -396,13 +398,25 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
         if feil_i_bunten:
             pause = min(pause * PAUSE_FAKTOR, PAUSE_TAK)
             uten_feil = 0
-            print(f"    bremser til {pause:.1f} s mellom buntene", flush=True)
+            # Struper kilden, er svaret færre samtidige — ikke bare lengre
+            # pause. Én tråd som venter kommer gjennom der fire blir avvist.
+            if trader > 1:
+                trader = max(1, trader // 2)
+                print(f"    bremser til {pause:.1f} s og {trader} "
+                      f"samtidige", flush=True)
+            else:
+                print(f"    bremser til {pause:.1f} s mellom sidene", flush=True)
         else:
             uten_feil += len(bunt)
-            if uten_feil >= GJENVINN_ETTER and pause > PAUSE:
+            if uten_feil >= GJENVINN_ETTER and (pause > PAUSE or trader < tak_trader):
+                # Bremsen må kunne slippes igjen. Uten dette blir én dårlig
+                # periode tidlig i kjøringen til én tråd resten av veien, og
+                # da er vi tilbake til timene vi nettopp kvittet oss med.
                 pause = max(PAUSE, pause / PAUSE_FAKTOR)
+                trader = min(tak_trader, trader * 2)
                 uten_feil = 0
-                print(f"    går bra igjen — {pause:.1f} s mellom buntene", flush=True)
+                print(f"    går bra igjen — {pause:.1f} s og {trader} samtidige",
+                      flush=True)
 
         ferdig = plassert + gjenbrukt + 1
         if ferdig % 20 < trader or plassert >= len(å_hente):
@@ -442,10 +456,11 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
         feilede = fortsatt_feil
 
     if feilede:
-        raise SystemExit(
-            f"FEIL: {len(feilede)} sider lot seg ikke hente: {feilede}\n"
-            "Sidene som gikk gjennom er lagret, så en ny kjøring fortsetter\n"
-            "der denne slapp og henter bare det som mangler."
+        # NettFeil, ikke SystemExit: kalleren fanger den og tar hele skiven i
+        # ny runde. En SystemExit her rev med seg alle de andre skivene, som er
+        # nøyaktig det sjekkpunktene og rundene er der for å hindre.
+        raise nett.NettFeil(
+            f"{len(feilede)} sider ga opp også i andre runde: {feilede}"
         )
 
     dokumenter = [d for side in sorted(sider_data) for d in sider_data[side]]
@@ -478,7 +493,20 @@ def hent_alle(bruk_sjekkpunkt: bool = True,
     dessuten en strengere kontroll enn før: den fanger både hull i et enkelt år
     og dokumenter som mangler årstall.
     """
-    fasit = hent_side(1, type=DOKUMENTTYPE).get("meta") or {}
+    # Fasitkallet er det ene vi ikke kan klare oss uten: uten meta.total vet vi
+    # ikke hva som er komplett. Derfor får det flere forsøk enn resten, og en
+    # forklaring framfor en traceback hvis kilden er nede.
+    try:
+        fasit = nett.hent_json(
+            f"{API}?{urllib.parse.urlencode({'page': 1, 'per_page': PER_SIDE, 'type': DOKUMENTTYPE})}",
+            BRUKERAGENT, forsok_maks=6,
+        ).get("meta") or {}
+    except (nett.NettFeil, nett.HttpFeil) as e:
+        raise SystemExit(
+            f"FEIL: fikk ikke fasittallet fra Kudos: {e}\n"
+            f"  Uten meta.total vet vi ikke hva en komplett base er.\n"
+            f"  Prøv igjen senere, eller sjekk {KILDE_URL}."
+        ) from e
     total = fasit.get("total")
     if not isinstance(total, int):
         raise SystemExit(f"FEIL: mangler meta.total.\n{json.dumps(fasit)[:300]}")
