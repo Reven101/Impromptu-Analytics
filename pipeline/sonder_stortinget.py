@@ -219,19 +219,26 @@ def main() -> int:
     # etter en ferdigbehandlet sak med publikasjonsreferanser, og bruker den.
     sak_detalj = None
     sakid = None
+    print("\n    Leter etter en ferdigbehandlet sak med publikasjoner:")
     for kandidat in saksliste[:40]:
         if not (isinstance(kandidat, dict) and kandidat.get("id")):
             continue
-        _, detalj = vis(f"Saksdetaljer for {kandidat['id']}", "sak",
-                        sakid=kandidat["id"], format="json")
+        time.sleep(PAUSE)
+        status, _, kropp = hent("sak", sakid=kandidat["id"], format="json")
+        detalj = som_json(kropp) if status == 200 else None
         if not isinstance(detalj, dict):
+            print(f"      {kandidat['id']}: HTTP {status}")
             continue
         ferdig = detalj.get("ferdigbehandlet")
         refs = detalj.get("publikasjon_referanse_liste") or []
-        print(f"    ferdigbehandlet={ferdig}, {len(refs)} publikasjonsreferanser")
+        # Én linje per sak. Førti fulle detaljblokker gjør loggen uleselig,
+        # og det er treffet vi er ute etter, ikke letingen.
+        print(f"      {kandidat['id']}: ferdigbehandlet={ferdig}, "
+              f"{len(refs)} publikasjonsreferanser")
         if ferdig in (True, "true") and refs:
             sak_detalj, sakid = detalj, kandidat["id"]
             print(f"    → bruker sak {sakid}: {str(kandidat.get('tittel'))[:60]}")
+            vis(f"Saksdetaljer for {sakid}", "sak", sakid=sakid, format="json")
             break
     if sak_detalj is None:
         # Ingen ferdig sak blant de første — ta den første vi fikk detaljer på,
@@ -313,19 +320,58 @@ def main() -> int:
     # ---------------------------------------------------------- nivå 3
     print("\n" + "=" * 72)
     print("NIVÅ 3 — VEDTAK")
-    form, voteringer = vis("Voteringer for saken", "voteringer", sakid=sakid, format="json")
-    vliste = forste_liste(voteringer) if form == "json" else []
-    funn["vedtak"] = bool(vliste)
-    if vliste:
-        vfelt = sorted({k for v in vliste[:10] if isinstance(v, dict) for k in v})
-        print(f"    {len(vliste)} voteringer. Felt: {', '.join(vfelt)}")
-        vid = next((v.get("votering_id") or v.get("id") for v in vliste
-                    if isinstance(v, dict)), None)
-        if vid:
-            vis(f"Voteringsresultat {vid}", "voteringsresultat", voteringid=vid, format="json")
+    funn["vedtak"] = False
+
+    # En sak i en pågående sesjon KAN ikke ha vedtak ennå, så å lete der og
+    # melde «✗ vedtak» måler kalenderen, ikke API-et. Vi går derfor gjennom
+    # sesjonene bakover — en avsluttet sesjon har ferdigbehandlede saker —
+    # og stopper på den første saken som faktisk har en votering.
+    # ider er nyeste først, og lista inneholder sesjoner som ikke har begynt.
+    # «Avsluttet» er derfor det som ligger ETTER den inneværende i lista —
+    # tar man bare «alle andre», ender man i 2028-2029, som er tom.
+    if args.sesjon or sesjon not in ider:
+        eldre = []
     else:
-        print("    · ingen voteringer på denne saken (den kan være under behandling) —")
-        print("      prøv --sesjon med en avsluttet sesjon før du konkluderer")
+        eldre = ider[ider.index(sesjon) + 1:]
+    avsluttede = eldre
+    for kilde_sesjon in [sesjon, *avsluttede][:4]:
+        if funn["vedtak"]:
+            break
+        if kilde_sesjon == sesjon:
+            saker_her = saksliste
+        else:
+            time.sleep(PAUSE)
+            status, _, kropp = hent("saker", sesjonid=kilde_sesjon, format="json")
+            saker_her = forste_liste(som_json(kropp)) if status == 200 else []
+            print(f"\n  Prøver avsluttet sesjon {kilde_sesjon}: {len(saker_her)} saker")
+
+        for kandidat in saker_her[:25]:
+            if not (isinstance(kandidat, dict) and kandidat.get("id")):
+                continue
+            time.sleep(PAUSE)
+            status, _, kropp = hent("voteringer", sakid=kandidat["id"], format="json")
+            vliste = forste_liste(som_json(kropp)) if status == 200 else []
+            if not vliste:
+                continue
+
+            print(f"\n  Sak {kandidat['id']} i {kilde_sesjon} har "
+                  f"{len(vliste)} voteringer")
+            print(f"    {str(kandidat.get('tittel'))[:70]}")
+            vfelt = sorted({k for v in vliste[:10] if isinstance(v, dict) for k in v})
+            print(f"    Felt: {', '.join(vfelt)}")
+            funn["vedtak"] = True
+
+            vid = next((v.get("votering_id") or v.get("id") for v in vliste
+                        if isinstance(v, dict)), None)
+            if vid:
+                vis(f"Voteringsresultat {vid}", "voteringsresultat",
+                    voteringid=vid, format="json")
+            break
+
+    if not funn["vedtak"]:
+        print("\n  · fant ingen sak med voteringer i de prøvde sesjonene.")
+        print("    Det er ikke det samme som at voteringer ikke finnes —")
+        print("    kjør med --sesjon mot en du vet er avsluttet før du tror på det.")
 
     # ---------------------------------------------------------- konklusjon
     print("\n" + "=" * 72)
@@ -339,6 +385,10 @@ def main() -> int:
     if funn.get("fulltekst"):
         print("\n  Akt 2 kan bygges som planlagt: verbatim navngiving av rapporttitler")
         print("  i stortingsdokumenter, rapportert som en NEDRE grense.")
+    if not funn.get("vedtak"):
+        print("\n  Uten nivå 3 mister trakten sitt siste trinn: vi kan telle")
+        print("  «navngitt» og «behandlet», men ikke «vedtatt». Trakten blir da")
+        print("  tre trinn i stedet for fire — ikke umulig, bare kortere.")
     else:
         print("\n  Ingen enkelttekst passerte terskelen på "
               f"{FULLTEKST_TERSKEL} tegn.")
