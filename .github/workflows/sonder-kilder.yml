@@ -27,6 +27,7 @@ on:
         options:
           - kudos
           - kudos-full
+          - kudos-temaer
           - stortinget
           - stortinget-fulltekst
           - statsregnskapet
@@ -80,6 +81,10 @@ jobs:
           # tidsgrensa tar hele loggen med seg i grava. Det skjedde: 45 minutter
           # uten en eneste linje utskrift.
           PYTHONUNBUFFERED: "1"
+          # Bare temaklassifiseringen trenger disse. Settes de ikke, feiler det
+          # steget forklarende på manglende nøkkel — de andre bryr seg ikke.
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           # Rådata utenfor repo-treet, så et uhell ikke kan commite dem.
           KUDOS_DIR: ${{ runner.temp }}/raadata/kudos
           STORTINGET_DIR: ${{ runner.temp }}/raadata/stortinget
@@ -96,6 +101,11 @@ jobs:
             if [ "$VALG" = "kudos-full" ]; then
               echo "########## KUDOS — hele korpuset ##########"
               python3 pipeline/hent_kudos_evalueringer.py
+            fi
+            if [ "$VALG" = "kudos-temaer" ]; then
+              echo "########## KUDOS — temaklassifisering, måling først ##########"
+              python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
+                --resonnering low
             fi
             if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
               echo

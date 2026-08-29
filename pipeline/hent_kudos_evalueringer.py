@@ -68,6 +68,15 @@ PAUSE_TAK = 15.0        # aldri saktere enn dette
 PAUSE_FAKTOR = 1.6      # ganges på ved hver feil
 GJENVINN_ETTER = 15     # etter så mange sider på rad uten feil, øk farten litt
 
+# Uten en eksplisitt sortering gir Laravel radene i den rekkefølgen databasen
+# tilfeldigvis har dem. Over en kjøring på halvannen time forskyver den seg, og
+# da havner samme dokument på to sider mens et annet aldri blir servert: en
+# kjøring ga 6775 unike av 7138, altså 363 duplikater. Vi ber derfor om en
+# stabil sortering. Hvilke felt som godtas står ikke i dokumentasjonen, så
+# kandidatene prøves og API-ets eget svar avgjør.
+SORTERINGSKANDIDATER = ("uuid", "id", "published_date", "publish_date",
+                        "title", "created_at")
+
 # Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
 # viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
 # HTTPException og ValueError — ikke fra URLError. Den gikk derfor rett forbi
@@ -135,6 +144,29 @@ def hent_json(url: str, timeout: int = 30) -> dict:
         ) from e
 
 
+def finn_sortering() -> str | None:
+    """Første sorteringsfelt API-et godtar, eller None hvis ingen gjør det.
+
+    Prøves én gang ved oppstart. Koster noen få kall og sparer oss for en
+    kjøring der pagineringen har flyttet på seg underveis.
+    """
+    for kandidat in SORTERINGSKANDIDATER:
+        params = {"page": 1, "per_page": 1, "type": DOKUMENTTYPE, "sort": kandidat}
+        try:
+            hent_json(f"{API}?{urllib.parse.urlencode(params)}")
+        except (SystemExit, PerSideTak):
+            print(f"  · sort={kandidat} avvist", flush=True)
+            continue
+        except nett.NettFeil:
+            print(f"  · sort={kandidat} svarte ikke — hopper over", flush=True)
+            continue
+        print(f"  ✓ sorterer på «{kandidat}» — stabil paginering", flush=True)
+        return kandidat
+    print("  ⚠ ingen sorteringsfelt ble godtatt. Pagineringen kan da forskyve", flush=True)
+    print("    seg underveis, og duplikater rapporteres til slutt.", flush=True)
+    return None
+
+
 def hent_side(side: int, **filtre) -> dict:
     """Én side. Retter seg etter API-ets per_page-tak hvis det avviser vårt.
 
@@ -199,7 +231,9 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
     for å betale for de samme 143 kallene på nytt.
     """
-    forste = hent_side(1, type=DOKUMENTTYPE)
+    sortering = finn_sortering()
+    ekstra = {"sort": sortering} if sortering else {}
+    forste = hent_side(1, type=DOKUMENTTYPE, **ekstra)
     meta = forste.get("meta") or {}
     total = meta.get("total")
     sider = meta.get("last_page")
@@ -244,7 +278,7 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
         time.sleep(pause)
         side_start = time.monotonic()
         try:
-            rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
+            rader = hent_side(side, type=DOKUMENTTYPE, **ekstra).get("data") or []
         except nett.NettFeil as e:
             # Én gjenstridig side skal ikke koste alt det andre. Vi noterer den
             # og tar den i en ny runde til slutt, når kilden har fått puste.
@@ -289,7 +323,7 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
         for side in feilede:
             time.sleep(PAUSE_TAK)
             try:
-                rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
+                rader = hent_side(side, type=DOKUMENTTYPE, **ekstra).get("data") or []
             except nett.NettFeil as e:
                 print(f"    ✗ side {side} feilet igjen: {e}", flush=True)
                 fortsatt_feil.append(side)
@@ -313,10 +347,18 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     # paginerings-felle når basen endres under kjøring, så vi teller unike uuid-er.
     unike = {d.get("uuid") for d in dokumenter if d.get("uuid")}
     if len(unike) < total:
+        duplikater = len(dokumenter) - len(unike)
+        teller = collections.Counter(d.get("uuid") for d in dokumenter)
+        verstinger = [u for u, n in teller.most_common(3) if n > 1]
         raise SystemExit(
-            f"FEIL: hentet {len(unike)} unike dokumenter, men API-et oppgir {total}. "
-            "En ufullstendig base ser komplett ut, og alle andeler regnet på den "
-            "blir feil. Kjør på nytt."
+            f"FEIL: {len(dokumenter)} rader hentet, men bare {len(unike)} unike — "
+            f"API-et oppgir {total}.\n"
+            f"  {duplikater} rader er duplikater. Det betyr at pagineringen har\n"
+            f"  forskjøvet seg underveis: samme dokument ble servert på to sider,\n"
+            f"  og et annet ble aldri servert i det hele tatt.\n"
+            f"  Eksempler på gjengangere: {verstinger}\n"
+            f"  Kjør på nytt med --frisk. Sorteringen som velges ved oppstart\n"
+            f"  skal hindre dette; ble ingen godtatt, står det i loggen over."
         )
     mangler_felt = [d for d in dokumenter if not d.get("uuid") or not d.get("title")]
     if mangler_felt:
