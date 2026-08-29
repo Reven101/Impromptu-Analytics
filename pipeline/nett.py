@@ -45,6 +45,16 @@ FORBIGAENDE = (
 )
 
 
+class NettFeil(Exception):
+    """Alle forsøk brukt opp på én URL.
+
+    Bevisst en vanlig exception og ikke SystemExit: kalleren skal kunne notere
+    at akkurat denne enheten feilet, gå videre, og prøve den igjen når kilden
+    har fått puste. Stopper vi hele kjøringen på første gjenstridige side,
+    kaster vi bort alt arbeidet som allerede er gjort.
+    """
+
+
 class HttpFeil(Exception):
     """En 4xx som ikke blir bedre av flere forsøk. Bærer kroppen, som ofte
     inneholder svaret på hva som var galt."""
@@ -56,14 +66,15 @@ class HttpFeil(Exception):
         self.kropp = kropp
 
 
-def hent_bytes(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT) -> bytes:
+def hent_bytes(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT,
+               forsok_maks: int = FORSOK) -> bytes:
     """GET med retry. Returnerer kroppen som bytes.
 
-    Kaster HttpFeil på 4xx som ikke skal prøves igjen, og SystemExit når alle
+    Kaster HttpFeil på 4xx som ikke skal prøves igjen, og NettFeil når alle
     forsøk er brukt opp — den siste feilen står i meldingen.
     """
     siste: Exception | None = None
-    for forsok in range(FORSOK):
+    for forsok in range(forsok_maks):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": brukeragent})
             with urllib.request.urlopen(req, timeout=timeout) as svar:
@@ -80,16 +91,18 @@ def hent_bytes(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT) -> b
             siste = e
         except FORBIGAENDE as e:
             siste = e
-        if forsok < FORSOK - 1:
+        if forsok < forsok_maks - 1:
             # «except ... as e» avbinder e når blokken går ut — her er det
             # siste som bærer feilen.
-            print(f"  ⚠ {type(siste).__name__} på forsøk {forsok + 1}/{FORSOK} "
-                  f"({siste}) — prøver igjen om {2 ** (forsok + 1)} s", flush=True)
-            time.sleep(2 ** (forsok + 1))
-    raise SystemExit(f"FEIL: ga opp {url} etter {FORSOK} forsøk.\n"
-                     f"  Siste feil: {type(siste).__name__}: {siste}")
+            vent = min(2 ** (forsok + 1), 60)
+            print(f"  ⚠ {type(siste).__name__} på forsøk {forsok + 1}/{forsok_maks} "
+                  f"({siste}) — prøver igjen om {vent} s", flush=True)
+            time.sleep(vent)
+    raise NettFeil(f"ga opp {url} etter {forsok_maks} forsøk. "
+                   f"Siste feil: {type(siste).__name__}: {siste}")
 
 
-def hent_json(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT) -> dict:
+def hent_json(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT,
+              forsok_maks: int = FORSOK) -> dict:
     """Som hent_bytes, men tolker svaret som JSON."""
-    return json.loads(hent_bytes(url, brukeragent, timeout).decode("utf-8"))
+    return json.loads(hent_bytes(url, brukeragent, timeout, forsok_maks).decode("utf-8"))

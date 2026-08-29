@@ -129,7 +129,10 @@ def sesjoner(antall: int) -> list[str]:
     Registeret lister sesjoner fram i tid — i august 2026 står 2028-2029 der,
     tom. Vi tar derfor fra og med den inneværende og bakover.
     """
-    data = hent_json("sesjoner", format="json")
+    try:
+        data = hent_json("sesjoner", format="json")
+    except (nett.NettFeil, nett.HttpFeil) as e:
+        raise SystemExit(f"FEIL: fikk ikke sesjonsregisteret: {e}") from e
     liste = forste_liste(data)
     ider = [s.get("id") for s in liste if isinstance(s, dict) and s.get("id")]
 
@@ -191,6 +194,13 @@ def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool) -> dict:
         except nett.HttpFeil as e:
             print(f"    ✗ {ptype}: HTTP {e.kode} — {e.kropp[:120]}", flush=True)
             continue
+        except nett.NettFeil as e:
+            # Her er det verre: uten lista vet vi ikke hva som mangler, så
+            # sesjonen blir ufullstendig uten at noen ser det. Stopp.
+            raise SystemExit(
+                f"FEIL: fikk ikke listet {ptype} for sesjon {sesjon}: {e}\n"
+                "Uten lista vet vi ikke hvilke dokumenter som mangler."
+            ) from e
         liste = forste_liste(data)
         print(f"    {ptype}: {len(liste)} publikasjoner", flush=True)
         for p in liste:
@@ -202,12 +212,22 @@ def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool) -> dict:
 
     start = time.monotonic()
     tomme = 0
+    feilede: list[str] = []
     for i, (pid, ptype, tittel) in enumerate(mangler, 1):
         time.sleep(PAUSE)
         try:
             kropp = hent("publikasjon", publikasjonid=pid)
         except nett.HttpFeil as e:
             print(f"    ✗ {pid}: HTTP {e.kode}", flush=True)
+            feilede.append(pid)
+            continue
+        except nett.NettFeil as e:
+            # Ett dokument som ikke svarer er et hull i dekningen, ikke en
+            # grunn til å kaste de andre. Men hullet telles: et dokument vi
+            # ikke fikk lest kan ikke gi treff, og skal aldri forveksles med
+            # et dokument som ikke nevnte noe.
+            print(f"    ✗ {pid}: {e}", flush=True)
+            feilede.append(pid)
             continue
         tekst = normaliser(tekst_fra_xml(kropp))
         if not tekst:
@@ -220,7 +240,11 @@ def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool) -> dict:
                   f"{gått / i:.2f} s/dok, ~{(len(mangler) - i) * gått / i / 60:.0f} min igjen",
                   flush=True)
 
-    return {"publikasjoner": len(ønsket), "hentet_nå": len(mangler), "tomme": tomme}
+    if feilede:
+        print(f"  ⚠ {len(feilede)} dokumenter lot seg ikke hente. En ny kjøring "
+              f"prøver dem igjen — resten er lagret.", flush=True)
+    return {"publikasjoner": len(ønsket), "hentet_nå": len(mangler),
+            "tomme": tomme, "feilede": len(feilede)}
 
 
 def main() -> int:
@@ -255,7 +279,11 @@ def main() -> int:
 
     totalt = sum(f["publikasjoner"] for f in fasit.values())
     tomme = sum(f["tomme"] for f in fasit.values())
+    feilet = sum(f["feilede"] for f in fasit.values())
     print(f"\n✓ {totalt} publikasjoner over {len(valgte)} sesjoner")
+    if feilet:
+        print(f"  ⚠ {feilet} dokumenter mangler fortsatt — kjør igjen for å")
+        print("    hente dem; resten gjenbrukes og koster ingen nye kall")
     if tomme:
         print(f"  ⚠ {tomme} dokumenter ga tom tekst — de kan ikke gi treff,")
         print("    og skal telles som manglende dekning, ikke som «nevnte ikke»")

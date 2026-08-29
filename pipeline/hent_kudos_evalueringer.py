@@ -59,8 +59,14 @@ DOKUMENTTYPE = "Evaluering"
 
 PER_SIDE = 50           # API-ets tak, oppgitt av dets egen 422: «The per page may not
                         # be greater than 50.» Gir ~143 sider på evalueringskorpuset.
-PAUSE = 0.5             # atlaset bruker 0,3; vi tar litt mer, fordi 143 sider på rad
-                        # er en helt annen belastning enn atlasets håndfull kall
+# Kudos slutter å svare etter en håndfull raske kall: en kjøring fikk sidene 1-4
+# på sekunder, og så timet side 5 ut fire ganger på 30 sekunder hver. Det er ikke
+# 429 — tjeneren tar imot forbindelsen og sender ingenting. Vi går derfor
+# betydelig saktere fra start, og bremser ytterligere når det først skjer.
+PAUSE = 2.0             # utgangspunkt; 143 sider ≈ 5 minutter i ren venting
+PAUSE_TAK = 15.0        # aldri saktere enn dette
+PAUSE_FAKTOR = 1.6      # ganges på ved hver feil
+GJENVINN_ETTER = 15     # etter så mange sider på rad uten feil, øk farten litt
 
 # Feil som betyr «prøv igjen», ikke «gi opp». http.client.HTTPException er den
 # viktige: en avkuttet chunked respons kommer som IncompleteRead, som arver fra
@@ -212,23 +218,45 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
 
     print(f"  {total} evalueringer fordelt på {sider} sider à {PER_SIDE}", flush=True)
 
+    # Sidene samles i en dict framfor å appendes underveis. Da blir resultatet
+    # det samme enten en side ble hentet nå, gjenbrukt fra sjekkpunkt, eller
+    # hentet i den andre runden — og rekkefølgen er alltid sidenes egen.
+    sider_data: dict[int, list[dict]] = {1: list(forste.get("data") or [])}
     if bruk_sjekkpunkt:
-        skriv_side(1, list(forste.get("data") or []))
-    dokumenter = list(forste.get("data") or [])
+        skriv_side(1, sider_data[1])
     gjenbrukt = 0
+    feilede: list[int] = []
     start = time.monotonic()
+    pause = PAUSE
+    uten_feil = 0
 
     for side in range(2, sider + 1):
         lagret = les_lagret_side(side) if bruk_sjekkpunkt else None
         if lagret is not None:
-            dokumenter += lagret
+            sider_data[side] = lagret
             gjenbrukt += 1
-        else:
-            time.sleep(PAUSE)
+            continue
+        time.sleep(pause)
+        try:
             rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
-            if bruk_sjekkpunkt:
-                skriv_side(side, rader)
-            dokumenter += rader
+        except nett.NettFeil as e:
+            # Én gjenstridig side skal ikke koste alt det andre. Vi noterer den
+            # og tar den i en ny runde til slutt, når kilden har fått puste.
+            print(f"  ⚠ side {side} ga opp ({e}) — tas i ny runde til slutt",
+                  flush=True)
+            feilede.append(side)
+            pause = min(pause * PAUSE_FAKTOR, PAUSE_TAK)
+            uten_feil = 0
+            print(f"    bremser til {pause:.1f} s mellom sidene", flush=True)
+            continue
+        sider_data[side] = rader
+        if bruk_sjekkpunkt:
+            skriv_side(side, rader)
+        uten_feil += 1
+        if uten_feil >= GJENVINN_ETTER and pause > PAUSE:
+            pause = max(PAUSE, pause / PAUSE_FAKTOR)
+            uten_feil = 0
+            print(f"    går bra igjen — øker farten til {pause:.1f} s", flush=True)
 
         if side % 10 == 0 or side == sider:
             # Farten er selve diagnosen når en kjøring går på tidsgrensa. Uten
@@ -237,13 +265,41 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             gått = time.monotonic() - start
             per_side = gått / max(1, side - 1 - gjenbrukt)
             igjen = (sider - side) * per_side
-            print(f"  side {side}/{sider} — {len(dokumenter)} dokumenter, "
-                  f"{gått:.0f} s brukt, {per_side:.1f} s/side, "
-                  f"~{igjen / 60:.0f} min igjen", flush=True)
+            print(f"  side {side}/{sider} — {gått:.0f} s brukt, "
+                  f"{per_side:.1f} s/side, ~{igjen / 60:.0f} min igjen", flush=True)
 
     if gjenbrukt:
         print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "
               f"de kostet ingen nye kall)", flush=True)
+
+    # Ny runde på de gjenstridige, i rolig tempo. Kilden henger under press,
+    # men kommer seg — den samme siden går ofte gjennom et minutt senere.
+    if feilede:
+        print(f"\n  Ny runde på {len(feilede)} sider som feilet, "
+              f"med {PAUSE_TAK:.0f} s mellom hver", flush=True)
+        fortsatt_feil = []
+        for side in feilede:
+            time.sleep(PAUSE_TAK)
+            try:
+                rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
+            except nett.NettFeil as e:
+                print(f"    ✗ side {side} feilet igjen: {e}", flush=True)
+                fortsatt_feil.append(side)
+                continue
+            sider_data[side] = rader
+            if bruk_sjekkpunkt:
+                skriv_side(side, rader)
+            print(f"    ✓ side {side} kom gjennom denne gangen", flush=True)
+        feilede = fortsatt_feil
+
+    if feilede:
+        raise SystemExit(
+            f"FEIL: {len(feilede)} sider lot seg ikke hente: {feilede}\n"
+            "Sidene som gikk gjennom er lagret, så en ny kjøring fortsetter\n"
+            "der denne slapp og henter bare det som mangler."
+        )
+
+    dokumenter = [d for side in sorted(sider_data) for d in sider_data[side]]
 
     # Fasitsjekk mot API-ets eget tall. Duplikater over sidegrenser er en kjent
     # paginerings-felle når basen endres under kjøring, så vi teller unike uuid-er.
