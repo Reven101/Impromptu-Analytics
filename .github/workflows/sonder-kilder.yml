@@ -44,8 +44,9 @@ jobs:
     # under vedvarende paginering enn ved enkeltkall — en kjøring på 45 minutter
     # ble drept midt i. Sjekkpunktene gjør at en kjøring som likevel går på
     # tidsgrensa kan fortsette der den slapp, men taket er hevet så det normale
-    # tilfellet ikke treffer det i det hele tatt.
-    timeout-minutes: 120
+    # tilfellet ikke treffer det i det hele tatt. GitHubs eget tak for en jobb
+    # er 360 minutter; vi legger oss under det.
+    timeout-minutes: 330
 
     steps:
       - uses: actions/checkout@v7

@@ -252,13 +252,18 @@ def skriv_side(side: int, data: list[dict]) -> None:
     tmp.replace(_sidefil(side))
 
 
-def _sveip(filtre: dict, merkelapp: str,
-           bruk_sjekkpunkt: bool) -> tuple[list[dict], dict]:
+def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
+           ved_side=None) -> tuple[list[dict], dict]:
     """Ett gjennomløp av pagineringen for én skive av korpuset.
 
     `filtre` går rett inn i spørringen — tomt for hele korpuset, eller
     published_year_from/to for ett år. `merkelapp` navngir sjekkpunktmappa, så
     to skiver aldri leser hverandres sider.
+
+    `ved_side` kalles med hver ferdige side og kan returnere True for å stoppe.
+    Det er der restsveipet henter sin verdi: leter vi etter 411 dokumenter som
+    mangler årstall, er det ingen grunn til å hente de 6727 vi allerede har
+    når de siste er funnet.
 
     Hver side lagres til disk etter hvert. En avbrutt kjøring — tidsgrense i
     Actions, et lukket lokk på Windows — fortsetter da der den slapp i stedet
@@ -292,6 +297,12 @@ def _sveip(filtre: dict, merkelapp: str,
     sider_data: dict[int, list[dict]] = {1: list(forste.get("data") or [])}
     if bruk_sjekkpunkt:
         skriv_side(1, sider_data[1])
+    # Side 1 hentes før løkka, så den må mates til ved_side her — ellers hopper
+    # restsveipet over de første femti dokumentene og kommer nøyaktig én side
+    # for kort.
+    if ved_side and ved_side(sider_data[1]):
+        print("  alt vi lette etter lå på første side", flush=True)
+        return sider_data[1], meta
     gjenbrukt = 0
     feilede: list[int] = []
     start = time.monotonic()
@@ -314,6 +325,10 @@ def _sveip(filtre: dict, merkelapp: str,
         if lagret is not None:
             sider_data[side] = lagret
             gjenbrukt += 1
+            if ved_side and ved_side(lagret):
+                print(f"  alt vi lette etter er funnet — stopper på side {side}",
+                      flush=True)
+                break
             continue
         time.sleep(pause)
         side_start = time.monotonic()
@@ -340,6 +355,10 @@ def _sveip(filtre: dict, merkelapp: str,
         if bruk_sjekkpunkt:
             skriv_side(side, rader)
         uten_feil += 1
+        if ved_side and ved_side(rader):
+            print(f"  alt vi lette etter er funnet — stopper på side {side} "
+                  f"av {sider}", flush=True)
+            break
         if uten_feil >= GJENVINN_ETTER and pause > PAUSE:
             pause = max(PAUSE, pause / PAUSE_FAKTOR)
             uten_feil = 0
@@ -460,12 +479,18 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
         mangler = total - len(samlet)
         print(f"\n  {mangler} dokumenter fanget ikke av årsskivene — de mangler")
         print("  trolig publiseringsår. Henter ufiltrert og slår sammen.", flush=True)
-        dokumenter, _ = _sveip({}, "uten_aarsfilter", bruk_sjekkpunkt)
+        # Sveipet mater rader inn i `samlet` etter hvert, og stopper i det
+        # øyeblikket fasiten er nådd. Uten det ville vi hentet hele korpuset
+        # på nytt for å finne en håndfull dokumenter uten årstall.
+        def samle(rader: list[dict]) -> bool:
+            for d in rader:
+                if d.get("uuid"):
+                    samlet.setdefault(d["uuid"], d)
+            return len(samlet) >= total
+
         før = len(samlet)
-        for d in dokumenter:
-            if d.get("uuid"):
-                samlet.setdefault(d["uuid"], d)
-        print(f"  det ufiltrerte sveipet ga {len(samlet) - før} nye "
+        _sveip({}, "uten_aarsfilter", bruk_sjekkpunkt, ved_side=samle)
+        print(f"  restsveipet ga {len(samlet) - før} nye "
               f"— {len(samlet)}/{total}", flush=True)
 
     if len(samlet) < total:
