@@ -280,6 +280,12 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     # sidene og 10 de neste, står anslaget og lyver lenge om at det er langt
     # igjen. Vi holder derfor de siste ti sidetidene og regner på dem.
     siste_tider: collections.deque[float] = collections.deque(maxlen=10)
+    # Duplikater telles UNDERVEIS, ikke bare til slutt. Sluttkontrollen fanget
+    # dem riktig, men først etter halvannen time — og med stabil sortering skal
+    # tallet være null fra første side. Er det ikke det, blir det ikke bedre av
+    # å hente 120 sider til, og da skal vi få vite det etter et par minutter.
+    sett_uuid: set[str] = {d.get("uuid") for d in sider_data[1] if d.get("uuid")}
+    dubletter = 0
 
     for side in range(2, sider + 1):
         lagret = les_lagret_side(side) if bruk_sjekkpunkt else None
@@ -302,6 +308,12 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             print(f"    bremser til {pause:.1f} s mellom sidene", flush=True)
             continue
         siste_tider.append(time.monotonic() - side_start)
+        for d in rader:
+            u = d.get("uuid")
+            if u in sett_uuid:
+                dubletter += 1
+            elif u:
+                sett_uuid.add(u)
         sider_data[side] = rader
         if bruk_sjekkpunkt:
             skriv_side(side, rader)
@@ -319,8 +331,21 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             nylig = (sum(siste_tider) / len(siste_tider)) if siste_tider else 0.0
             igjen = (sider - side) * (nylig + pause)
             print(f"  side {side}/{sider} — {gått / 60:.0f} min brukt, "
-                  f"{nylig:.0f} s/side siste ti, ~{igjen / 60:.0f} min igjen",
+                  f"{nylig:.0f} s/side siste ti, ~{igjen / 60:.0f} min igjen"
+                  + (f", {dubletter} dubletter" if dubletter else ""),
                   flush=True)
+
+        # Tidlig avbrudd. Med stabil sortering er null duplikater forventningen,
+        # ikke håpet. Dukker de opp allerede på de første tjue sidene, er
+        # pagineringen ustabil, og resten av kjøringen er bortkastet tid.
+        if side >= 20 and dubletter > 0:
+            raise SystemExit(
+                f"FEIL: {dubletter} duplikater alt etter {side} sider.\n"
+                f"  Sorteringen som ble valgt ({_sortering or 'ingen'}) gir ikke\n"
+                f"  stabil paginering. Resten av kjøringen ville arvet problemet,\n"
+                f"  så vi stopper nå framfor å bruke halvannen time på det.\n"
+                f"  Si fra med denne meldingen, så finner vi et annet sorteringsfelt."
+            )
 
     if gjenbrukt:
         print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "
