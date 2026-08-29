@@ -229,6 +229,11 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
     start = time.monotonic()
     pause = PAUSE
     uten_feil = 0
+    # Anslaget bør si hvor fort det går NÅ, ikke i snitt siden start. Et
+    # kumulativt snitt henger etter: bruker kilden 40 sekunder de første femti
+    # sidene og 10 de neste, står anslaget og lyver lenge om at det er langt
+    # igjen. Vi holder derfor de siste ti sidetidene og regner på dem.
+    siste_tider: collections.deque[float] = collections.deque(maxlen=10)
 
     for side in range(2, sider + 1):
         lagret = les_lagret_side(side) if bruk_sjekkpunkt else None
@@ -237,6 +242,7 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             gjenbrukt += 1
             continue
         time.sleep(pause)
+        side_start = time.monotonic()
         try:
             rader = hent_side(side, type=DOKUMENTTYPE).get("data") or []
         except nett.NettFeil as e:
@@ -249,6 +255,7 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             uten_feil = 0
             print(f"    bremser til {pause:.1f} s mellom sidene", flush=True)
             continue
+        siste_tider.append(time.monotonic() - side_start)
         sider_data[side] = rader
         if bruk_sjekkpunkt:
             skriv_side(side, rader)
@@ -263,10 +270,11 @@ def hent_alle(bruk_sjekkpunkt: bool = True) -> tuple[list[dict], dict]:
             # sekundene i utskriften kan vi ikke skille «kilden er treg» fra
             # «vi prøver på nytt hele tiden», og da gjetter vi på neste fiks.
             gått = time.monotonic() - start
-            per_side = gått / max(1, side - 1 - gjenbrukt)
-            igjen = (sider - side) * per_side
-            print(f"  side {side}/{sider} — {gått:.0f} s brukt, "
-                  f"{per_side:.1f} s/side, ~{igjen / 60:.0f} min igjen", flush=True)
+            nylig = (sum(siste_tider) / len(siste_tider)) if siste_tider else 0.0
+            igjen = (sider - side) * (nylig + pause)
+            print(f"  side {side}/{sider} — {gått / 60:.0f} min brukt, "
+                  f"{nylig:.0f} s/side siste ti, ~{igjen / 60:.0f} min igjen",
+                  flush=True)
 
     if gjenbrukt:
         print(f"  ({gjenbrukt} sider gjenbrukt fra sjekkpunkt — "

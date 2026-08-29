@@ -179,7 +179,15 @@ def legg_til(sesjon: str, rad: dict) -> None:
 
 # ---------------------------------------------------------------- henting
 
-def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool) -> dict:
+# Kudos serverte ~40 sekunder per side under vedvarende paginering. Er Stortinget
+# like treg, er 9 000 dokumenter ikke en lang kjøring — det er en umulig en, og
+# det skal oppdages etter to minutter, ikke etter en time på tidsgrensa.
+VARSEL_ETTER = 50           # dokumenter før vi tør anslå
+VARSEL_TIMER = 1.5          # anslått totaltid som utløser varselet
+_varslet = False            # anslaget sies én gang, ikke per sesjon
+
+
+def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool, sesjoner_igjen: int = 0) -> dict:
     """Alle publikasjoner i én sesjon, med fulltekst. Returnerer kontrolltall."""
     hentet = alt_hentet(sesjon) if bruk_sjekkpunkt else set()
     if hentet:
@@ -236,9 +244,25 @@ def hent_sesjon(sesjon: str, bruk_sjekkpunkt: bool) -> dict:
                           "tittel": tittel, "tegn": len(tekst), "tekst": tekst})
         if i % 50 == 0 or i == len(mangler):
             gått = time.monotonic() - start
-            print(f"    {i}/{len(mangler)} — {gått:.0f} s, "
-                  f"{gått / i:.2f} s/dok, ~{(len(mangler) - i) * gått / i / 60:.0f} min igjen",
+            per_dok = gått / i
+            print(f"    {i}/{len(mangler)} — {gått / 60:.0f} min, "
+                  f"{per_dok:.2f} s/dok, "
+                  f"~{(len(mangler) - i) * per_dok / 60:.0f} min igjen denne sesjonen",
                   flush=True)
+
+        if i == VARSEL_ETTER and not _varslet:
+            # Anslag for HELE jobben, ikke bare denne sesjonen. Det er totalen
+            # som avgjør om dette lar seg gjøre, og den kan ikke leses ut av en
+            # linje som bare snakker om sesjonen man står i.
+            globals()["_varslet"] = True
+            per_dok = (time.monotonic() - start) / i
+            anslag = per_dok * len(mangler) * (1 + sesjoner_igjen) / 3600
+            print(f"    → i dette tempoet: ~{anslag:.1f} timer for alle "
+                  f"{1 + sesjoner_igjen} sesjonene", flush=True)
+            if anslag > VARSEL_TIMER:
+                print("    ⚠ DET ER FOR LANGT FOR ÉN KJØRING. Alt som hentes er", flush=True)
+                print("      lagret, så du kan la den gå på tidsgrensa og kjøre", flush=True)
+                print("      igjen — eller stoppe nå og kjøre med færre sesjoner.", flush=True)
 
     if feilede:
         print(f"  ⚠ {len(feilede)} dokumenter lot seg ikke hente. En ny kjøring "
@@ -263,9 +287,10 @@ def main() -> int:
 
     RAADATA_DIR.mkdir(parents=True, exist_ok=True)
     fasit = {}
-    for sesjon in valgte:
-        print(f"\nSesjon {sesjon}", flush=True)
-        fasit[sesjon] = hent_sesjon(sesjon, bruk_sjekkpunkt=not args.frisk)
+    for nr, sesjon in enumerate(valgte):
+        print(f"\nSesjon {sesjon}  ({nr + 1} av {len(valgte)})", flush=True)
+        fasit[sesjon] = hent_sesjon(sesjon, bruk_sjekkpunkt=not args.frisk,
+                                    sesjoner_igjen=len(valgte) - nr - 1)
 
     (RAADATA_DIR / "hentelogg.json").write_text(json.dumps({
         "kilde": KILDE, "kilde_url": KILDE_URL,
