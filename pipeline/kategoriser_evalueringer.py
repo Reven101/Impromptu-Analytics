@@ -67,7 +67,7 @@ from llm_klient import (
 )
 
 # Bumpes når KATEGORIER eller prompten endres.
-PROMPTVERSJON = "kudostema-v1"
+PROMPTVERSJON = "kudostema-v2"
 CACHE_FIL = Path(__file__).resolve().parent / "cache" / "kudostema_cache.json"
 
 RAADATA_DIR = Path(
@@ -83,10 +83,25 @@ ABSTRACT_TEGN = 600
 # Politikkområdene er skrevet for hånd, etter departementsstrukturen — ikke etter
 # hva som finnes i dataene. Det er poenget: en kategori ingen evaluering havner i,
 # er en opplysning om forvaltningen, ikke en feil i lista.
+#
+# v2: «barn_og_familie» kom til etter en tomodellskjøring på 200 tekster. De to
+# modellene var enige om 80 %, men uenighetene var ikke tilfeldig spredt — de
+# klumpet seg der lista manglet et hjem. «Følgeevaluering av kompetansesatsingen
+# for det kommunale barnevernet» ble arbeid_og_velferd hos den ene og
+# kommunal_og_distrikt hos den andre; barnevern hørte ingen av stedene.
+#
+# Det er verre enn en høy annet-andel, som er synlig: her ble dokumentene presset
+# inn i bokser som nesten passet, og andelen annet/uklar holdt seg på 2 % mens
+# feilen vokste i det stille. Uenighet mellom to modeller er derfor et bedre
+# instrument for å måle kategorilista enn annet-andelen alene.
+#
+# Likestilling er lagt til kultur_og_frivillighet, som følger departementsnavnet
+# (Kultur- og likestillingsdepartementet).
 KATEGORIER = {
     "helse_og_omsorg": "Helsetjenester, sykehus, folkehelse, eldreomsorg, rus og psykisk helse, legemidler.",
     "utdanning_og_forskning": "Barnehage, skole, høyere utdanning, fagopplæring, forskningspolitikk og forskningsfinansiering.",
     "arbeid_og_velferd": "Arbeidsmarked, NAV, trygd, pensjon, sykefravær, inkludering i arbeidslivet, fattigdom.",
+    "barn_og_familie": "Barnevern, familiepolitikk, foreldrestøtte, adopsjon, oppvekstvilkår, vold i nære relasjoner. (Barnehage hører til utdanning og forskning.)",
     "samferdsel": "Vei, jernbane, kollektivtransport, luftfart, havner, post, elektronisk kommunikasjon.",
     "justis_og_beredskap": "Politi, domstoler, kriminalomsorg, sivil beredskap, redningstjeneste, samfunnssikkerhet.",
     "forsvar": "Forsvarssektoren, militære anskaffelser, langtidsplaner, alliert samarbeid.",
@@ -94,7 +109,7 @@ KATEGORIER = {
     "naering_og_fiskeri": "Næringspolitikk, konkurranse, reiseliv, fiskeri, havbruk, virkemiddelapparatet.",
     "landbruk_og_mat": "Jordbruk, skogbruk, matproduksjon, mattrygghet, dyrevelferd, reindrift.",
     "kommunal_og_distrikt": "Kommuneøkonomi, kommunereform, regional utvikling, distriktspolitikk, bolig, plan og bygg.",
-    "kultur_og_frivillighet": "Kultur, kunst, medier, idrett, frivillighet, tros- og livssynssamfunn, kulturarv.",
+    "kultur_og_frivillighet": "Kultur, kunst, medier, idrett, frivillighet, likestilling og diskriminering, tros- og livssynssamfunn, kulturarv.",
     "innvandring_og_integrering": "Asyl, innvandring, integrering, bosetting, statsborgerskap.",
     "finans_og_skatt": "Skatt, avgift, statsbudsjett, finansmarked, økonomistyring i staten.",
     "utenriks_og_bistand": "Utenrikspolitikk, utviklingssamarbeid, bistand, internasjonale avtaler, EØS.",

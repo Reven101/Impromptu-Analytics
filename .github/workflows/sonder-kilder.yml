@@ -215,6 +215,11 @@ jobs:
       # commiter ingenting, så den lastes opp for hånd-innlegging. if: always()
       # fordi en kjøring som gikk på tidsgrensa har klassifisert det meste, og
       # det er nettopp da den ikke skal kastes.
+      #
+      # MERK: --sammenlign skriver med vilje ingenting til cachen — to modeller
+      # om hverandre ville gitt et blandet grunnlag. «No files were found» etter
+      # en ren sammenligningskjøring er derfor riktig, ikke en feil. Det er
+      # --grense og --alle som produserer fila.
       - name: Last opp temacachen
         if: always() && startsWith(inputs.kilde, 'kudos-temaer')
         uses: actions/upload-artifact@v5

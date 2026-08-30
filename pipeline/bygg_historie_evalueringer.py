@@ -80,6 +80,7 @@ TEMANAVN = {
     "helse_og_omsorg": "Helse og omsorg",
     "utdanning_og_forskning": "Utdanning og forskning",
     "arbeid_og_velferd": "Arbeid og velferd",
+    "barn_og_familie": "Barn og familie",
     "samferdsel": "Samferdsel",
     "justis_og_beredskap": "Justis og beredskap",
     "forsvar": "Forsvar",
@@ -178,6 +179,15 @@ def main() -> None:
             per_tema[post["kategori"]] += 1
         else:
             uten_tema += 1
+    ukjente = sorted(set(per_tema) - set(TEMANAVN))
+    if ukjente:
+        # Uten dette faller figuren tilbake på den maskinlesbare nøkkelen, og
+        # «barn_og_familie» havner i en publisert graf. En kategori lagt til i
+        # kategoriser_evalueringer.py skal tvinge fram et lesbart navn her.
+        raise SystemExit(
+            f"FEIL: kategoriene {ukjente} mangler lesbart navn i TEMANAVN.\n"
+            "  Legg dem inn her — figuren skal ikke vise maskinnøkler."
+        )
     if not per_tema:
         raise SystemExit(
             "FEIL: ingen av evalueringene fant sin kategori i temacachen.\n"
