@@ -52,6 +52,14 @@ LEVERANDORER = {
 }
 
 
+# Lesetidsavbrudd per kall. En resonnerende modell i en delt pulje kan bruke
+# lang tid på å komme i gang, og et for kort avbrudd kaster bort generering som
+# var underveis: forsøket telles som mislykket, og neste forsøk starter på null.
+# Settes av kalleren (kategoriser_evalueringer.py --tidsavbrudd) framfor å
+# tres gjennom fem funksjoner.
+STANDARD_TIDSAVBRUDD = 120
+
+
 def _del_modell(modell: str) -> tuple[str, str, dict | None]:
     """«nvidia:openai/gpt-oss-120b» -> (url, modellnavn, leverandørkonfig)."""
     if ":" in modell:
@@ -188,10 +196,12 @@ def kall_modell(
     maks_tokens: int = 4000,
     resonnering: str | None = None,
     forsok: int | None = None,
-    tidsavbrudd: int = 120,
+    tidsavbrudd: int | None = None,
     _doblinger: int = 0,
 ) -> str:
     """Returnerer modellens svartekst. Feiler hardt framfor å returnere noe tvilsomt."""
+    if tidsavbrudd is None:
+        tidsavbrudd = STANDARD_TIDSAVBRUDD
     # Gratismodellene ligger i en delt pulje og rate-limites oppstrøms. De trenger flere
     # og lengre forsøk enn en betalt modell — ellers gir de opp før puljen frigjøres.
     # OpenRouters gratismodeller heter «...:free». NVIDIAs gratislag gjør ikke
@@ -242,7 +252,8 @@ def kall_modell(
                 if kode not in STATUS_SOM_PROVES_IGJEN or n == forsok - 1:
                     raise SystemExit(f"OpenRouter svarte {siste_feil}")
                 ventetid = min(2 ** n * (4 if gratis else 1), 60)
-                print(f"    …{siste_feil[:120]} — nytt forsøk om {ventetid}s")
+                print(f"    …{siste_feil[:120]} — forsøk {n + 2}/{forsok} "
+                      f"om {ventetid}s")
                 time.sleep(ventetid)
                 continue
             break
@@ -273,7 +284,10 @@ def kall_modell(
             if n == forsok - 1:
                 raise SystemExit(f"OpenRouter utilgjengelig etter {forsok} forsøk ({siste_feil})")
         ventetid = min(2 ** n * (4 if gratis else 1), 60)
-        print(f"    …{siste_feil[:120]} — nytt forsøk om {ventetid}s")
+        # Forsøksnummeret er ikke pynt: uten det ser tre og syv forsøk likt ut,
+        # og man vet ikke om kjøringen er i ferd med å gi opp eller så vidt har
+        # begynt å prøve.
+        print(f"    …{siste_feil[:120]} — forsøk {n + 2}/{forsok} om {ventetid}s")
         time.sleep(ventetid)
 
     if "choices" not in data or not data["choices"]:

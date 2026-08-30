@@ -118,10 +118,14 @@ jobs:
               # To modeller fra samme leverandør. Poenget med sammenligningen er
               # at modellene er uavhengige av hverandre, ikke at de er fra hver
               # sin tjeneste — og NVIDIA-nøkkelen alene rekker dermed.
+              # 300 s, ikke 120: 120b-modellen ligger i NVIDIAs delte pulje og
+              # bruker lang tid på å komme i gang. Et avbrudd midt i genereringen
+              # kaster bort arbeid som var underveis, og neste forsøk starter på
+              # null — det er dyrere enn å vente.
               python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
                 --modell nvidia:openai/gpt-oss-120b \
                 --mot nvidia:openai/gpt-oss-20b \
-                --resonnering low
+                --resonnering low --tidsavbrudd 300
             fi
             if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
               echo

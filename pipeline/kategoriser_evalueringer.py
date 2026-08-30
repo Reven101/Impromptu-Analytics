@@ -52,6 +52,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kontrakt  # noqa: F401  -- setter utf-8 på stdout (se CLAUDE.md)
+import llm_klient
 from llm_klient import (
     LEVERANDORER,
     STANDARDMODELL,
@@ -360,9 +361,15 @@ def main() -> int:
     ap.add_argument("--resonnering", choices=("low", "medium", "high"),
                     help="reasoning_effort; «low» for resonnerende modeller "
                          "som gpt-oss — svaret er ett ord, ikke et resonnement")
+    ap.add_argument("--tidsavbrudd", type=int, default=llm_klient.STANDARD_TIDSAVBRUDD,
+                    help="sekunder å vente på ett svar (standard "
+                         f"{llm_klient.STANDARD_TIDSAVBRUDD}). Et 120b-kall i en "
+                         "delt pulje kan bruke lengre tid på å komme i gang — og "
+                         "et avbrudd kaster bort generering som var underveis")
     ap.add_argument("--bunt", type=int, default=20)
     ap.add_argument("--trader", type=int, default=4)
     args = ap.parse_args()
+    llm_klient.STANDARD_TIDSAVBRUDD = args.tidsavbrudd
 
     if not (args.alle or args.grense or args.sammenlign):
         ap.error("velg --grense N (måling først), --sammenlign N eller --alle")
