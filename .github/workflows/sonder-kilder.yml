@@ -252,39 +252,60 @@ jobs:
           path: historier/innhold/evalueringene/data.json
           if-no-files-found: warn
 
-      # Cachen lastes ikke bare opp, den commites — ellers må den hentes ut av
+      # Filene lastes ikke bare opp, de commites — ellers må de hentes ut av
       # en zip og legges inn for hånd, og det er ikke en jobb for en iPad.
-      # if: always() fordi en kjøring som gikk på tidsgrensa har klassifisert
-      # det meste, og det er nettopp da arbeidet ikke skal kastes.
-      - name: Commit temacachen
-        if: always() && startsWith(inputs.kilde, 'kudos-temaer')
+      # if: always() fordi en kjøring som gikk på tidsgrensa har gjort det
+      # meste, og det er nettopp da arbeidet ikke skal kastes.
+      - name: Commit det som hører hjemme i repoet
+        if: always()
         continue-on-error: true
+        env:
+          VALG: ${{ inputs.kilde }}
         run: |
           set -o pipefail
-          FIL=pipeline/cache/kudostema_cache.json
-          # --sammenlign skriver med vilje ingen cache: to modeller om hverandre
-          # ville gitt et blandet grunnlag. Ingen fil er da riktig, ikke en feil.
-          if [ ! -f "$FIL" ]; then
-            echo "Ingen temacache å commite — sammenligningskjøringer skriver ingen."
+          # Bare disse. Aldri «git add -A»: alt annet workflowen produserer er
+          # rådata som ikke skal inn i et repo Vercel serverer statisk, og et
+          # bredt add er nettopp måten det ville skjedd på.
+          #
+          # manifest.json er med vilje IKKE med. bygg_manifest.py stempler
+          # dagens dato i den ved hver kjøring, så den ville gitt en commit
+          # uten innhold hver eneste gang.
+          case "$VALG" in
+            kudos-temaer|kudos-temaer-alle)
+              FILER="pipeline/cache/kudostema_cache.json" ;;
+            historie)
+              FILER="historier/innhold/evalueringene/data.json" ;;
+            *)
+              echo "Ingenting å commite for «$VALG»."; exit 0 ;;
+          esac
+
+          FINNES=""
+          for f in $FILER; do
+            [ -f "$f" ] && FINNES="$FINNES $f"
+          done
+          if [ -z "$FINNES" ]; then
+            # --sammenlign skriver med vilje ingen cache: to modeller om
+            # hverandre ville gitt et blandet grunnlag. Ingen fil er da riktig.
+            echo "Fant ingen av filene ($FILER) — ingenting å commite."
             exit 0
           fi
-          # --porcelain, ikke «git diff»: fila er utsjekket første gang, og en
+          # --porcelain, ikke «git diff»: fila er usporet første gang, og en
           # diff mot en usporet fil er tom. Da ville det aller første — og
           # viktigste — resultatet blitt hoppet over som «uendret».
-          if [ -z "$(git status --porcelain -- "$FIL")" ]; then
-            echo "Temacachen er uendret siden forrige kjøring."
+          if [ -z "$(git status --porcelain -- $FINNES)" ]; then
+            echo "Uendret siden forrige kjøring:$FINNES"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "$FIL"
-          git commit -m "Temacache fra $VALG (kjøring $GITHUB_RUN_ID)" \
-            -m "Klassifisering av Kudos-korpuset, skrevet av pipeline/kategoriser_evalueringer.py."
+          git add -- $FINNES
+          git commit -m "$VALG fra kjøring $GITHUB_RUN_ID" \
+            -m "Skrevet av pipeline/, kjørt fra workflowen «Sonder kildene»."
           # Greina kan ha flyttet seg mens jobben gikk. Rebase framfor merge:
-          # dette er én fil og én commit, og en merge-commit fra CI er støy.
+          # dette er én commit på én fil, og en merge-commit fra CI er støy.
           git pull --rebase origin "$GITHUB_REF_NAME" || true
           git push origin "HEAD:$GITHUB_REF_NAME"
-          echo "✓ Temacachen er commitet til $GITHUB_REF_NAME — ingenting å laste ned."
+          echo "✓ Commitet til $GITHUB_REF_NAME:$FINNES — ingenting å laste ned."
 
       - name: Vis hva som ligger lagret
         if: always()
