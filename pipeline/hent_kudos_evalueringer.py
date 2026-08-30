@@ -354,6 +354,26 @@ def _sveip(filtre: dict, merkelapp: str, bruk_sjekkpunkt: bool,
 
     tak_trader = trader
 
+    # Leter vi etter en delmengde — restsveipet etter dokumenter uten årstall —
+    # er rekkefølgen på sidene avgjørende. Kudos serverer nyeste først, og de
+    # udaterte ligger enten helt fremst eller helt bakerst; hvilken av delene
+    # vet vi ikke. Vi går derfor innover fra begge ender samtidig, og stopper
+    # så snart fasiten er nådd. Det gjør 142 sider til en håndfull, uansett
+    # hvilken ende de ligger i — og korter ned nettopp den lange pagineringen
+    # der driften rekker å oppstå.
+    if ved_side and len(å_hente) > 4:
+        fra_begge = []
+        venstre, høyre = 0, len(å_hente) - 1
+        while venstre <= høyre:
+            fra_begge.append(å_hente[høyre])
+            if venstre != høyre:
+                fra_begge.append(å_hente[venstre])
+            venstre += 1
+            høyre -= 1
+        å_hente = fra_begge
+        print(f"  søker fra begge ender ({å_hente[0]}, {å_hente[1]}, …) "
+              f"— stopper når alt er funnet", flush=True)
+
     def hent_en(side: int) -> tuple[int, list[dict] | None]:
         """Én side, i sin egen tråd. None betyr at den ga opp."""
         try:
