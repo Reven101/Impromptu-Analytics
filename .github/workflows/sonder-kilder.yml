@@ -34,6 +34,7 @@ on:
           - vedtak
           - statsregnskapet
           - budsjettspor
+          - historie
           - alle
 
 permissions:
@@ -154,6 +155,15 @@ jobs:
               # Ligger de ikke i cachen, sier scriptet hvilket steg som mangler.
               python3 pipeline/analyser_budsjettspor.py
             fi
+            if [ "$VALG" = "historie" ]; then
+              echo "########## HISTORIEN — setter sammen de fire snapshotene ##########"
+              # Skriver historier/innhold/evalueringene/data.json i kjørerens
+              # arbeidstre. Den commites ikke herfra — den lastes opp som
+              # artefakt under, så du kan laste den ned og legge den inn selv.
+              python3 pipeline/bygg_historie_evalueringer.py
+              python3 pipeline/kontrakt.py
+              python3 pipeline/bygg_manifest.py
+            fi
           } 2>&1 | tee kjoring.txt
 
       # Lagres uansett utfall. En kjøring som gikk på tidsgrensa har som regel
@@ -166,6 +176,18 @@ jobs:
         with:
           path: ${{ runner.temp }}/raadata
           key: raadata-${{ inputs.kilde }}-${{ github.run_id }}
+
+      # data.json er noen kilobyte — aggregerte tall, ikke korpuset. Den lastes
+      # opp så den kan hentes ned og commites fra en maskin, uten at denne
+      # workflowen får skriverettigheter i repoet.
+      - name: Last opp den bygde historien
+        if: always() && inputs.kilde == 'historie'
+        uses: actions/upload-artifact@v5
+        continue-on-error: true
+        with:
+          name: evalueringene-data
+          path: historier/innhold/evalueringene/data.json
+          if-no-files-found: warn
 
       - name: Vis hva som ligger lagret
         if: always()

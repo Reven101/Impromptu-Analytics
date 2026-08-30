@@ -182,6 +182,32 @@ def utfall(kapittelsum, aarssum, navn, kap: str, aar: int,
 
 # ---------------------------------------------------------------- testen
 
+def bane(kapittelsum, aarssum, kap: str, aar: int, vindu: int) -> list[float] | None:
+    """Kapitlets budsjettandel år for år gjennom vinduet, indeksert til 100 i år 0.
+
+    Dette er det figuren tegner. Poenget med å indeksere hver enhet for seg —
+    framfor å summere kronene — er at et stort kapittel ellers ville bestemt
+    kurven alene: medianen av 200 baner er en typisk bane, summen er Nav og
+    Helsedirektoratet.
+    """
+    basis = andel(kapittelsum, aarssum, aar, kap)
+    if not basis:
+        return None
+    ut = []
+    for forskyvning in range(-vindu, vindu + 1):
+        verdi = andel(kapittelsum, aarssum, aar + forskyvning, kap)
+        if verdi is None:
+            return None
+        ut.append(100 * verdi / basis)
+    return ut
+
+
+def median_bane(baner: list[list[float]]) -> list[float]:
+    """Medianen for hver forskyvning. Ikke en enkelt banes forløp — en typisk verdi
+    per år, som er det en leser av figuren skal kunne lese av."""
+    return [round(statistics.median(kolonne), 2) for kolonne in zip(*baner)]
+
+
 def permutasjonstest(behandlet: list[float], kontroll: list[float],
                      runder: int = PERMUTASJONER) -> float:
     """Tosidig p-verdi for forskjellen mellom medianene.
@@ -297,6 +323,8 @@ def main() -> int:
 
     behandlet: list[float] = []
     kontroll: list[float] = []
+    bane_behandlet: list[list[float]] = []
+    bane_kontroll: list[list[float]] = []
     forkastet: collections.Counter = collections.Counter()
 
     for kap in alle_kapitler:
@@ -312,6 +340,11 @@ def main() -> int:
                 forkastet[grunn] += 1
                 continue
             (behandlet if er_hendelse else kontroll).append(verdi)
+            b = bane(kapittelsum, aarssum, kap, aar, args.vindu)
+            if b is None:
+                forkastet["bane_ufullstendig"] += 1
+            else:
+                (bane_behandlet if er_hendelse else bane_kontroll).append(b)
 
     print(f"\nVinduer (±{args.vindu} år):")
     print(f"  behandling: {len(behandlet)}")
@@ -369,6 +402,16 @@ def main() -> int:
         "forkastet": dict(forkastet),
         "behandling": b,
         "kontroll": k,
+        "spor": {
+            "forskyvninger": list(range(-args.vindu, args.vindu + 1)),
+            "merknad": ("Median av kapitlenes egen budsjettandel, indeksert til "
+                        "100 i evalueringsåret. Hver enhet indekseres for seg, "
+                        "så et stort kapittel ikke bestemmer kurven alene."),
+            "evaluert": median_bane(bane_behandlet) if bane_behandlet else [],
+            "kontroll": median_bane(bane_kontroll) if bane_kontroll else [],
+            "n_evaluert": len(bane_behandlet),
+            "n_kontroll": len(bane_kontroll),
+        },
         "forskjell_median": round(forskjell, 4),
         "p_verdi": round(p, 4),
         "permutasjoner": args.permutasjoner,

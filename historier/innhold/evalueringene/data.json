@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "tittel": "Evalueringene — plassholder, ikke bygget ennå",
+    "kilde": "Kudos (DFØ), Stortinget, statsregnskapet.no (DFØ)",
+    "kilde_url": "https://kudos.dfo.no/apne-data",
+    "dato_hentet": "2026-08-30",
+    "geografi": "Norge",
+    "enhet": "evalueringer",
+    "oppdateringsfrekvens": "løpende",
+    "beskrivelse": "PLASSHOLDER. Alle tall er null fordi historien ikke er bygget ennå — kjør pipeline/bygg_historie_evalueringer.py, som overskriver denne fila med ekte tall. Ingenting her skal siteres.",
+    "demo": true,
+    "utkast": true
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "Ikke bygget",
+      "sporsmal": "Hvor mye kunnskap produserer forvaltningen om seg selv — og hvor blir den av?",
+      "rader": [
+        {"etikett": "Evalueringer i Kudos", "verdi": "–", "detalj": "ikke hentet"},
+        {"etikett": "Oppdragsgivere", "verdi": "–", "detalj": "ikke hentet"},
+        {"etikett": "Nye per uke", "verdi": "–", "detalj": "ikke hentet"},
+        {"etikett": "Navngitt på Stortinget", "verdi": "–", "detalj": "ikke hentet"}
+      ],
+      "fotnote": "Plassholder. Kjør pipeline/bygg_historie_evalueringer.py for ekte tall."
+    },
+    "tempo": {
+      "type": "tidslinje",
+      "tittel": "Evalueringer per publiseringsår",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "evalueringer",
+      "stil": "søyle",
+      "x_navn": "Publiseringsår",
+      "serier": [{"navn": "Evalueringer", "punkter": [[2016, 0], [2025, 0]]}]
+    },
+    "bestillerne": {
+      "type": "rangering",
+      "tittel": "Hvem bestiller kunnskapen",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "evalueringer",
+      "rader": [{"navn": "Ikke hentet", "verdi": 0}]
+    },
+    "temaene": {
+      "type": "rangering",
+      "tittel": "Hva evalueres",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "evalueringer",
+      "rader": [{"navn": "Ikke klassifisert", "verdi": 0}]
+    },
+    "trakten": {
+      "type": "rangering",
+      "tittel": "Fra publisert til vedtatt",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "evalueringer",
+      "sorter": false,
+      "rader": [
+        {"navn": "Publisert", "verdi": 0},
+        {"navn": "Navngitt i et dokument", "verdi": 0},
+        {"navn": "Knyttet til en sak", "verdi": 0},
+        {"navn": "Saken fikk et vedtak", "verdi": 0}
+      ]
+    },
+    "hvem_blir_lest": {
+      "type": "rangering",
+      "tittel": "Hvem får sin evaluering navngitt",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "prosent",
+      "rader": [{"navn": "Ikke hentet", "verdi": 0, "detalj": "0 av 0"}]
+    },
+    "budsjettsporet": {
+      "type": "tidslinje",
+      "tittel": "Kapitlets andel av statsbudsjettet rundt en evaluering",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "enhet": "indeks",
+      "x_navn": "År fra evalueringen",
+      "serier": [
+        {"navn": "Evaluert", "punkter": [[-2, 100], [-1, 100], [0, 100], [1, 100], [2, 100]]},
+        {"navn": "Kontroll", "punkter": [[-2, 100], [-1, 100], [0, 100], [1, 100], [2, 100]]}
+      ]
+    },
+    "forbeholdene": {
+      "type": "kortgalleri",
+      "tittel": "Hva som ikke er med",
+      "undertekst": "Plassholder — ingen tall hentet",
+      "kort": [
+        {"overtittel": "Aldri servert", "verdi": "–", "detalj": "ikke hentet"},
+        {"overtittel": "Uten publiseringsår", "verdi": "–", "detalj": "ikke hentet"},
+        {"overtittel": "Uten tema", "verdi": "–", "detalj": "ikke hentet"}
+      ]
+    }
+  }
+}
