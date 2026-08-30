@@ -50,13 +50,17 @@ Da blir spørsmålet hvem de 3,6 prosentene tilhører. Og her er svaret mer inte
 
 [[viz:hvem_blir_lest]]
 
-**Her finnes det en forskjell.** Ytterpunktene er slående: Helsedirektoratet får rundt hver tiende evaluering navngitt, mens Statens vegvesen har over seksti evalueringer i dekningsvinduet og ikke én eneste omtale i et stortingsdokument.
+**Her finnes det en forskjell.** Helsedirektoratet får rundt hver tiende evaluering navngitt. I den andre enden ligger fire oppdragsgivere med nok evalueringer til å telles, og null omtaler mellom seg: Norad, Innovasjon Norge, Norges forskningsråd og Statens vegvesen.
 
 Et slikt sprik må testes før det kan skrives om, og den nærliggende testen duger ikke. De to etatene er ikke plukket på forhånd — de er plukket *fordi* de er ytterpunktene. Med et titalls oppdragsgivere finnes det førti-femti par, og det største spriket blant dem er stort selv når ingenting skiller gruppene fra hverandre. Å teste det som om paret var valgt på forhånd, er å stille spørsmålet etter å ha sett svaret. Gjør man det likevel, får man p under 0,01 — tre ganger så overbevisende som det er dekning for.
 
 Testen vi bruker stokker i stedet om hvilke evalueringer som ble navngitt, på tvers av alle oppdragsgiverne, og måler hvor ofte ren tilfeldighet gir et like stort spenn. Da er utvalget av ytterpunkter en del av nullhypotesen. Spennet på ti prosentpoeng holder også da: **det er større enn tilfeldig variasjon gir.**
 
-Men «forskjell» er ikke det samme som «forsømmelse». Den mest nærliggende forklaringen på Statens vegvesen er ikke at etaten overses, men at den evaluerer noe annet — veitekniske og driftsmessige spørsmål som ikke hører hjemme i en innstilling fra en stortingskomité. Det som skiller oppdragsgiverne, er da ikke hvor godt de blir lyttet til, men hvilken *type* kunnskap de bestiller. En evaluering av fastlegeordningen ender i en helsedebatt. En evaluering av tunnelvedlikehold gjør det ikke, og skal kanskje ikke gjøre det heller.
+Men «forskjell» er ikke det samme som «forsømmelse», og de fire nullene har et fellestrekk verdt å merke seg. Norad, Innovasjon Norge, Forskningsrådet og Vegvesenet evaluerer i hovedsak *ordninger de selv forvalter* — bistandsprosjekter, innovasjonstilskudd, forskningsprogrammer, veidrift. Slike evalueringer er styringsverktøy for etaten selv. De er ikke skrevet for en stortingskomité, og de havner ikke der.
+
+Det som skiller oppdragsgiverne, er altså neppe hvor godt de blir lyttet til, men hvilken *type* kunnskap de bestiller. En evaluering av fastlegeordningen ender i en helsedebatt. En evaluering av tunnelvedlikehold gjør det ikke, og skal kanskje ikke gjøre det heller.
+
+Det gjør funnet mindre oppsiktsvekkende og mer nyttig: gapet mellom utredning og vedtak handler ikke om at noen blir oversett, men om at det meste av kunnskapen forvaltningen kjøper, aldri var ment å nå det politiske nivået i det hele tatt.
 
 ## Sporet i budsjettet
 
