@@ -37,6 +37,8 @@ from __future__ import annotations
 
 import collections
 import json
+import math
+import re
 import os
 import statistics
 from datetime import date
@@ -71,8 +73,12 @@ TEMACACHE = Path(__file__).resolve().parent / "cache" / "kudostema_cache.json"
 TOPP_BESTILLERE = 15
 TOPP_LEST = 12
 
-# Under dette blir «andel navngitt» ren støy: én av to er 50 %, og betyr ingenting.
-MIN_FOR_ANDEL = 25
+# Under dette blir «andel navngitt» ren støy. Målt: 81 treff fordelt på alle
+# oppdragsgivere, så en etat med 20 evalueringer beveger seg fem prosentpoeng
+# per treff. Da rangerer figuren tilfeldigheter. Ved 40 er ett treff 2,5
+# prosentpoeng — fortsatt grovt, men forskjellen mellom topp og bunn er da
+# større enn ett enkelt treff.
+MIN_FOR_ANDEL = 40
 
 # Kategorinøkler fra kategoriser_evalueringer.py, til lesbare navn. Håndskrevet:
 # nøklene er maskinvennlige, figuren skal være menneskevennlig.
@@ -117,6 +123,26 @@ def oppdragsgivere(ev: dict) -> list[str]:
     ut = [a["name"] for a in (ev.get("owners") or [])
           if isinstance(a, dict) and a.get("name")]
     return ut or ["(ukjent oppdragsgiver)"]
+
+
+def andeler_forskjellige(t1: int, n1: int, t2: int, n2: int) -> float:
+    """Tosidig p-verdi for at to andeler er ulike. Normaltilnærming, to
+    proporsjoner.
+
+    Hvorfor dette i det hele tatt: figuren rangerer oppdragsgivere etter andel
+    navngitt, og en rangering ser alltid ut som en forskjell. Med 81 treff
+    fordelt på et titalls etater kan avstanden mellom topp og bunn like gjerne
+    være tilfeldig. Da skal vi vite det før vi skriver at noen «får sin
+    evaluering lest oftere» enn andre.
+    """
+    if not (n1 and n2):
+        return 1.0
+    p1, p2 = t1 / n1, t2 / n2
+    samlet = (t1 + t2) / (n1 + n2)
+    se = math.sqrt(samlet * (1 - samlet) * (1 / n1 + 1 / n2))
+    if se == 0:
+        return 1.0
+    return math.erfc(abs(p1 - p2) / se / math.sqrt(2))
 
 
 # ---------------------------------------------------------------- main
@@ -200,7 +226,16 @@ def main() -> None:
 
     # --- akt 2: trakten
     trakt = vedtak.get("trakt") or {}
+    # To ulike nevnere, og de må ikke forveksles. Alle evalueringer publisert i
+    # dekningsvinduet er 2855; av dem har 2255 en tittel distinkt nok til at et
+    # treff beviser noe. Andelen regnes på den søkbare, for vi kan ikke lete
+    # etter de generiske — men trakten viser begge, ellers ser 600 dokumenter
+    # ut som om de aldri ble publisert.
+    publisert = kobling.get("publisert_i_vinduet") or 0
+    generiske = kobling.get("utelatt_generisk") or 0
     nevner = trakt.get("publisert") or kobling.get("nevner") or 0
+    if not publisert:
+        publisert = nevner + generiske
     navngitt = trakt.get("navngitt") or kobling.get("navngitt") or 0
     behandlet = trakt.get("behandlet") or 0
     vedtatt = trakt.get("vedtatt") or 0
@@ -221,6 +256,12 @@ def main() -> None:
             "  dekningsvinduet. Da finnes ikke fordelingen figuren skal vise, og\n"
             "  akt 2 må skrives om til totalen alene."
         )
+
+    # Er spredningen mellom oppdragsgiverne i det hele tatt en forskjell?
+    # Sammenligner ytterpunktene blant dem som har nok evalueringer til å måles.
+    topp, bunn = lest[0], lest[-1]
+    p_spredning = andeler_forskjellige(topp[3], topp[2], bunn[3], bunn[2])
+    spredning_reell = p_spredning < 0.05
 
     # --- akt 3: budsjettsporet
     sporet = spor.get("spor") or {}
@@ -267,7 +308,7 @@ def main() -> None:
                     {"etikett": "Nye per uke", "verdi": f"{per_uke:.1f}".replace(".", ","),
                      "detalj": "snitt siste ti år"},
                     {"etikett": "Navngitt på Stortinget", "verdi": f"{andel_navngitt:.1f} %".replace(".", ","),
-                     "detalj": f"{navngitt} av {nevner} i dekningsvinduet"},
+                     "detalj": f"{navngitt} av {nevner} med søkbar tittel"},
                 ],
                 "fotnote": (
                     f"Kudos oppgir {oppgitt} dokumenter og serverte "
@@ -305,19 +346,21 @@ def main() -> None:
             },
             "trakten": {
                 "type": "rangering",
-                "tittel": "Fra publisert til vedtatt",
+                "tittel": "Fallet skjer på ett trinn",
                 "undertekst": "Evalueringer publisert i dekningsvinduet, og hvor langt de kom",
                 "enhet": "evalueringer",
                 "sorter": False,
                 "rader": [
-                    {"navn": "Publisert", "verdi": nevner,
+                    {"navn": "Publisert i dekningsvinduet", "verdi": publisert,
                      "detalj": "i sesjonene vi har fulltekst for"},
+                    {"navn": "Tittel distinkt nok til å søke på", "verdi": nevner,
+                     "detalj": f"{generiske} for generiske til at et treff beviser noe"},
                     {"navn": "Navngitt i et dokument", "verdi": navngitt,
                      "detalj": "ordrett tittelmatch"},
                     {"navn": "Knyttet til en sak", "verdi": behandlet,
-                     "detalj": "saksbundne dokumenttyper"},
+                     "detalj": "resten er nevnt i referat, som dekker mange saker"},
                     {"navn": "Saken fikk et vedtak", "verdi": vedtatt,
-                     "detalj": "ikke nødvendigvis evalueringens anbefaling"},
+                     "detalj": "at saken ble avgjort — ikke at evalueringen avgjorde den"},
                 ],
             },
             "hvem_blir_lest": {
@@ -325,6 +368,13 @@ def main() -> None:
                 "tittel": "Hvem får sin evaluering navngitt",
                 "undertekst": (f"Andel navngitt på Stortinget, oppdragsgivere med "
                                f"minst {MIN_FOR_ANDEL} evalueringer i vinduet"),
+                "fotnote": (
+                    f"Forskjellen mellom øverste og nederste er "
+                    + ("større enn tilfeldig variasjon (p = "
+                       f"{p_spredning:.3f})." if spredning_reell else
+                       "ikke til å skille fra tilfeldig variasjon "
+                       f"(p = {p_spredning:.2f}). Rekkefølgen er ikke en rangering.")
+                ),
                 "enhet": "prosent",
                 "rader": [{"navn": navn, "verdi": round(andel, 1),
                            "detalj": f"{treff} av {totalt}"}
@@ -388,14 +438,39 @@ def main() -> None:
           f"{uten_aar} uten år")
     print(f"  temaer:   {len(per_tema)} kategorier, sum {sum(per_tema.values())}, "
           f"{uten_tema} uten")
-    print(f"  trakt:    {nevner} → {navngitt} → {behandlet} → {vedtatt}")
+    print(f"  trakt:    {publisert} → {nevner} → {navngitt} → {behandlet} "
+          f"→ {vedtatt}")
+    print(f"  spredning: {topp[0][:28]} {topp[1]:.1f} % ({topp[3]}/{topp[2]}) mot "
+          f"{bunn[0][:28]} {bunn[1]:.1f} % ({bunn[3]}/{bunn[2]})")
+    print(f"             p = {p_spredning:.3f} — "
+          + ("en reell forskjell" if spredning_reell
+             else "IKKE til å skille fra tilfeldig variasjon"))
     print(f"  akt 3:    n={spor['behandling']['n']}/{spor['kontroll']['n']}, "
           f"p={p_verdi}, forskjell {100 * spor['forskjell_median']:+.2f} pp")
 
     if sum(per_tema.values()) + uten_tema != len(dokumenter):
         raise SystemExit("FEIL: temafordelingen summerer ikke til korpuset.")
-    if not (nevner >= navngitt >= behandlet >= vedtatt):
-        raise SystemExit("FEIL: trakten er ikke monotont synkende.")
+    if not (publisert >= nevner >= navngitt >= behandlet >= vedtatt):
+        raise SystemExit(
+            f"FEIL: trakten er ikke monotont synkende: {publisert} → {nevner} "
+            f"→ {navngitt} → {behandlet} → {vedtatt}.")
+
+    # Brødteksten gjentar hovedtallet med ord, som den skal — et tall som bare
+    # står i en figur blir ikke lest. Men da kan teksten drifte fra dataene i
+    # stillhet neste gang noe hentes på nytt. Derfor sjekkes det her: står
+    # andelen i teksten, må den stemme med den vi nettopp regnet ut.
+    tekstfil = mappe / "tekst.md"
+    if tekstfil.exists():
+        tekst = tekstfil.read_text(encoding="utf-8")
+        skrevet = f"{andel_navngitt:.1f}".replace(".", ",")
+        nevnte = set(re.findall(r"(\d+,\d)\s*prosent", tekst))
+        if nevnte and skrevet not in nevnte:
+            raise SystemExit(
+                f"FEIL: tekst.md sier {sorted(nevnte)} prosent, "
+                f"men tallet er nå {skrevet}.\n"
+                f"  Rett brødteksten — en historie som motsier sin egen figur\n"
+                f"  er verre enn en uten tall i teksten."
+            )
 
     feil = kontrakt.valider_snapshot(data, SLUG)
     print(f"  validering: {'OK' if not feil else feil}")

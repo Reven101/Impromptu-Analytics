@@ -30,17 +30,23 @@ Det spørsmålet har ingen god operasjonalisering. En evaluering kan bli lest av
 
 [[viz:trakten]]
 
-Tre ting om dette tallet, og de gjelder hver gang det nevnes:
+Legg merke til hvor fallet skjer. Det skjer på ett trinn, og bare der: fra publisert til navngitt. Etter det renner det knapt ut mer. Nesten alle evalueringene som først blir navngitt i et saksdokument, hører til en sak som får et vedtak — men det siste trinnet betyr mindre enn det ser ut til, for det er slik Stortinget virker. Saker som blir behandlet, blir som regel avgjort. At tallet holder seg oppe der sier noe om nasjonalforsamlingen, ikke om evalueringene.
 
-**Det er en nedre grense.** En evaluering kan bli lest, brukt og fulgt opp uten å bli navngitt. Vi teller det vi kan se, og det er mindre enn det som skjer.
+Tre ting om hovedtallet, og de gjelder hver gang det nevnes:
 
-**De fleste evalueringer er aldri ment å nå Stortinget.** Et direktorat som evaluerer sitt eget prosjekt skal ikke dit. At andelen er lav er derfor ikke i seg selv en skandale — det er fordelingen som er interessant, ikke gjennomsnittet.
+**Det er en nedre grense.** En evaluering kan bli lest, brukt og fulgt opp uten å bli navngitt. Vi teller det vi kan se, og det er mindre enn det som skjer. Motsatt vei holder det derimot: en rapport kan ikke bli navngitt uten å ha blitt lest av noen.
 
-**Nevneren er ikke hele korpuset.** Vi har fulltekst for de nyeste stortingssesjonene, ikke for alle. En evaluering fra 2008 kan ikke telles som «aldri nevnt» når vi ikke har lett i 2008-sesjonen, så bare evalueringer publisert innenfor dekningsvinduet er med.
+**De fleste evalueringer er aldri ment å nå Stortinget.** Et direktorat som evaluerer sitt eget prosjekt skal ikke dit. At andelen er lav er derfor ikke i seg selv en skandale.
 
-Og det er fordelingen som er verdt å se på:
+**Nevneren er ikke hele korpuset — to ganger.** Vi har fulltekst for de nyeste stortingssesjonene, ikke for alle, så en evaluering fra 2008 kan ikke telles som «aldri nevnt» når vi ikke har lett i 2008-sesjonen. Og av dem som er publisert i vinduet, er ikke alle søkbare: en rapport som heter «Evaluering av tilskuddsordningen» ville truffet på alt og bevist ingenting. De er talt for seg i trakten framfor å forsvinne.
+
+Da blir spørsmålet hvem de 3,6 prosentene tilhører. Og her er svaret mer interessant enn vi ventet:
 
 [[viz:hvem_blir_lest]]
+
+**Forskjellene mellom oppdragsgiverne er mindre enn de ser ut.** Vår første opptelling ga et utslag på fire ganger, fra rundt 19 prosent på topp til under 5 på bunn. Men de høyeste tallene kom fra etater med få evalueringer, der ett enkelt treff flytter andelen flere prosentpoeng. Begrenser man seg til oppdragsgivere med nok evalueringer til at tallet kan måles, kollapser spennet — og forskjellen mellom den øverste og den nederste er ikke til å skille fra tilfeldig variasjon.
+
+Det er verdt å si rett ut, for det motsier den historien vi gikk inn for å finne. Det finnes ingen etat her som systematisk får sine evalueringer lest, og ingen som systematisk ikke blir det. Andelen er lav omtrent overalt.
 
 ## Sporet i budsjettet
 

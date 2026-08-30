@@ -277,6 +277,17 @@ def main() -> int:
     print("Dette er en NEDRE grense. En evaluering kan bli lest og brukt uten")
     print("å bli navngitt; den kan ikke bli navngitt uten å ha blitt lest.")
 
+    # Kudos registrerer samme rapport flere ganger — delrapporter, nye
+    # utgaver, dobbeltregistreringer. To dokumenter med samme tittel gir da to
+    # treff på samme omtale. Det er ikke en feil (én rad er ett dokument, ikke
+    # ett prosjekt), men forskjellen skal være kjent framfor å oppdages av en
+    # leser som teller opp lista.
+    distinkte = len({brukbare[u]["_nokkel"] for u in treff})
+    if distinkte != navngitt:
+        print(f"\n  {navngitt} dokumenter, men {distinkte} distinkte titler — "
+              f"{navngitt - distinkte} er")
+        print("  dobbeltregistreringer av samme rapport i Kudos.")
+
     # Fordelingen er det interessante, ikke gjennomsnittet: briefen spør hvem
     # som får sin evaluering lest.
     per_giver_alle: collections.Counter = collections.Counter()
@@ -314,8 +325,10 @@ def main() -> int:
                       "sesjonene vi har fulltekst for; titler kortere enn "
                       f"{MIN_TEGN} tegn eller på generiskelisten er utelatt."),
         "dekning": {"sesjoner": sesjoner, "fra_aar": fra_aar, "til_aar": til_aar},
+        "publisert_i_vinduet": len(i_vinduet),
         "nevner": len(brukbare),
         "navngitt": navngitt,
+        "navngitt_distinkte_titler": distinkte,
         "utelatt_generisk": len(forkastet),
         "utenfor_dekning": len(evalueringer) - len(i_vinduet),
         "per_oppdragsgiver": {g: {"navngitt": per_giver_treff[g], "totalt": n}
