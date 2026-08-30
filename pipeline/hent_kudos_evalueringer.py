@@ -89,7 +89,7 @@ SORTERINGSKANDIDATER = ("uuid", "id", "published_date", "publish_date",
 # Årsskivene starter her. Tomme år koster ett kall hver, så det er billig å
 # begynne tidlig — og et dokument fra 1994 som faller utenfor ville vært et
 # stille hull i basen.
-FORSTE_AAR = 1990
+FORSTE_AAR = 1980
 
 # Fra og med dette året hentes hvert år for seg. Før det slås årene sammen i
 # bolker: din kjøring viste 1 dokument i 1990 og 9 i 1996, og en spørring koster
@@ -604,7 +604,9 @@ def hent_alle(bruk_sjekkpunkt: bool = True,
     while aar < AAR_ENKELTVIS_FRA:
         skiver.append((aar, min(aar + BOLKSTORRELSE - 1, AAR_ENKELTVIS_FRA - 1)))
         aar += BOLKSTORRELSE
-    skiver += [(a, a) for a in range(AAR_ENKELTVIS_FRA, date.today().year + 1)]
+    # To år fram i tid også: registre postdaterer, og et dokument merket 2027
+    # ville ellers falt utenfor alle skivene og havnet i det dyre restsveipet.
+    skiver += [(a, a) for a in range(AAR_ENKELTVIS_FRA, date.today().year + 3)]
     print(f"  {len(skiver)} skiver: {skiver[0][0]}–{skiver[-1][1]}, "
           f"bolker fram til {AAR_ENKELTVIS_FRA}, deretter år for år", flush=True)
 
@@ -625,12 +627,44 @@ def hent_alle(bruk_sjekkpunkt: bool = True,
                 "  mangler — de ferdige årene koster ingen nye kall."
             )
 
-    # Dokumenter uten publiseringsår fanges ikke av noen årsskive. Er summen
-    # kortere enn fasiten, henter vi resten ufiltrert og slår sammen.
+    # Dokumenter uten publiseringsår fanges ikke av noen publiseringsårsskive.
+    # Men feltkartleggingen viste at concerned_year_from/to finnes med full
+    # dekning: et dokument uten publiseringsdato kan godt ha et virkeår. Vi
+    # prøver den dimensjonen FØR vi faller tilbake på å paginere hele basen —
+    # en målrettet spørring på noen sider er alltid bedre enn 143.
     if len(samlet) < total:
         mangler = total - len(samlet)
-        print(f"\n  {mangler} dokumenter fanget ikke av årsskivene — de mangler")
-        print("  trolig publiseringsår. Henter ufiltrert og slår sammen.", flush=True)
+        print(f"\n  {mangler} dokumenter fanget ikke av publiseringsårene.")
+        print("  Prøver virkeår (concerned_year) før vi henter ufiltrert.",
+              flush=True)
+        for fra, til in skiver:
+            if len(samlet) >= total:
+                break
+            merke = f"virkeaar_{fra}" if fra == til else f"virkeaar_{fra}-{til}"
+            try:
+                dokumenter, _ = _sveip(
+                    {"concerned_year_from": fra, "concerned_year_to": til},
+                    merke, bruk_sjekkpunkt, trader=trader)
+            except nett.HttpFeil as e:
+                print(f"    ✗ virkeårsfilteret avvist: HTTP {e.kode} — "
+                      f"{e.kropp[:150]}", flush=True)
+                break
+            except nett.NettFeil as e:
+                print(f"    ⚠ virkeår {merke} svarte ikke ({e})", flush=True)
+                continue
+            før = len(samlet)
+            for d in dokumenter:
+                if d.get("uuid"):
+                    samlet.setdefault(d["uuid"], d)
+            if len(samlet) > før:
+                print(f"    virkeår {merke}: {len(samlet) - før} nye "
+                      f"— {len(samlet)}/{total}", flush=True)
+
+    if len(samlet) < total:
+        mangler = total - len(samlet)
+        print(f"\n  {mangler} dokumenter står fortsatt igjen — verken")
+        print("  publiseringsår eller virkeår fanget dem. Henter ufiltrert.",
+              flush=True)
         # Sveipet mater rader inn i `samlet` etter hvert, og stopper i det
         # øyeblikket fasiten er nådd. Uten det ville vi hentet hele korpuset
         # på nytt for å finne en håndfull dokumenter uten årstall.
