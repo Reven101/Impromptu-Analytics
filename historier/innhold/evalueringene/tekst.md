@@ -44,7 +44,11 @@ Da blir spørsmålet hvem de 3,6 prosentene tilhører. Og her er svaret mer inte
 
 [[viz:hvem_blir_lest]]
 
-**Forskjellene mellom oppdragsgiverne er mindre enn de ser ut.** Vår første opptelling ga et utslag på fire ganger, fra rundt 19 prosent på topp til under 5 på bunn. Men de høyeste tallene kom fra etater med få evalueringer, der ett enkelt treff flytter andelen flere prosentpoeng. Begrenser man seg til oppdragsgivere med nok evalueringer til at tallet kan måles, kollapser spennet — og forskjellen mellom den øverste og den nederste er ikke til å skille fra tilfeldig variasjon.
+**Forskjellene mellom oppdragsgiverne er mindre enn de ser ut.** Ytterpunktene er slående ved første øyekast: Helsedirektoratet får rundt hver tiende evaluering navngitt, mens Statens vegvesen har over seksti evalueringer i vinduet og ikke én eneste omtale. En vanlig test på det paret gir p under 0,01, altså et solid utslag.
+
+Men den testen er ugyldig, og det er verdt å forklare hvorfor. De to etatene er ikke plukket på forhånd — de er plukket *fordi* de er ytterpunktene. Med et titalls oppdragsgivere finnes det førti-femti par, og det største spriket blant dem er stort selv når ingenting skiller gruppene fra hverandre. Å teste det største spriket som om det var det eneste, er å stille spørsmålet etter å ha sett svaret.
+
+Testen vi bruker i stedet stokker om hvilke evalueringer som ble navngitt, på tvers av alle oppdragsgiverne, og måler hvor ofte ren tilfeldighet gir et like stort spenn. Da er utvalget av ytterpunkter en del av nullhypotesen, slik det skal være. Og da forsvinner utslaget: p går fra under 0,01 til godt over 0,1. **Spredningen er ikke til å skille fra tilfeldig variasjon.**
 
 Det er verdt å si rett ut, for det motsier den historien vi gikk inn for å finne. Det finnes ingen etat her som systematisk får sine evalueringer lest, og ingen som systematisk ikke blir det. Andelen er lav omtrent overalt.
 

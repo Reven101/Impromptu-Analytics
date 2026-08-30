@@ -38,6 +38,7 @@ from __future__ import annotations
 import collections
 import json
 import math
+import random
 import re
 import os
 import statistics
@@ -79,6 +80,9 @@ TOPP_LEST = 12
 # prosentpoeng — fortsatt grovt, men forskjellen mellom topp og bunn er da
 # større enn ett enkelt treff.
 MIN_FOR_ANDEL = 40
+
+# Fast frø, så spredningstesten gir samme svar hver gang den kjøres.
+FRO_SPREDNING = 20260830
 
 # Kategorinøkler fra kategoriser_evalueringer.py, til lesbare navn. Håndskrevet:
 # nøklene er maskinvennlige, figuren skal være menneskevennlig.
@@ -123,6 +127,49 @@ def oppdragsgivere(ev: dict) -> list[str]:
     ut = [a["name"] for a in (ev.get("owners") or [])
           if isinstance(a, dict) and a.get("name")]
     return ut or ["(ukjent oppdragsgiver)"]
+
+
+def spredningstest(rader: list[tuple], runder: int = 10_000) -> tuple[float, float]:
+    """Er avstanden mellom høyeste og laveste andel større enn tilfeldighet gir?
+
+    Returnerer (observert spenn i prosentpoeng, tosidig p).
+
+    Hvorfor ikke bare en tosidig test på ytterpunktene: fordi ytterpunktene er
+    VALGT fordi de er ytterpunkter. Med ti oppdragsgivere finnes det 45 par, og
+    det største spriket blant dem er stort selv når ingenting skiller gruppene.
+    En vanlig tosproporsjonstest på topp mot bunn later som paret var plukket på
+    forhånd, og gir en p-verdi som er for liten — her 0,0097 der den korrigerte
+    er en helt annen.
+
+    Testen her stokker i stedet hvilke evalueringer som ble navngitt, på tvers av
+    alle oppdragsgiverne, og måler hvor ofte tilfeldigheten alene gir et like
+    stort spenn. Da er utvalget av ytterpunkter en del av nullhypotesen, slik det
+    skal være.
+    """
+    storrelser = [n for _, _, n, _ in rader]
+    treff_totalt = sum(t for _, _, _, t in rader)
+    n_totalt = sum(storrelser)
+    if not n_totalt or len(rader) < 2:
+        return 0.0, 1.0
+
+    def spenn(merker: list[int]) -> float:
+        andeler, i = [], 0
+        for n in storrelser:
+            andeler.append(sum(merker[i:i + n]) / n)
+            i += n
+        return 100 * (max(andeler) - min(andeler))
+
+    observert = max(r[1] for r in rader) - min(r[1] for r in rader)
+
+    pott = [1] * treff_totalt + [0] * (n_totalt - treff_totalt)
+    rng = random.Random(FRO_SPREDNING)
+    minst_like_stort = 0
+    for _ in range(runder):
+        rng.shuffle(pott)
+        if spenn(pott) >= observert:
+            minst_like_stort += 1
+    # +1 i teller og nevner: p = 0 er en påstand testen ikke kan bære.
+    return observert, (minst_like_stort + 1) / (runder + 1)
 
 
 def andeler_forskjellige(t1: int, n1: int, t2: int, n2: int) -> float:
@@ -258,10 +305,12 @@ def main() -> None:
         )
 
     # Er spredningen mellom oppdragsgiverne i det hele tatt en forskjell?
-    # Sammenligner ytterpunktene blant dem som har nok evalueringer til å måles.
     topp, bunn = lest[0], lest[-1]
-    p_spredning = andeler_forskjellige(topp[3], topp[2], bunn[3], bunn[2])
+    spenn, p_spredning = spredningstest(lest)
     spredning_reell = p_spredning < 0.05
+    # Den naive testen beholdes bare for å vise hvor mye utvalgsskjevheten
+    # utgjorde. Den skal ikke brukes til å konkludere.
+    p_naiv = andeler_forskjellige(topp[3], topp[2], bunn[3], bunn[2])
 
     # --- akt 3: budsjettsporet
     sporet = spor.get("spor") or {}
@@ -369,11 +418,13 @@ def main() -> None:
                 "undertekst": (f"Andel navngitt på Stortinget, oppdragsgivere med "
                                f"minst {MIN_FOR_ANDEL} evalueringer i vinduet"),
                 "fotnote": (
-                    f"Forskjellen mellom øverste og nederste er "
-                    + ("større enn tilfeldig variasjon (p = "
-                       f"{p_spredning:.3f})." if spredning_reell else
-                       "ikke til å skille fra tilfeldig variasjon "
-                       f"(p = {p_spredning:.2f}). Rekkefølgen er ikke en rangering.")
+                    f"Spennet fra øverst til nederst er {spenn:.1f} prosentpoeng. "
+                    + (f"Det er større enn tilfeldig omfordeling av treffene gir "
+                       f"(p = {p_spredning:.3f})."
+                       if spredning_reell else
+                       f"Tilfeldig omfordeling av treffene gir like stort spenn "
+                       f"i {100 * p_spredning:.0f} % av tilfellene, så rekkefølgen "
+                       "er ikke en rangering.")
                 ),
                 "enhet": "prosent",
                 "rader": [{"navn": navn, "verdi": round(andel, 1),
@@ -437,17 +488,27 @@ def main() -> None:
     print(f"{SLUG}:")
     print(f"  korpus:   {len(dokumenter)} hentet av {oppgitt} oppgitt "
           f"({manko} aldri servert)")
+    utenfor = sum(n for a, n in per_aar.items() if not (1990 <= a < i_aar))
     print(f"  tempo:    {len(aarspunkter)} årganger, topp {toppaar} ({topptall}), "
-          f"{uten_aar} uten år")
+          f"{uten_aar} uten år, {utenfor} utenfor 1990–{i_aar - 1}")
+    # Formen på kurven, ikke bare toppen: teksten påstår noe om vekst, og den
+    # påstanden må kunne leses av her framfor å tros på.
+    bøtter: dict[str, int] = {}
+    for a, n in aarspunkter:
+        bøtter[f"{a // 5 * 5}–{a // 5 * 5 + 4}"] = bøtter.get(f"{a // 5 * 5}–{a // 5 * 5 + 4}", 0) + n
+    print("            " + "  ".join(f"{k}: {v}" for k, v in sorted(bøtter.items())))
     print(f"  temaer:   {len(per_tema)} kategorier, sum {sum(per_tema.values())}, "
           f"{uten_tema} uten")
     print(f"  trakt:    {publisert} → {nevner} → {navngitt} → {behandlet} "
           f"→ {vedtatt}")
     print(f"  spredning: {topp[0][:28]} {topp[1]:.1f} % ({topp[3]}/{topp[2]}) mot "
           f"{bunn[0][:28]} {bunn[1]:.1f} % ({bunn[3]}/{bunn[2]})")
-    print(f"             p = {p_spredning:.3f} — "
+    print(f"             spenn {spenn:.1f} pp, p = {p_spredning:.4f} "
+          f"(permutasjon) — "
           + ("en reell forskjell" if spredning_reell
              else "IKKE til å skille fra tilfeldig variasjon"))
+    print(f"             til sammenligning: p = {p_naiv:.4f} hvis man later som\n"
+          f"             ytterpunktene var valgt på forhånd — de er de ikke")
     print(f"  akt 3:    n={spor['behandling']['n']}/{spor['kontroll']['n']}, "
           f"p={p_verdi}, forskjell {100 * spor['forskjell_median']:+.2f} pp")
 
@@ -467,6 +528,21 @@ def main() -> None:
         tekst = tekstfil.read_text(encoding="utf-8")
         skrevet = f"{andel_navngitt:.1f}".replace(".", ",")
         nevnte = set(re.findall(r"(\d+,\d)\s*prosent", tekst))
+        # Samme resonnement som for prosenttallet: teksten sier hva testen kom
+        # fram til, og da må den si det testen faktisk kom fram til.
+        påstår_ingen = "ikke til å skille fra tilfeldig variasjon" in tekst
+        påstår_reell = "større enn tilfeldig" in tekst
+        if påstår_ingen and spredning_reell:
+            raise SystemExit(
+                f"FEIL: teksten sier spredningen ikke er til å skille fra\n"
+                f"  tilfeldig variasjon, men testen ga p = {p_spredning:.4f}.\n"
+                f"  Skriv om avsnittet før dette publiseres."
+            )
+        if påstår_reell and not spredning_reell:
+            raise SystemExit(
+                f"FEIL: teksten sier spredningen er reell, men testen ga\n"
+                f"  p = {p_spredning:.4f}. Skriv om avsnittet."
+            )
         if nevnte and skrevet not in nevnte:
             raise SystemExit(
                 f"FEIL: tekst.md sier {sorted(nevnte)} prosent, "
