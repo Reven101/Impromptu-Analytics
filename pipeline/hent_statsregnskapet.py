@@ -100,7 +100,12 @@ SETT = {
         "nokler": ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
                    "Post_type", "Fagdepartement"],
         "belop": "Bevilgning_beløp",
-        "fordel_paa": ["Post_type"],
+        # Tildelings_periode og Bevilgning er med i diagnosen fordi de ser ut
+        # til å skille mellom typer bevilgningsvedtak. Summen fordelt på dem
+        # avgjør om fila inneholder nivåer, endringer, eller begge om
+        # hverandre — og det er forskjellen på et brukbart og et ubrukelig
+        # utfallsmål.
+        "fordel_paa": ["Post_type", "Tildelings_periode", "Bevilgning"],
     },
 }
 
@@ -138,11 +143,23 @@ def hent_tekst(sti: str) -> str:
         return svar.read().decode("cp1252")
 
 
-def dokumenterte_kolonner(kolonnefil: str) -> list[str]:
-    """Kolonnenavnene slik DFØ selv dokumenterer dem."""
+def dokumenterte_kolonner(kolonnefil: str) -> list[tuple[str, str]]:
+    """Kolonnenavn OG beskrivelse, slik DFØ selv dokumenterer dem.
+
+    Beskrivelsen ble lenge ignorert, og det var en feil: uten den gjettet vi på
+    hva «Bevilgning_beløp» og «Post_type» betyr, og gjetningen ga et
+    aggregat der overføringer kom ut som minus fire tusen milliarder. Kilden
+    dokumenterer sine egne kolonner — da skal vi lese dokumentasjonen framfor å
+    tolke tallene baklengs.
+    """
     tekst = hent_tekst(kolonnefil)
     rader = list(csv.reader(io.StringIO(tekst), delimiter=";"))
-    return [rad[0].strip() for rad in rader[1:] if rad and rad[0].strip()]
+    ut = []
+    for rad in rader[1:]:
+        if rad and rad[0].strip():
+            ut.append((rad[0].strip(),
+                       " ".join(c.strip() for c in rad[1:] if c.strip())))
+    return ut
 
 
 # ---------------------------------------------------------------- parsing
@@ -243,8 +260,12 @@ def kjor_sett(navn: str, behold_zip: bool) -> None:
     konf = SETT[navn]
     print(f"\n{navn} — {konf['hva']}")
     print(f"  Leser kolonnebeskrivelsen ({konf['kolonnefil']}) …")
-    dokumentert = dokumenterte_kolonner(konf["kolonnefil"])
-    print(f"    {len(dokumentert)} dokumenterte kolonner")
+    dokumentert_par = dokumenterte_kolonner(konf["kolonnefil"])
+    dokumentert = [navn for navn, _ in dokumentert_par]
+    print(f"    {len(dokumentert)} dokumenterte kolonner:")
+    for navn, forklaring in dokumentert_par:
+        merke = " ←" if navn in set(konf["nokler"]) | {konf["belop"]} else "  "
+        print(f"     {merke} {navn:<28} {forklaring[:88]}")
 
     zipsti = RAADATA_DIR / konf["zip"]
     if zipsti.exists():
