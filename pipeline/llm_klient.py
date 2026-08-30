@@ -30,6 +30,7 @@ import os
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -44,6 +45,7 @@ BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
 # «pris ikke oppgitt» framfor «$0,0000», som ville lest som gratis.
 LEVERANDORER = {
     "nvidia": {
+        "navn": "NVIDIA",
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
         "nokkel": "NVIDIA_API_KEY",
         "hjelp": "Hent nøkkel på https://build.nvidia.com/ (starter med «nvapi-»)",
@@ -211,6 +213,12 @@ def kall_modell(
         forsok = 8 if gratis else 5
 
     url, modellnavn, leverandor = _del_modell(modell)
+    # Feilmeldingene navnga OpenRouter uansett hvilken leverandør kallet gikk til.
+    # «OpenRouter utilgjengelig» på et NVIDIA-kall sender feilsøkingen rett i
+    # grøfta — man leter etter en nøkkel man ikke bruker. Navnet hentes derfor
+    # fra leverandøren, og verten står i meldingen så det ikke er noen tvil.
+    tjeneste = leverandor["navn"] if leverandor else "OpenRouter"
+    vert = urllib.parse.urlsplit(url).netloc
     payload = json.dumps(
         {
             "model": modellnavn,
@@ -247,10 +255,11 @@ def kall_modell(
             if feil:
                 kode = int(feil.get("code") or 0)
                 if kode == 402:
-                    raise TomForKreditt(f"OpenRouter avviste kallet: {feil.get('message')}")
+                    raise TomForKreditt(
+                        f"{tjeneste} ({vert}) avviste kallet: {feil.get('message')}")
                 siste_feil = f"kropp-feil {kode}: {str(feil.get('message'))[:200]}"
                 if kode not in STATUS_SOM_PROVES_IGJEN or n == forsok - 1:
-                    raise SystemExit(f"OpenRouter svarte {siste_feil}")
+                    raise SystemExit(f"{tjeneste} ({vert}) svarte {siste_feil}")
                 ventetid = min(2 ** n * (4 if gratis else 1), 60)
                 print(f"    …{siste_feil[:120]} — forsøk {n + 2}/{forsok} "
                       f"om {ventetid}s")
@@ -264,15 +273,18 @@ def kall_modell(
                 # sprengt», og de krever helt ulike tiltak. Uten teksten er de umulige
                 # å skille fra hverandre.
                 raise TomForKreditt(
-                    "OpenRouter avviste kallet med HTTP 402:\n"
+                    f"{tjeneste} ({vert}) avviste kallet med HTTP 402:\n"
                     f"  {kropp[:600]}\n"
-                    "  Saldo og forbruk: https://openrouter.ai/settings/credits\n"
+                    + ("  Saldo og forbruk: https://openrouter.ai/settings/credits\n"
+                       if not leverandor else
+                       f"  Sjekk kvoten din hos {tjeneste}.\n")
+                    +
                     "  Kjøringen kan startes igjen — cachen gjør at alt som allerede er\n"
                     "  kategorisert ikke koster noe på nytt."
                 )
             siste_feil = f"HTTP {e.code}: {kropp[:400]}"
             if e.code not in STATUS_SOM_PROVES_IGJEN or n == forsok - 1:
-                raise SystemExit(f"OpenRouter svarte {siste_feil}")
+                raise SystemExit(f"{tjeneste} ({vert}) svarte {siste_feil}")
         except (
             urllib.error.URLError,
             http.client.HTTPException,  # bl.a. IncompleteRead: svaret brytes midtveis
@@ -282,7 +294,12 @@ def kall_modell(
         ) as e:
             siste_feil = f"{type(e).__name__}: {e}"
             if n == forsok - 1:
-                raise SystemExit(f"OpenRouter utilgjengelig etter {forsok} forsøk ({siste_feil})")
+                raise SystemExit(
+                    f"{tjeneste} ({vert}) svarte ikke etter {forsok} forsøk "
+                    f"({siste_feil}).\n"
+                    f"  Modell: {modell}. Nøkkelen som ble brukt: "
+                    f"{leverandor['nokkel'] if leverandor else 'OPENROUTER_API_KEY'}."
+                )
         ventetid = min(2 ** n * (4 if gratis else 1), 60)
         # Forsøksnummeret er ikke pynt: uten det ser tre og syv forsøk likt ut,
         # og man vet ikke om kjøringen er i ferd med å gi opp eller så vidt har
@@ -291,7 +308,8 @@ def kall_modell(
         time.sleep(ventetid)
 
     if "choices" not in data or not data["choices"]:
-        raise SystemExit(f"Uventet responsformat fra OpenRouter: {json.dumps(data)[:400]}")
+        raise SystemExit(
+            f"Uventet responsformat fra {tjeneste}: {json.dumps(data)[:400]}")
 
     bruk = data.get("usage") or {}
     with _forbrukslas:

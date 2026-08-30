@@ -44,6 +44,8 @@ import json
 import os
 import random
 import sys
+import time
+import urllib.parse
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
@@ -126,6 +128,43 @@ def sjekk_nokler(modeller: list[str]) -> None:
         except SystemExit as e:
             raise SystemExit(f"Modellen «{modell}» mangler nøkkel.\n{e}") from e
         print(f"  ✓ nøkkel funnet for {modell}")
+
+
+def sjekk_tilkobling(modeller: list[str], tidsavbrudd: int = 30) -> int:
+    """Ett minimalt kall per modell, med kort tidsavbrudd, før den store jobben.
+
+    En nøkkel som finnes betyr ikke at endepunktet svarer. Uten denne prøven ser
+    «leverandøren er blokkert fra denne maskinen» nøyaktig ut som «modellen
+    tenker lenge»: begge ender i TimeoutError etter åtte forsøk. Forskjellen er
+    tjue minutter per kall og helt ulike tiltak.
+
+    Kallet ber om ett token og aksepterer et avkuttet svar — vi tester at
+    tjenesten svarer, ikke hva den svarer.
+    """
+    feilet = 0
+    for modell in dict.fromkeys(modeller):
+        url, _, leverandor = llm_klient._del_modell(modell)
+        vert = urllib.parse.urlsplit(url).netloc
+        start = time.monotonic()
+        try:
+            kall_modell([{"role": "user", "content": "Svar med tallet 1."}],
+                        modell=modell, maks_tokens=16, forsok=1,
+                        tidsavbrudd=tidsavbrudd)
+            print(f"  ✓ {modell} svarte på {time.monotonic() - start:.1f} s "
+                  f"({vert})")
+        except SystemExit as e:
+            # Et avkuttet svar er et svar: tjenesten er i live, og det er alt
+            # denne prøven skal fastslå.
+            if "avkuttet" in str(e):
+                print(f"  ✓ {modell} svarte på {time.monotonic() - start:.1f} s "
+                      f"({vert}, avkuttet — som forventet på 16 tokens)")
+                continue
+            feilet += 1
+            print(f"  ✗ {modell} etter {time.monotonic() - start:.1f} s: {e}")
+        except TomForKreditt as e:
+            feilet += 1
+            print(f"  ✗ {modell}: {e}")
+    return feilet
 
 
 # ---------------------------------------------------------------- kilde
@@ -361,6 +400,10 @@ def main() -> int:
     ap.add_argument("--resonnering", choices=("low", "medium", "high"),
                     help="reasoning_effort; «low» for resonnerende modeller "
                          "som gpt-oss — svaret er ett ord, ikke et resonnement")
+    ap.add_argument("--sjekk-tilkobling", action="store_true",
+                    help="ett minimalt kall per modell og så stopp — svarer "
+                         "leverandøren i det hele tatt? Tretti sekunder, mot "
+                         "tjue minutter på å oppdage det samme midt i en jobb")
     ap.add_argument("--tidsavbrudd", type=int, default=llm_klient.STANDARD_TIDSAVBRUDD,
                     help="sekunder å vente på ett svar (standard "
                          f"{llm_klient.STANDARD_TIDSAVBRUDD}). Et 120b-kall i en "
@@ -370,6 +413,12 @@ def main() -> int:
     ap.add_argument("--trader", type=int, default=4)
     args = ap.parse_args()
     llm_klient.STANDARD_TIDSAVBRUDD = args.tidsavbrudd
+
+    if args.sjekk_tilkobling:
+        modeller = [args.modell] + ([args.mot] if args.mot else [])
+        sjekk_nokler(modeller)
+        print("Prøvekaller hver modell med ett token …")
+        return 1 if sjekk_tilkobling(modeller) else 0
 
     if not (args.alle or args.grense or args.sammenlign):
         ap.error("velg --grense N (måling først), --sammenlign N eller --alle")

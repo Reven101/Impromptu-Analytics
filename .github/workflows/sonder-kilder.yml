@@ -115,6 +115,12 @@ jobs:
             fi
             if [ "$VALG" = "kudos-temaer" ]; then
               echo "########## KUDOS — temaklassifisering, måling først ##########"
+              # Preflight FØRST. Svarer ikke leverandøren, tar det tretti sekunder
+              # å oppdage her — mot tjue minutter per kall midt i jobben, der en
+              # blokkert tilkobling og en treg modell ser helt like ut.
+              python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
+                --modell nvidia:openai/gpt-oss-120b \
+                --mot nvidia:openai/gpt-oss-20b
               # To modeller fra samme leverandør. Poenget med sammenligningen er
               # at modellene er uavhengige av hverandre, ikke at de er fra hver
               # sin tjeneste — og NVIDIA-nøkkelen alene rekker dermed.
