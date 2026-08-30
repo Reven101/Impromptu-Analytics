@@ -16,7 +16,11 @@ Toppen av lista er robust; halen er det ikke. Kudos identifiserer oppdragsgivere
 
 [[viz:temaene]]
 
-Klassifiseringen er gjort av en språkmodell som velger blant femten håndskrevne politikkområder. Den finner ikke på kategorier: gjør den det, stopper scriptet. Modellen ser tittelen og de første 600 tegnene av sammendraget, og svarene er sjekket inn, så det er etterprøvbart hvilken modell som sa hva.
+Klassifiseringen er gjort av en språkmodell som velger blant seksten håndskrevne politikkområder. Den finner ikke på kategorier: gjør den det, stopper scriptet. Modellen ser tittelen og de første 600 tegnene av sammendraget, og svarene er sjekket inn, så det er etterprøvbart hvilken modell som sa hva.
+
+Lista er skrevet etter departementsstrukturen, ikke etter hva som ligger i dataene — en kategori ingen evaluering havner i, er en opplysning om forvaltningen og ikke en feil i lista. Og en slik kategori finnes: **forsvarssektoren er så godt som fraværende.** Det betyr ikke at Forsvaret ikke evalueres. Det betyr at evalueringene ikke ligger her.
+
+Kategoriene ble justert én gang underveis, og det er verdt å si hvorfor. Vi kjørte to uavhengige modeller over de samme 200 tekstene og så på hvor de var uenige. Uenighetene var ikke tilfeldig spredt — de klumpet seg rundt barnevern og familie, som ikke hadde noe hjem i lista og derfor ble presset inn i «arbeid og velferd» eller «kommunal og distrikt» alt etter hvilken modell som svarte. Andelen «annet» var hele tiden lav, så feilen var usynlig i det målet vi vanligvis stoler på. Kategorien ble lagt til, og hele korpuset klassifisert på nytt.
 
 ## Gapet
 
