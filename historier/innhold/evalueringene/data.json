@@ -380,7 +380,7 @@
       "type": "rangering",
       "tittel": "Hvem får sin evaluering navngitt",
       "undertekst": "Andel navngitt på Stortinget, oppdragsgivere med minst 40 evalueringer i vinduet",
-      "fotnote": "Forskjellen mellom øverste og nederste er større enn tilfeldig variasjon (p = 0.010).",
+      "fotnote": "Spennet fra øverst til nederst er 10.1 prosentpoeng. Det er større enn tilfeldig omfordeling av treffene gir (p = 0.034).",
       "enhet": "prosent",
       "rader": [
         {
