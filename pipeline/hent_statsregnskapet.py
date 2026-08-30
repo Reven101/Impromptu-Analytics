@@ -76,9 +76,18 @@ SETT = {
         "kolonnefil": "statsregnskapet_beskrivelse_av_kolonner.csv",
         "utfil": "statsregnskapet_aarlig.json",
         "hva": "kontantregnskapet — hva som faktisk ble brukt",
+        # Kontoklasse er med i nøkkelen, ikke fordi analysen grupperer på den,
+        # men fordi den MÅ kunne filtreres på. Summerer man utgifter og
+        # inntekter i én bunke, netter de hverandre ut: hele kontantregnskapet
+        # 2014–2026 kom ut på 10,1 mrd, som er tre størrelsesordener for lite
+        # for én måned, langt mindre tretten år.
         "nokler": ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
-                   "Fagdepartement", "Virksomhet_id", "Virksomhet"],
+                   "Kontoklasse", "Fagdepartement", "Virksomhet_id",
+                   "Virksomhet"],
         "belop": "Beløp",
+        # Kolonner vi vil se fordelingen av før vi velger filter. Uten dette
+        # gjetter man på hvilken verdi som betyr «utgift».
+        "fordel_paa": ["Kontoklasse"],
     },
     "bevilgninger": {
         "zip": "bevilgninger_full_historikk.zip",
@@ -91,6 +100,7 @@ SETT = {
         "nokler": ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
                    "Post_type", "Fagdepartement"],
         "belop": "Bevilgning_beløp",
+        "fordel_paa": ["Post_type"],
     },
 }
 
@@ -159,8 +169,15 @@ def tall(rå: str) -> float:
 
 
 def aggreger(zipsti: Path, dokumentert: list[str], nokler: list[str],
-             belopskolonne: str) -> tuple[list[dict], dict]:
-    """Strømmer CSV-en i zipen og summerer Beløp per (år, kapittel, post, virksomhet)."""
+             belopskolonne: str,
+             fordel_paa: list[str] | None = None) -> tuple[list[dict], dict]:
+    """Strømmer CSV-en i zipen og summerer beløpet per nøkkel.
+
+    `fordel_paa` navngir kolonner vi i tillegg vil se summen fordelt på. Det er
+    ikke pynt: et totaltall som er nettet ut mellom utgift og inntekt ser
+    fullstendig troverdig ut helt til man bryter det ned.
+    """
+    fordel_paa = fordel_paa or []
     with zipfile.ZipFile(zipsti) as z:
         csv_navn = [n for n in z.namelist() if n.lower().endswith(".csv")]
         if len(csv_navn) != 1:
@@ -188,11 +205,21 @@ def aggreger(zipsti: Path, dokumentert: list[str], nokler: list[str],
             sum_per: dict[tuple, float] = collections.defaultdict(float)
             rader_lest = 0
             aar = collections.Counter()
+            # Summen per verdi i klassekolonnene. Dette er diagnosen som
+            # avslører at et totaltall er nettet ut — se merknaden i SETT.
+            fordeling: dict[str, dict[str, list]] = {
+                k: collections.defaultdict(lambda: [0, 0.0]) for k in fordel_paa
+            }
             for rad in leser:
                 rader_lest += 1
                 nokkel = tuple((rad.get(k) or "").strip() for k in nokler)
-                sum_per[nokkel] += tall(rad.get(belopskolonne, ""))
+                belop = tall(rad.get(belopskolonne, ""))
+                sum_per[nokkel] += belop
                 aar[nokkel[0]] += 1
+                for kol in fordel_paa:
+                    post = fordeling[kol][(rad.get(kol) or "").strip() or "(tom)"]
+                    post[0] += 1
+                    post[1] += belop
 
     if rader_lest == 0:
         raise SystemExit(f"FEIL: {zipsti.name} inneholdt ingen rader.")
@@ -201,7 +228,13 @@ def aggreger(zipsti: Path, dokumentert: list[str], nokler: list[str],
         {**dict(zip(nokler, nokkel)), "belop": round(belop, 2)}
         for nokkel, belop in sorted(sum_per.items())
     ]
-    return aggregat, {"rader_lest": rader_lest, "aar": dict(sorted(aar.items()))}
+    return aggregat, {
+        "rader_lest": rader_lest,
+        "aar": dict(sorted(aar.items())),
+        "fordeling": {kol: {v: {"rader": n, "sum": round(b, 2)}
+                            for v, (n, b) in sorted(d.items())}
+                      for kol, d in fordeling.items()},
+    }
 
 
 # ---------------------------------------------------------------- main
@@ -222,7 +255,7 @@ def kjor_sett(navn: str, behold_zip: bool) -> None:
 
     print("  Aggregerer (strømmer CSV-en, holder ikke hele i minnet) …")
     aggregat, kontroll = aggreger(zipsti, dokumentert, konf["nokler"],
-                                  konf["belop"])
+                                  konf["belop"], konf.get("fordel_paa"))
 
     utfil = RAADATA_DIR / konf["utfil"]
     utfil.write_text(json.dumps({
@@ -242,6 +275,12 @@ def kjor_sett(navn: str, behold_zip: bool) -> None:
     print(f"  ✓ {kontroll['rader_lest']} rader → {len(aggregat)} aggregerte linjer")
     print(f"    år i datasettet: {', '.join(sorted(k for k in kontroll['aar'] if k))}")
     print(f"    sum totalt: {sum(r['belop'] for r in aggregat) / 1e9:.1f} mrd kr")
+    for kol, verdier in (kontroll.get("fordeling") or {}).items():
+        print(f"    fordelt på {kol} — dette avgjør hva som må filtreres bort:")
+        for verdi, tallene in sorted(verdier.items(),
+                                     key=lambda kv: -abs(kv[1]["sum"])):
+            print(f"      {verdi[:34]:<34} {tallene['sum'] / 1e9:>12.1f} mrd "
+                  f"({tallene['rader']} rader)")
     print(f"    skrev {utfil}")
 
     if not behold_zip:

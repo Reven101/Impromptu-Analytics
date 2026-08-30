@@ -68,6 +68,23 @@ VINDU = 2
 # Under dette bærer ikke testen, og da skal den ikke publiseres som et tall.
 MIN_N = 30
 
+# Nedre grense for hva et årsbudsjett kan være, i kroner. Statsbudsjettet har
+# ligget rundt 1 500–2 000 mrd i perioden, og ingen rimelig lesning av
+# «bevilgninger til statens kapitler» havner under 300.
+#
+# Denne finnes fordi utfallet er en ANDEL: kapitlets beløp delt på årets sum.
+# Er nevneren feil, er hver eneste andel feil — men testen kjører like fint og
+# gir et pent p-tall. Første kjøring ga 22 mrd i året, fordi utgifter og
+# inntekter ble summert i samme bunke og nettet hverandre ut. Resultatet så
+# helt troverdig ut.
+MIN_AARSSUM = 300e9
+
+# Kontrollgruppa skal være en sammenlignbar rest, ikke en kuriositet. Er den
+# mye mindre enn behandlingsgruppa, er det ikke lenger «de samme kapitlene i år
+# uten evaluering» — det er de få kapitlene ingen evaluert virksomhet rører,
+# og de er systematisk annerledes.
+MIN_KONTROLLANDEL = 0.25
+
 # Antall omstokkinger i permutasjonstesten. 10 000 gir p ned til 0,0001, som er
 # finere enn noe vi kommer til å påstå.
 PERMUTASJONER = 10_000
@@ -284,6 +301,22 @@ def main() -> int:
     kapittelsum, aarssum, navn = bygg_bevilgninger(bevilgninger.get("rader") or [])
     org_kap = bygg_orgkart(regnskap.get("rader") or [])
     aar_fra, aar_til = min(aarssum), max(aarssum)
+
+    # Sanity på nevneren FØR noe regnes ut. En andel av feil total er feil, og
+    # den feilen er usynlig i resultatet.
+    typisk = statistics.median(aarssum.values())
+    if typisk < MIN_AARSSUM:
+        raise SystemExit(
+            f"FEIL: samlet bevilgning er {typisk / 1e9:.1f} mrd i et typisk år.\n"
+            f"  Statsbudsjettet er over {MIN_AARSSUM / 1e9:.0f} mrd. Da er ikke\n"
+            "  dette hele budsjettet, og utfallet — kapitlets ANDEL av årets sum\n"
+            "  — er regnet mot feil nevner.\n"
+            "  Vanligste årsak: utgifter og inntekter er summert i samme bunke\n"
+            "  og netter hverandre ut. Kjør hent_statsregnskapet.py og les\n"
+            "  «fordelt på»-linjene: de viser hvilke verdier som må filtreres\n"
+            "  bort før dette tallet betyr noe.\n"
+            "  Et nullresultat fra en ødelagt måling er ikke et nullresultat."
+        )
     print(f"Bevilgninger: {aar_fra}–{aar_til}, "
           f"{len({k for _, k in kapittelsum})} kapitler (utfallet)")
     print(f"Regnskapet:   {len(org_kap)} virksomheter med organisasjonsnummer "
@@ -387,6 +420,19 @@ def main() -> int:
     for grunn, antall in forkastet.most_common():
         print(f"  forkastet — {grunn}: {antall}")
 
+    andel_kontroll = len(kontroll) / max(1, len(behandlet) + len(kontroll))
+    if andel_kontroll < MIN_KONTROLLANDEL:
+        print(f"\n  ⚠ Kontrollgruppa er bare {100 * andel_kontroll:.0f} % av "
+              f"vinduene.", flush=True)
+        print("    Evalueringene dekker da nesten hele budsjettet, og "
+              "«kapitler uten", flush=True)
+        print("    evaluering» er ikke en sammenlignbar rest — det er de få "
+              "kapitlene", flush=True)
+        print("    ingen evaluert virksomhet fører utgifter på. Forskjellen "
+              "mellom", flush=True)
+        print("    gruppene måler da også dette, og det skal stå i teksten.",
+              flush=True)
+
     if len(behandlet) < MIN_N or len(kontroll) < MIN_N:
         raise SystemExit(
             f"FEIL: {len(behandlet)} behandlings- og {len(kontroll)} "
@@ -437,6 +483,8 @@ def main() -> int:
                     "virksomheter": len(berørte_org),
                     "hendelser": len(hendelser)},
         "forkastet": dict(forkastet),
+        "kontrollandel": round(andel_kontroll, 3),
+        "aarssum_typisk": round(typisk, 2),
         "behandling": b,
         "kontroll": k,
         "spor": {
