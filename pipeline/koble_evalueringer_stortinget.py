@@ -324,8 +324,9 @@ def main() -> int:
     }, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\nSkrev {UTFIL}")
     print("\nNESTE: «behandlet» og «vedtatt» krever koblingen dokument → sak →")
-    print("votering. Den er ikke hentet ennå — trakten har derfor to trinn nå,")
-    print("ikke fire, og det skal stå i teksten framfor å antydes.")
+    print("votering. Den bygges av hent_stortinget_vedtak.py, som leser fila")
+    print("over. Kjøres den ikke, har trakten to trinn og ikke fire — og det")
+    print("skal stå i teksten framfor å antydes.")
     return 0
 
 

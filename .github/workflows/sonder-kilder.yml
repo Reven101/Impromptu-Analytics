@@ -31,6 +31,7 @@ on:
           - stortinget
           - stortinget-fulltekst
           - koble
+          - vedtak
           - statsregnskapet
           - alle
 
@@ -65,6 +66,13 @@ jobs:
       #
       # Derfor er restore og save delt: save kjører med if: always(), og
       # lagrer også når hentingen strandet. Det er nettopp da vi trenger den.
+      #
+      # Cachen er ÉN mappe for alle kildene, og den akkumulerer: hvert valg
+      # henter det nyeste cachetreffet, legger sitt til, og lagrer hele treet
+      # igjen. Derfor må stegene kjøres i rekkefølge — «koble» trenger både
+      # kudos/ og stortinget/, «vedtak» trenger det «koble» skrev. Steget «Vis
+      # hva som ligger lagret» nederst sier hva som faktisk fulgte med, så en
+      # kjøring som mangler forutsetningen ikke ser ut som et funn.
       - name: Hent sjekkpunkter fra forrige kjøring
         uses: actions/cache/restore@v5
         continue-on-error: true
@@ -125,6 +133,14 @@ jobs:
             if [ "$VALG" = "koble" ]; then
               echo "########## KOBLING — hvem blir navngitt på Stortinget? ##########"
               python3 pipeline/koble_evalueringer_stortinget.py
+            fi
+            if [ "$VALG" = "vedtak" ]; then
+              echo "########## VEDTAK — trakten fra navngitt til vedtatt ##########"
+              # Sonderingen skriver koblingsnøkkelen til cachen, så hentingen
+              # etterpå slipper å lete på nytt. Begge kjører her: sonderingen
+              # er sekunder, og uten den stopper hentingen uansett.
+              python3 pipeline/hent_stortinget_vedtak.py --sonder
+              python3 pipeline/hent_stortinget_vedtak.py
             fi
             if [ "$VALG" = "statsregnskapet" ] || [ "$VALG" = "alle" ]; then
               echo
