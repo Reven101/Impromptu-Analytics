@@ -33,6 +33,7 @@ on:
           - koble
           - vedtak
           - statsregnskapet
+          - budsjettspor
           - alle
 
 permissions:
@@ -146,6 +147,12 @@ jobs:
               echo
               echo "########## STATSREGNSKAPET — kolonner og årssummer ##########"
               python3 pipeline/hent_statsregnskapet.py
+            fi
+            if [ "$VALG" = "budsjettspor" ]; then
+              echo "########## AKT 3 — budsjettsporet, med kontrollgruppe ##########"
+              # Ingen nett: leser snapshotene fra kudos-full og statsregnskapet.
+              # Ligger de ikke i cachen, sier scriptet hvilket steg som mangler.
+              python3 pipeline/analyser_budsjettspor.py
             fi
           } 2>&1 | tee kjoring.txt
 
