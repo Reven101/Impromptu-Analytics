@@ -108,6 +108,15 @@ SYSTEMPROMPT = (
     "etter hvilket politikkområde de handler om. Du svarer kun med JSON."
 )
 
+# Frist for preflighten. Kort med vilje: den skal svare på om tjenesten lever,
+# ikke vente ut en treg modell. Kan heves med --tidsavbrudd når en stor modell
+# ligger kaldt i en kø.
+PREFLIGHT_TIDSAVBRUDD = 30
+
+# Hvor ofte cachen skrives til disk under en kjøring. Ti bunter er 200 tekster:
+# nok til at skrivingen ikke merkes, lite nok til at et avbrudd ikke koster mye.
+LAGRE_HVER = 10
+
 _las = threading.Lock()
 
 
@@ -130,7 +139,8 @@ def sjekk_nokler(modeller: list[str]) -> None:
         print(f"  ✓ nøkkel funnet for {modell}")
 
 
-def sjekk_tilkobling(modeller: list[str], tidsavbrudd: int = 30) -> int:
+def sjekk_tilkobling(modeller: list[str],
+                     tidsavbrudd: int = PREFLIGHT_TIDSAVBRUDD) -> int:
     """Ett minimalt kall per modell, med kort tidsavbrudd, før den store jobben.
 
     En nøkkel som finnes betyr ikke at endepunktet svarer. Uten denne prøven ser
@@ -320,7 +330,7 @@ def kjor(tekster: list[str], modell: str, buntstorrelse: int, arbeidere: int,
                     "modell": modell,
                 }
             ferdig += 1
-            if ferdig % 25 == 0 or ferdig == len(bunter):
+            if ferdig % LAGRE_HVER == 0 or ferdig == len(bunter):
                 print(f"    {ferdig}/{len(bunter)} bunter", flush=True)
                 skriv_cache(cache, modell)
 
@@ -332,6 +342,15 @@ def kjor(tekster: list[str], modell: str, buntstorrelse: int, arbeidere: int,
         raise SystemExit(
             f"{e}\n{len(cache['temaer'])} tekster er allerede lagret og røres ikke."
         ) from e
+    except BaseException:
+        # Alt annet som avbryter kjøringen — nettverket som gir opp, tidsgrensa i
+        # Actions, Ctrl-C — skal ikke koste de buntene som alt er klassifisert.
+        # Uten dette skrives cachen bare hvert LAGRE_HVER kall og ved normal
+        # slutt, og en drept kjøring kaster bort alt siden forrige lagring.
+        skriv_cache(cache, modell)
+        print(f"  Avbrutt — {len(cache['temaer'])} tekster er lagret i cachen.",
+              flush=True)
+        raise
 
     skriv_cache(cache, modell)
     return cache
@@ -404,21 +423,28 @@ def main() -> int:
                     help="ett minimalt kall per modell og så stopp — svarer "
                          "leverandøren i det hele tatt? Tretti sekunder, mot "
                          "tjue minutter på å oppdage det samme midt i en jobb")
-    ap.add_argument("--tidsavbrudd", type=int, default=llm_klient.STANDARD_TIDSAVBRUDD,
+    ap.add_argument("--tidsavbrudd", type=int, default=None,
                     help="sekunder å vente på ett svar (standard "
-                         f"{llm_klient.STANDARD_TIDSAVBRUDD}). Et 120b-kall i en "
-                         "delt pulje kan bruke lengre tid på å komme i gang — og "
-                         "et avbrudd kaster bort generering som var underveis")
+                         f"{llm_klient.STANDARD_TIDSAVBRUDD}, {PREFLIGHT_TIDSAVBRUDD} "
+                         "for --sjekk-tilkobling). Et 120b-kall i en delt pulje kan "
+                         "bruke lengre tid på å komme i gang — og et avbrudd kaster "
+                         "bort generering som var underveis")
     ap.add_argument("--bunt", type=int, default=20)
     ap.add_argument("--trader", type=int, default=4)
     args = ap.parse_args()
-    llm_klient.STANDARD_TIDSAVBRUDD = args.tidsavbrudd
+    if args.tidsavbrudd:
+        llm_klient.STANDARD_TIDSAVBRUDD = args.tidsavbrudd
 
     if args.sjekk_tilkobling:
         modeller = [args.modell] + ([args.mot] if args.mot else [])
         sjekk_nokler(modeller)
-        print("Prøvekaller hver modell med ett token …")
-        return 1 if sjekk_tilkobling(modeller) else 0
+        # Tretti sekunder er vår egen terskel for «i live», ikke leverandørens.
+        # En stor modell som ligger kaldt i en kø kan bruke lengre tid på å
+        # komme i gang uten å være nede, så terskelen skal kunne heves —
+        # ellers avskriver prøven en modell den bare ikke ventet på.
+        frist = args.tidsavbrudd or PREFLIGHT_TIDSAVBRUDD
+        print(f"Prøvekaller hver modell med ett token (frist {frist} s) …")
+        return 1 if sjekk_tilkobling(modeller, frist) else 0
 
     if not (args.alle or args.grense or args.sammenlign):
         ap.error("velg --grense N (måling først), --sammenlign N eller --alle")

@@ -28,6 +28,7 @@ on:
           - kudos
           - kudos-full
           - kudos-temaer
+          - kudos-temaer-alle
           - stortinget
           - stortinget-fulltekst
           - koble
@@ -113,25 +114,47 @@ jobs:
               echo "########## KUDOS — hele korpuset ##########"
               python3 pipeline/hent_kudos_evalueringer.py
             fi
-            if [ "$VALG" = "kudos-temaer" ]; then
-              echo "########## KUDOS — temaklassifisering, måling først ##########"
-              # Preflight FØRST. Svarer ikke leverandøren, tar det tretti sekunder
-              # å oppdage her — mot tjue minutter per kall midt i jobben, der en
-              # blokkert tilkobling og en treg modell ser helt like ut.
-              python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
-                --modell nvidia:openai/gpt-oss-120b \
-                --mot nvidia:openai/gpt-oss-20b
+            if [ "$VALG" = "kudos-temaer" ] || [ "$VALG" = "kudos-temaer-alle" ]; then
+              echo "########## KUDOS — temaklassifisering ##########"
               # To modeller fra samme leverandør. Poenget med sammenligningen er
               # at modellene er uavhengige av hverandre, ikke at de er fra hver
               # sin tjeneste — og NVIDIA-nøkkelen alene rekker dermed.
-              # 300 s, ikke 120: 120b-modellen ligger i NVIDIAs delte pulje og
-              # bruker lang tid på å komme i gang. Et avbrudd midt i genereringen
-              # kaster bort arbeid som var underveis, og neste forsøk starter på
-              # null — det er dyrere enn å vente.
-              python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
-                --modell nvidia:openai/gpt-oss-120b \
-                --mot nvidia:openai/gpt-oss-20b \
-                --resonnering low --tidsavbrudd 300
+              STOR=nvidia:openai/gpt-oss-120b
+              LITEN=nvidia:openai/gpt-oss-20b
+              # Preflight FØRST, og med 120 s: 30 er vår terskel for «i live»,
+              # ikke leverandørens, og en stor modell som ligger kaldt i en kø
+              # skal ikke avskrives fordi vi ikke ventet på den.
+              if python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
+                   --modell "$STOR" --mot "$LITEN" --tidsavbrudd 120; then
+                MODELL="$STOR"
+                echo "Begge modellene svarer — kjører sammenligningen."
+              else
+                # 120b svarte ikke. Det er en opplysning, ikke en grunn til å
+                # stoppe: 20b klassifiserer korpuset like fullt, og
+                # tomodellskontrollen kan tas senere mot en annen leverandør —
+                # som uansett er en bedre uavhengighetstest enn to gpt-oss.
+                echo
+                echo "⚠ Minst én modell svarte ikke. Faller tilbake til $LITEN alene."
+                MODELL="$LITEN"
+                python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
+                  --modell "$LITEN" --tidsavbrudd 120
+              fi
+              # 300 s, ikke 120: modellene ligger i NVIDIAs delte pulje og bruker
+              # lang tid på å komme i gang. Et avbrudd midt i genereringen kaster
+              # bort arbeid som var underveis, og neste forsøk starter på null.
+              if [ "$VALG" = "kudos-temaer-alle" ]; then
+                echo "Kategoriserer HELE korpuset med $MODELL …"
+                python3 pipeline/kategoriser_evalueringer.py --alle \
+                  --modell "$MODELL" --resonnering low --tidsavbrudd 300
+              elif [ "$MODELL" = "$STOR" ]; then
+                python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
+                  --modell "$STOR" --mot "$LITEN" \
+                  --resonnering low --tidsavbrudd 300
+              else
+                echo "Måler tid og kvalitet på 300 tekster med $MODELL …"
+                python3 pipeline/kategoriser_evalueringer.py --grense 300 \
+                  --modell "$MODELL" --resonnering low --tidsavbrudd 300
+              fi
             fi
             if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
               echo
@@ -186,6 +209,20 @@ jobs:
         with:
           path: ${{ runner.temp }}/raadata
           key: raadata-${{ inputs.kilde }}-${{ github.run_id }}
+
+      # Temacachen ligger i repo-treet, ikke i rådatamappa, fordi den skal
+      # sjekkes inn — den er både sporingslogg og kostnadssparer. Workflowen
+      # commiter ingenting, så den lastes opp for hånd-innlegging. if: always()
+      # fordi en kjøring som gikk på tidsgrensa har klassifisert det meste, og
+      # det er nettopp da den ikke skal kastes.
+      - name: Last opp temacachen
+        if: always() && startsWith(inputs.kilde, 'kudos-temaer')
+        uses: actions/upload-artifact@v5
+        continue-on-error: true
+        with:
+          name: kudostema-cache
+          path: pipeline/cache/kudostema_cache.json
+          if-no-files-found: warn
 
       # data.json er noen kilobyte — aggregerte tall, ikke korpuset. Den lastes
       # opp så den kan hentes ned og commites fra en maskin, uten at denne
