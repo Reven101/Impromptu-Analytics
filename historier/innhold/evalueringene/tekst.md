@@ -8,7 +8,13 @@ Det finnes ingen publisert oversikt over hvor mange de er blitt, hvem som bestil
 
 [[viz:tempo]]
 
-Kurven skal leses med ett forbehold, og det er historiens viktigste: **den måler også registreringspraksis.** Kudos er bygget opp i etterkant, sammen med Nasjonalbiblioteket, og et dokument fra 2005 må være funnet og lagt inn av noen for å telle med her. At det ligger flere evalueringer fra de siste årene enn fra tidlig 2000-tall er delvis at det ble laget flere — og delvis at de nyere er registrert. Hvor mye som er hva, kan vi ikke skille ut. Nivået de siste ti årene er derfor et mer robust tall enn stigningen dit.
+Vi ventet en kurve som steg mot i dag. Det er ikke det som står der.
+
+Produksjonen tar av rundt 2005, topper seg i årene rundt 2010, og faller så. Femårsbolken 2010–2014 rommer 1 837 evalueringer; 2020–2024 rommer 1 413. Et fall på nesten en fjerdedel. Toppåret er 2009.
+
+Kurven skal leses med ett forbehold: **den måler også registreringspraksis.** Kudos er bygget opp i etterkant, sammen med Nasjonalbiblioteket, og et dokument fra 2005 må være funnet og lagt inn av noen for å telle med her. Men merk hvilken vei det forbeholdet trekker. Et register som bygges i etterkant har det *lettere* med de ferske årene enn med de gamle — nyere dokumenter er digitale, lenkene lever, byråene finnes fortsatt. Skjevheten skulle altså gitt oss en stigende kurve. Vi ser en fallende. Da er fallet trolig ekte, og kanskje undervurdert.
+
+Hva det skyldes, sier ikke disse dataene noe om. Færre reformer å evaluere, strammere konsulentbudsjetter, en dreining mot andre kunnskapsformer — alt er mulig, og ingenting av det kan avgjøres herfra. Det som kan sies, er at forvaltningen produserer mindre evalueringskunnskap om seg selv nå enn den gjorde for femten år siden.
 
 [[viz:bestillerne]]
 
@@ -44,13 +50,13 @@ Da blir spørsmålet hvem de 3,6 prosentene tilhører. Og her er svaret mer inte
 
 [[viz:hvem_blir_lest]]
 
-**Forskjellene mellom oppdragsgiverne er mindre enn de ser ut.** Ytterpunktene er slående ved første øyekast: Helsedirektoratet får rundt hver tiende evaluering navngitt, mens Statens vegvesen har over seksti evalueringer i vinduet og ikke én eneste omtale. En vanlig test på det paret gir p under 0,01, altså et solid utslag.
+**Her finnes det en forskjell.** Ytterpunktene er slående: Helsedirektoratet får rundt hver tiende evaluering navngitt, mens Statens vegvesen har over seksti evalueringer i dekningsvinduet og ikke én eneste omtale i et stortingsdokument.
 
-Men den testen er ugyldig, og det er verdt å forklare hvorfor. De to etatene er ikke plukket på forhånd — de er plukket *fordi* de er ytterpunktene. Med et titalls oppdragsgivere finnes det førti-femti par, og det største spriket blant dem er stort selv når ingenting skiller gruppene fra hverandre. Å teste det største spriket som om det var det eneste, er å stille spørsmålet etter å ha sett svaret.
+Et slikt sprik må testes før det kan skrives om, og den nærliggende testen duger ikke. De to etatene er ikke plukket på forhånd — de er plukket *fordi* de er ytterpunktene. Med et titalls oppdragsgivere finnes det førti-femti par, og det største spriket blant dem er stort selv når ingenting skiller gruppene fra hverandre. Å teste det som om paret var valgt på forhånd, er å stille spørsmålet etter å ha sett svaret. Gjør man det likevel, får man p under 0,01 — tre ganger så overbevisende som det er dekning for.
 
-Testen vi bruker i stedet stokker om hvilke evalueringer som ble navngitt, på tvers av alle oppdragsgiverne, og måler hvor ofte ren tilfeldighet gir et like stort spenn. Da er utvalget av ytterpunkter en del av nullhypotesen, slik det skal være. Og da forsvinner utslaget: p går fra under 0,01 til godt over 0,1. **Spredningen er ikke til å skille fra tilfeldig variasjon.**
+Testen vi bruker stokker i stedet om hvilke evalueringer som ble navngitt, på tvers av alle oppdragsgiverne, og måler hvor ofte ren tilfeldighet gir et like stort spenn. Da er utvalget av ytterpunkter en del av nullhypotesen. Spennet på ti prosentpoeng holder også da: **det er større enn tilfeldig variasjon gir.**
 
-Det er verdt å si rett ut, for det motsier den historien vi gikk inn for å finne. Det finnes ingen etat her som systematisk får sine evalueringer lest, og ingen som systematisk ikke blir det. Andelen er lav omtrent overalt.
+Men «forskjell» er ikke det samme som «forsømmelse». Den mest nærliggende forklaringen på Statens vegvesen er ikke at etaten overses, men at den evaluerer noe annet — veitekniske og driftsmessige spørsmål som ikke hører hjemme i en innstilling fra en stortingskomité. Det som skiller oppdragsgiverne, er da ikke hvor godt de blir lyttet til, men hvilken *type* kunnskap de bestiller. En evaluering av fastlegeordningen ender i en helsedebatt. En evaluering av tunnelvedlikehold gjør det ikke, og skal kanskje ikke gjøre det heller.
 
 ## Sporet i budsjettet
 
