@@ -30,6 +30,7 @@ on:
           - kudos-temaer
           - stortinget
           - stortinget-fulltekst
+          - koble
           - statsregnskapet
           - alle
 
@@ -120,6 +121,10 @@ jobs:
             if [ "$VALG" = "stortinget-fulltekst" ]; then
               echo "########## STORTINGET — fulltekst, 10 sesjoner ##########"
               python3 pipeline/hent_stortinget_publikasjoner.py
+            fi
+            if [ "$VALG" = "koble" ]; then
+              echo "########## KOBLING — hvem blir navngitt på Stortinget? ##########"
+              python3 pipeline/koble_evalueringer_stortinget.py
             fi
             if [ "$VALG" = "statsregnskapet" ] || [ "$VALG" = "alle" ]; then
               echo
