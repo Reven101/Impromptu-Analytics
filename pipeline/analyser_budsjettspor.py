@@ -79,6 +79,21 @@ MIN_N = 30
 # helt troverdig ut.
 MIN_AARSSUM = 300e9
 
+# Statsbudsjettet har utgiftskapitler under 3000 og inntektskapitler fra 3000 og
+# opp. Bevilgningsfila inneholder begge, og med samme fortegnskonvensjon som
+# regnskapet: inntekter er negative. Summerer man dem sammen, får man netto —
+# altså nær null, siden budsjettet balanserer.
+#
+# Det forklarer hvert eneste rare tall i første kjøring: «Saldert budsjett 2018»
+# kom ut på MINUS 62 mrd, og «Overføringer til andre» på minus 4 190. Ingen av
+# delene er endringer eller fortegnsfeil; det er utgifter og inntekter som
+# nøytraliserer hverandre.
+#
+# Grensen er ikke gjettet ut fra tallene, men er statsbudsjettets egen
+# nummerering. Og den er etterprøvbar: går filteret galt, faller årssummen
+# utenfor MIN_AARSSUM, og analysen stopper i stedet for å regne videre.
+FORSTE_INNTEKTSKAPITTEL = 3000
+
 # Kontrollgruppa skal være en sammenlignbar rest, ikke en kuriositet. Er den
 # mye mindre enn behandlingsgruppa, er det ikke lenger «de samme kapitlene i år
 # uten evaluering» — det er de få kapitlene ingen evaluert virksomhet rører,
@@ -140,25 +155,42 @@ def publiseringsaar(ev: dict) -> int | None:
 
 # ---------------------------------------------------------------- budsjettet
 
-def bygg_bevilgninger(rader: list[dict]) -> tuple[dict, dict, dict]:
+def er_utgiftskapittel(kapittel: str) -> bool:
+    """Utgiftskapitler ligger under 3000; inntektskapitler fra 3000 og opp."""
+    kap = str(kapittel or "").strip()
+    return kap.isdigit() and int(kap) < FORSTE_INNTEKTSKAPITTEL
+
+
+def bygg_bevilgninger(rader: list[dict]) -> tuple[dict, dict, dict, int]:
     """Bevilgningslinjene aggregert til (år, kapittel). Dette er UTFALLET.
 
-    Returnerer (kapittelsum, aarssum, kapittelnavn).
+    Fila er en hovedbok over bevilgningsVEDTAK, ikke over nivåer: saldert
+    budsjett, hver tilleggsproposisjon, overføringer inn og ut, årsavslutning.
+    Å summere dem per år er derfor riktig — det gir årets samlede bevilgning.
+
+    Men bare for utgiftskapitlene. Inntektene er ført med motsatt fortegn, og
+    tas de med, måler vi budsjettbalansen framfor budsjettet.
+
+    Returnerer (kapittelsum, aarssum, kapittelnavn, antall_droppede_rader).
     """
     kapittelsum: dict[tuple[int, str], float] = collections.defaultdict(float)
     aarssum: dict[int, float] = collections.defaultdict(float)
     navn: dict[tuple[int, str], set] = collections.defaultdict(set)
+    droppet = 0
 
     for rad in rader:
         aar = str(rad.get("År") or "").strip()
         kap = str(rad.get("Kapittel_id") or "").strip()
         if not aar.isdigit() or not kap:
             continue
+        if not er_utgiftskapittel(kap):
+            droppet += 1
+            continue
         aar = int(aar)
         kapittelsum[(aar, kap)] += float(rad.get("belop") or 0.0)
         aarssum[aar] += float(rad.get("belop") or 0.0)
         navn[(aar, kap)].add(str(rad.get("Kapittel") or "").strip().lower())
-    return dict(kapittelsum), dict(aarssum), dict(navn)
+    return dict(kapittelsum), dict(aarssum), dict(navn), droppet
 
 
 def bygg_orgkart(rader: list[dict]) -> dict[str, set]:
@@ -298,7 +330,8 @@ def main() -> int:
                    "python pipeline/hent_statsregnskapet.py --sett statsregnskapet")
 
     evalueringer = kudos.get("dokumenter") or []
-    kapittelsum, aarssum, navn = bygg_bevilgninger(bevilgninger.get("rader") or [])
+    kapittelsum, aarssum, navn, droppet_inntekt = bygg_bevilgninger(
+        bevilgninger.get("rader") or [])
     org_kap = bygg_orgkart(regnskap.get("rader") or [])
     aar_fra, aar_til = min(aarssum), max(aarssum)
 
@@ -318,7 +351,11 @@ def main() -> int:
             "  Et nullresultat fra en ødelagt måling er ikke et nullresultat."
         )
     print(f"Bevilgninger: {aar_fra}–{aar_til}, "
-          f"{len({k for _, k in kapittelsum})} kapitler (utfallet)")
+          f"{len({k for _, k in kapittelsum})} utgiftskapitler (utfallet)")
+    print(f"  {droppet_inntekt} linjer på inntektskapitler (≥ "
+          f"{FORSTE_INNTEKTSKAPITTEL}) er holdt utenfor — de er ført med "
+          f"motsatt fortegn")
+    print(f"  typisk år: {statistics.median(aarssum.values()) / 1e9:.0f} mrd kr")
     print(f"Regnskapet:   {len(org_kap)} virksomheter med organisasjonsnummer "
           f"(koblingen)")
     # Fører virksomhetene utgifter på kapitler bevilgningsfila ikke kjenner,
@@ -483,6 +520,7 @@ def main() -> int:
                     "virksomheter": len(berørte_org),
                     "hendelser": len(hendelser)},
         "forkastet": dict(forkastet),
+        "droppet_inntektslinjer": droppet_inntekt,
         "kontrollandel": round(andel_kontroll, 3),
         "aarssum_typisk": round(typisk, 2),
         "behandling": b,
