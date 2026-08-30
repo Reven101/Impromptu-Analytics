@@ -45,6 +45,12 @@ jobs:
   sonder:
     name: Se hva kildene inneholder
     runs-on: ubuntu-latest
+    # Skriverett, men bare for temacachen. Den er den ene fila her som SKAL inn
+    # i repoet (CLAUDE.md: cachen sjekkes inn — den er sporingslogg og
+    # kostnadssparer). Alt annet workflowen produserer er rådata som ikke skal
+    # inn, og commit-steget navngir derfor én sti og bruker aldri «git add -A».
+    permissions:
+      contents: write
     # Kudos-korpuset er 143 sider som hentes sekvensielt, og kilden er tregere
     # under vedvarende paginering enn ved enkeltkall — en kjøring på 45 minutter
     # ble drept midt i. Sjekkpunktene gjør at en kjøring som likevel går på
@@ -55,6 +61,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full historikk. Commit-steget nederst rebaser mot greina, og en
+          # grunn klone gjør det upålitelig. Repoet er under fire megabyte, så
+          # det koster ingenting å hente alt.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v7
         with:
@@ -240,6 +251,40 @@ jobs:
           name: evalueringene-data
           path: historier/innhold/evalueringene/data.json
           if-no-files-found: warn
+
+      # Cachen lastes ikke bare opp, den commites — ellers må den hentes ut av
+      # en zip og legges inn for hånd, og det er ikke en jobb for en iPad.
+      # if: always() fordi en kjøring som gikk på tidsgrensa har klassifisert
+      # det meste, og det er nettopp da arbeidet ikke skal kastes.
+      - name: Commit temacachen
+        if: always() && startsWith(inputs.kilde, 'kudos-temaer')
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          FIL=pipeline/cache/kudostema_cache.json
+          # --sammenlign skriver med vilje ingen cache: to modeller om hverandre
+          # ville gitt et blandet grunnlag. Ingen fil er da riktig, ikke en feil.
+          if [ ! -f "$FIL" ]; then
+            echo "Ingen temacache å commite — sammenligningskjøringer skriver ingen."
+            exit 0
+          fi
+          # --porcelain, ikke «git diff»: fila er utsjekket første gang, og en
+          # diff mot en usporet fil er tom. Da ville det aller første — og
+          # viktigste — resultatet blitt hoppet over som «uendret».
+          if [ -z "$(git status --porcelain -- "$FIL")" ]; then
+            echo "Temacachen er uendret siden forrige kjøring."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$FIL"
+          git commit -m "Temacache fra $VALG (kjøring $GITHUB_RUN_ID)" \
+            -m "Klassifisering av Kudos-korpuset, skrevet av pipeline/kategoriser_evalueringer.py."
+          # Greina kan ha flyttet seg mens jobben gikk. Rebase framfor merge:
+          # dette er én fil og én commit, og en merge-commit fra CI er støy.
+          git pull --rebase origin "$GITHUB_REF_NAME" || true
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "✓ Temacachen er commitet til $GITHUB_REF_NAME — ingenting å laste ned."
 
       - name: Vis hva som ligger lagret
         if: always()
