@@ -56,11 +56,19 @@ Testen er definert på forhånd, i kode, og kjørt én gang. Uten en kontrollgru
 
 [[viz:budsjettsporet]]
 
-Dette måler **samvariasjon, ikke årsak** — og her er den innvendingen sterkere enn vanlig: en evaluering bestilles ofte nettopp *fordi* noe er i endring. En omorganisering, et kutt, en ny satsing. Da er evalueringen et symptom på bevegelsen, ikke en årsak til den.
+**Vi finner ingenting.** De to kurvene er ikke til å skille fra hverandre. Kapitler der en evaluert virksomhet fører utgifter, mister om noe litt *mer* av budsjettandelen sin enn kapitler uten — men forskjellen er godt innenfor det tilfeldig variasjon gir, og retningen skal ikke tillegges vekt.
 
-Koblingen går dessuten gjennom to filer, ikke én. Statsregnskapet vet hvilke budsjettkapitler en virksomhet faktisk *bruker* penger på — organisasjonsnummeret står bare der. Bevilgningsfila vet hva Stortinget *bevilget* til de samme kapitlene, men kjenner ingen virksomheter i det hele tatt, fordi bevilgninger gis til kapittel og post og ikke til etater. Vi leser altså den ene for å finne koblingen, og den andre for å måle utfallet.
+Det er testens svar, og den ble definert på forhånd nettopp for at et slikt svar skulle kunne rapporteres. Hadde vi ikke bundet oss til metoden før vi så tallene, kunne vi lett funnet noe: med tusenvis av vinduer og fritt valg av vindusbredde og utfallsmål dukker det alltid opp et utslag et sted.
 
-Og det vi måler, er **bestillerens budsjett — ikke det evaluerte tiltakets**. Evaluerer Helsedirektoratet en kommunal ordning, er det Helsedirektoratets kapitler vi ser på. Det er analysens største metodiske svakhet, og den lar seg ikke reparere med disse dataene.
+Tre forbehold, og det siste er det tyngste:
+
+Dette måler **samvariasjon, ikke årsak** — og her er innvendingen sterkere enn vanlig, for en evaluering bestilles ofte nettopp *fordi* noe er i endring. En omorganisering, et kutt, en ny satsing. Da er evalueringen et symptom på bevegelsen, ikke en årsak til den.
+
+Koblingen går dessuten gjennom to filer, ikke én. Statsregnskapet vet hvilke budsjettkapitler en virksomhet faktisk *bruker* penger på — organisasjonsnummeret står bare der. Bevilgningsfila vet hva Stortinget *bevilget* til de samme kapitlene, men kjenner ingen virksomheter i det hele tatt, fordi bevilgninger gis til kapittel og post og ikke til etater. Vi leser altså den ene for å finne koblingen, og den andre for å måle utfallet. Og det vi måler, er **bestillerens budsjett — ikke det evaluerte tiltakets**.
+
+**Og kontrollgruppen er svak.** Evalueringene dekker nesten hele statsbudsjettet: 95 prosent av dem lar seg koble til et kapittel, og de 101 virksomhetene til sammen fører utgifter nesten overalt. «Kapitler uten evaluering» er derfor ikke en sammenlignbar rest — det er de få kapitlene ingen evaluert virksomhet rører, og de er systematisk annerledes enn resten. Det trekker i retning av at testen har mindre kraft enn tallene antyder, og en reell sammenheng kunne godt vært for svak til å synes her.
+
+Vi presenterer altså ikke dette som «evalueringer påvirker ikke budsjettene». Vi presenterer det som at **denne målingen ikke fant noe** — og at det i seg selv er verdt å vite, når to av statens største åpne datasett ikke rekker lenger enn hit.
 
 [[viz:forbeholdene]]
 
