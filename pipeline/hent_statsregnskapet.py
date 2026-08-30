@@ -59,24 +59,38 @@ RAADATA_DIR = Path(
     or Path(__file__).resolve().parents[2] / "impromptu_raadata" / "statsregnskapet"
 )
 
-# Kolonnene vi faktisk bruker. Alt annet i filene ignoreres — 28 kolonner er mer enn
-# analysen trenger, og en smal nøkkel gjør aggregatet lite nok til å sjekkes med øyet.
-NOKKELKOLONNER = ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
-                  "Fagdepartement", "Virksomhet_id", "Virksomhet"]
-BELOPSKOLONNE = "Beløp"
-
+# Kolonnene vi faktisk bruker. Alt annet i filene ignoreres — regnskapsfila har 28
+# kolonner, mer enn analysen trenger, og en smal nøkkel gjør aggregatet lite nok
+# til å sjekkes med øyet.
+#
+# DE TO DATASETTENE HAR ULIK FORM, og det er ikke en tilfeldighet man kan
+# normalisere bort: bevilgningsfila har ingen virksomhetsdimensjon, fordi
+# Stortinget bevilger til kapittel og post — ikke til etater. Beløpskolonnen
+# heter dessuten «Bevilgning_beløp» der, ikke «Beløp».
+#
+# Konsekvensen for akt 3 er at koblingen orgnr → kapittel MÅ komme fra
+# regnskapet, mens utfallet måles på bevilgningen. Begge settene trengs.
 SETT = {
     "statsregnskapet": {
         "zip": "statsregnskapet_full_historikk.zip",
         "kolonnefil": "statsregnskapet_beskrivelse_av_kolonner.csv",
         "utfil": "statsregnskapet_aarlig.json",
         "hva": "kontantregnskapet — hva som faktisk ble brukt",
+        "nokler": ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
+                   "Fagdepartement", "Virksomhet_id", "Virksomhet"],
+        "belop": "Beløp",
     },
     "bevilgninger": {
         "zip": "bevilgninger_full_historikk.zip",
         "kolonnefil": "bevilgninger_beskrivelse_av_kolonner.csv",
         "utfil": "bevilgninger_aarlig.json",
         "hva": "bevilgningene — hva Stortinget vedtok",
+        # Ingen Virksomhet_id her. Verifisert mot kildens egen
+        # kolonnebeskrivelse 2026-08-30: 18 kolonner, ingen av dem om
+        # virksomhet.
+        "nokler": ["År", "Kapittel_id", "Kapittel", "Post_id", "Post",
+                   "Post_type", "Fagdepartement"],
+        "belop": "Bevilgning_beløp",
     },
 }
 
@@ -144,7 +158,8 @@ def tall(rå: str) -> float:
         ) from e
 
 
-def aggreger(zipsti: Path, dokumentert: list[str]) -> tuple[list[dict], dict]:
+def aggreger(zipsti: Path, dokumentert: list[str], nokler: list[str],
+             belopskolonne: str) -> tuple[list[dict], dict]:
     """Strømmer CSV-en i zipen og summerer Beløp per (år, kapittel, post, virksomhet)."""
     with zipfile.ZipFile(zipsti) as z:
         csv_navn = [n for n in z.namelist() if n.lower().endswith(".csv")]
@@ -162,7 +177,7 @@ def aggreger(zipsti: Path, dokumentert: list[str]) -> tuple[list[dict], dict]:
             # Uten den siste oppdager vi ikke at fila har byttet format før tallene
             # allerede er summert feil.
             for kilde, kolonner in (("kolonnebeskrivelsen", dokumentert), ("CSV-headeren", header)):
-                mangler = [k for k in NOKKELKOLONNER + [BELOPSKOLONNE] if k not in kolonner]
+                mangler = [k for k in nokler + [belopskolonne] if k not in kolonner]
                 if mangler:
                     raise SystemExit(
                         f"FEIL: {kilde} mangler kolonnene {mangler}.\n"
@@ -175,15 +190,15 @@ def aggreger(zipsti: Path, dokumentert: list[str]) -> tuple[list[dict], dict]:
             aar = collections.Counter()
             for rad in leser:
                 rader_lest += 1
-                nokkel = tuple((rad.get(k) or "").strip() for k in NOKKELKOLONNER)
-                sum_per[nokkel] += tall(rad.get(BELOPSKOLONNE, ""))
+                nokkel = tuple((rad.get(k) or "").strip() for k in nokler)
+                sum_per[nokkel] += tall(rad.get(belopskolonne, ""))
                 aar[nokkel[0]] += 1
 
     if rader_lest == 0:
         raise SystemExit(f"FEIL: {zipsti.name} inneholdt ingen rader.")
 
     aggregat = [
-        {**dict(zip(NOKKELKOLONNER, nokkel)), "belop": round(belop, 2)}
+        {**dict(zip(nokler, nokkel)), "belop": round(belop, 2)}
         for nokkel, belop in sorted(sum_per.items())
     ]
     return aggregat, {"rader_lest": rader_lest, "aar": dict(sorted(aar.items()))}
@@ -206,7 +221,8 @@ def kjor_sett(navn: str, behold_zip: bool) -> None:
         last_ned(konf["zip"], zipsti)
 
     print("  Aggregerer (strømmer CSV-en, holder ikke hele i minnet) …")
-    aggregat, kontroll = aggreger(zipsti, dokumentert)
+    aggregat, kontroll = aggreger(zipsti, dokumentert, konf["nokler"],
+                                  konf["belop"])
 
     utfil = RAADATA_DIR / konf["utfil"]
     utfil.write_text(json.dumps({
@@ -214,7 +230,8 @@ def kjor_sett(navn: str, behold_zip: bool) -> None:
         "kilde_url": KILDE_URL,
         "dato_hentet": date.today().isoformat(),
         "datasett": navn,
-        "aggregeringsnokkel": NOKKELKOLONNER,
+        "aggregeringsnokkel": konf["nokler"],
+        "belopskolonne": konf["belop"],
         "merknad": ("Summert per år, ikke per måned. Et budsjett beveger seg når "
                     "Stortinget vedtar det, ikke mellom månedene — «24 måneder etter» "
                     "er i praksis «de to budsjettårene etter»."),

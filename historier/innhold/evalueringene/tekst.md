@@ -58,7 +58,9 @@ Testen er definert på forhånd, i kode, og kjørt én gang. Uten en kontrollgru
 
 Dette måler **samvariasjon, ikke årsak** — og her er den innvendingen sterkere enn vanlig: en evaluering bestilles ofte nettopp *fordi* noe er i endring. En omorganisering, et kutt, en ny satsing. Da er evalueringen et symptom på bevegelsen, ikke en årsak til den.
 
-Og koblingen går gjennom bestillerens organisasjonsnummer til de kapitlene virksomheten fører utgifter på. Det er **bestillerens budsjett, ikke det evaluerte tiltakets**. Evaluerer Helsedirektoratet en kommunal ordning, er det Helsedirektoratets kapitler vi ser på. Det er analysens største metodiske svakhet, og den lar seg ikke reparere med disse dataene.
+Koblingen går dessuten gjennom to filer, ikke én. Statsregnskapet vet hvilke budsjettkapitler en virksomhet faktisk *bruker* penger på — organisasjonsnummeret står bare der. Bevilgningsfila vet hva Stortinget *bevilget* til de samme kapitlene, men kjenner ingen virksomheter i det hele tatt, fordi bevilgninger gis til kapittel og post og ikke til etater. Vi leser altså den ene for å finne koblingen, og den andre for å måle utfallet.
+
+Og det vi måler, er **bestillerens budsjett — ikke det evaluerte tiltakets**. Evaluerer Helsedirektoratet en kommunal ordning, er det Helsedirektoratets kapitler vi ser på. Det er analysens største metodiske svakhet, og den lar seg ikke reparere med disse dataene.
 
 [[viz:forbeholdene]]
 

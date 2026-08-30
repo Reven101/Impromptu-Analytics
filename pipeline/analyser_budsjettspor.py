@@ -123,15 +123,14 @@ def publiseringsaar(ev: dict) -> int | None:
 
 # ---------------------------------------------------------------- budsjettet
 
-def bygg_budsjett(rader: list[dict]) -> tuple[dict, dict, dict, dict]:
-    """Aggregerer bevilgningslinjene til det testen trenger.
+def bygg_bevilgninger(rader: list[dict]) -> tuple[dict, dict, dict]:
+    """Bevilgningslinjene aggregert til (år, kapittel). Dette er UTFALLET.
 
-    Returnerer (kapittelsum, aarssum, kapittelnavn, orgnr_til_kapitler).
+    Returnerer (kapittelsum, aarssum, kapittelnavn).
     """
     kapittelsum: dict[tuple[int, str], float] = collections.defaultdict(float)
     aarssum: dict[int, float] = collections.defaultdict(float)
     navn: dict[tuple[int, str], set] = collections.defaultdict(set)
-    org_kap: dict[str, set] = collections.defaultdict(set)
 
     for rad in rader:
         aar = str(rad.get("År") or "").strip()
@@ -139,14 +138,32 @@ def bygg_budsjett(rader: list[dict]) -> tuple[dict, dict, dict, dict]:
         if not aar.isdigit() or not kap:
             continue
         aar = int(aar)
-        belop = float(rad.get("belop") or 0.0)
-        kapittelsum[(aar, kap)] += belop
-        aarssum[aar] += belop
+        kapittelsum[(aar, kap)] += float(rad.get("belop") or 0.0)
+        aarssum[aar] += float(rad.get("belop") or 0.0)
         navn[(aar, kap)].add(str(rad.get("Kapittel") or "").strip().lower())
+    return dict(kapittelsum), dict(aarssum), dict(navn)
+
+
+def bygg_orgkart(rader: list[dict]) -> dict[str, set]:
+    """Organisasjonsnummer → kapitlene virksomheten fører utgifter på.
+
+    Denne MÅ komme fra regnskapet, ikke fra bevilgningene: bevilgningsfila har
+    ingen virksomhetsdimensjon, fordi Stortinget bevilger til kapittel og post
+    og ikke til etater. Koblingen Kudos → statsregnskapet går gjennom
+    organisasjonsnummeret, og det finnes bare på regnskapssiden.
+
+    Konsekvensen er verdt å merke seg: vi leser hvilke kapitler en virksomhet
+    faktisk BRUKER penger på, og måler så hva Stortinget BEVILGET til de samme
+    kapitlene. Det er to ulike ting om samme kapittel, og det er med vilje —
+    men det gjør koblingen indirekte, og det hører hjemme i forbeholdene.
+    """
+    org_kap: dict[str, set] = collections.defaultdict(set)
+    for rad in rader:
+        kap = str(rad.get("Kapittel_id") or "").strip()
         org = _rens_orgnr(rad.get("Virksomhet_id") or "")
-        if org:
+        if kap and org:
             org_kap[org].add(kap)
-    return dict(kapittelsum), dict(aarssum), dict(navn), dict(org_kap)
+    return dict(org_kap)
 
 
 def andel(kapittelsum: dict, aarssum: dict, aar: int, kap: str) -> float | None:
@@ -258,13 +275,31 @@ def main() -> int:
                 "python pipeline/hent_kudos_evalueringer.py")
     bevilgninger = les(STATSREGNSKAP_DIR / "bevilgninger_aarlig.json",
                        "python pipeline/hent_statsregnskapet.py --sett bevilgninger")
+    # Begge settene trengs, og de har ulik form: bevilgningsfila mangler
+    # virksomhetskolonnen, så orgnr-koblingen må hentes fra regnskapet.
+    regnskap = les(STATSREGNSKAP_DIR / "statsregnskapet_aarlig.json",
+                   "python pipeline/hent_statsregnskapet.py --sett statsregnskapet")
 
     evalueringer = kudos.get("dokumenter") or []
-    kapittelsum, aarssum, navn, org_kap = bygg_budsjett(bevilgninger.get("rader") or [])
+    kapittelsum, aarssum, navn = bygg_bevilgninger(bevilgninger.get("rader") or [])
+    org_kap = bygg_orgkart(regnskap.get("rader") or [])
     aar_fra, aar_til = min(aarssum), max(aarssum)
     print(f"Bevilgninger: {aar_fra}–{aar_til}, "
-          f"{len({k for _, k in kapittelsum})} kapitler, "
-          f"{len(org_kap)} virksomheter med organisasjonsnummer")
+          f"{len({k for _, k in kapittelsum})} kapitler (utfallet)")
+    print(f"Regnskapet:   {len(org_kap)} virksomheter med organisasjonsnummer "
+          f"(koblingen)")
+    # Fører virksomhetene utgifter på kapitler bevilgningsfila ikke kjenner,
+    # er de to settene ikke om samme verden, og resten av analysen er tull.
+    kjente = {k for _, k in kapittelsum}
+    truffet = {k for kapitler in org_kap.values() for k in kapitler} & kjente
+    print(f"  {len(truffet)} kapitler finnes i begge settene")
+    if not truffet:
+        raise SystemExit(
+            "FEIL: ingen kapittel-id fra regnskapet finnes i bevilgningene.\n"
+            "  De to filene er da ikke om samme verden — sjekk at Kapittel_id\n"
+            "  har samme format i begge (nullpadding, lengde) før du tolker\n"
+            "  noe som helst av dette."
+        )
     print(f"Evalueringer: {len(evalueringer)}")
 
     # --- kobling Kudos → statsregnskapet
@@ -395,6 +430,8 @@ def main() -> int:
                       "nettopp fordi noe er i endring."),
         "dataperiode": [aar_fra, aar_til],
         "vindu_aar": args.vindu,
+        "kilder": {"utfall": "bevilgninger_aarlig.json",
+                   "orgnr_kobling": "statsregnskapet_aarlig.json"},
         "kobling": {"evalueringer": len(evalueringer), "med_orgnummer": med_org,
                     "koblet_til_kapittel": koblet,
                     "virksomheter": len(berørte_org),
