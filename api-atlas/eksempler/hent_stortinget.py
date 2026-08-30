@@ -37,6 +37,20 @@ Tre ting som kostet tid å finne ut (verifisert 2026-08-29):
      id inni, ikke en streng — og regn eldre sesjoner som det som ligger
      etter den i lista.
 
+  4. KOBLINGEN PUBLIKASJON → SAK ligger på feltet `henvisning` i
+     saksobjektet fra `saker?sesjonid=`, og den er en DELSTRENG — feltet
+     inneholder «Innst. 101 S (2025-2026), jf. Prop. 1 S», ikke bare
+     referansen. Krever du eksakt likhet, finner du null. Krever du
+     delstreng uten ordgrensesjekk, treffer «Innst. 10 S» inne i
+     «Innst. 101 S». Verifisert 2026-08-30: 106 av 106 saksbundne
+     dokumenter lot seg knytte til en sak på denne måten.
+     `voteringer?sakid=` gir deretter vedtaket; les `vedtatt` defensivt,
+     API-et har levert den både som bool og som strengen «true».
+
+  5. REFERATER KAN IKKE FØLGES TIL ETT VEDTAK. Et referat dekker en hel
+     møtedag og mange saker. Skal du bygge en trakt fra omtale til vedtak,
+     tell referattreff for seg — de hører hjemme på omtalenivået.
+
 Gull å grave i:
   - Hvor ofte nevnes «kultur» i saker per sesjon — politisk oppmerksomhet
     over tid

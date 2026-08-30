@@ -27,6 +27,24 @@ Endepunkt (verifisert med live-test 2026-07-04):
       concerned_year_from/to  året dokumentet gjelder
       sort, page, per_page    per_page har tak på 50 (verifisert 2026-08-29)
 
+Verifisert 2026-08-30, og verdt å vite før du paginerer:
+
+  meta.total ER IKKE OPPNÅELIG. Et sveip over hele Evaluering-basen — alle
+  143 sidene — ga 7 112 unike av de 7 138 API-et oppgir. De siste blir aldri
+  servert: kilden sorterer nyeste først, og mens pagineringen står på i
+  tjuefem minutter publiseres nye dokumenter foran i lista, så halen skyves
+  forbi den siste siden. Sidetallet ble låst da sveipet begynte.
+  Krev derfor DEKNING, ikke identitet, og skriv mankoen inn i snapshotet.
+
+  SORTERING FINNES IKKE. Alle seks kandidatene (id, uuid, published_at,
+  created_at, -id, title) gir 422, og feilkroppen lister ikke gyldige
+  verdier. Uten stabil sortering driver pagineringen: ett langt sveip ga
+  363 duplikater og like mange tapte dokumenter.
+
+  HENT ÅR FOR ÅR I STEDET. published_year_from/to gjør hver spørring kort,
+  og et nytt dokument i 2026 rører ikke 2019. Driften følger tid, ikke
+  sidetall. Dokumenter uten årstall fanges av ett ufiltrert restsveip.
+
 Gull å grave i:
   - Alle evalueringer på kulturfeltet: type=Evaluering + actor_org_number
     fra Brreg-oppslag av kultursektorens virksomheter
