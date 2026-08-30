@@ -499,17 +499,40 @@ def hent_alle(bruk_sjekkpunkt: bool = True,
     # Fasitkallet er det ene vi ikke kan klare oss uten: uten meta.total vet vi
     # ikke hva som er komplett. Derfor får det flere forsøk enn resten, og en
     # forklaring framfor en traceback hvis kilden er nede.
+    # Fasittallet lagres, og gjenbrukes hvis kilden er nede. Uten det dør en
+    # kjøring på det aller første kallet selv når tusenvis av dokumenter alt
+    # ligger i sjekkpunktene — og den dør på et tall vi har sett før.
+    fasitfil = RAADATA_DIR / "fasit.json"
     try:
         fasit = nett.hent_json(
             f"{API}?{urllib.parse.urlencode({'page': 1, 'per_page': PER_SIDE, 'type': DOKUMENTTYPE})}",
             BRUKERAGENT, forsok_maks=6,
         ).get("meta") or {}
+        if isinstance(fasit.get("total"), int):
+            RAADATA_DIR.mkdir(parents=True, exist_ok=True)
+            fasitfil.write_text(json.dumps(
+                {"total": fasit["total"], "dato": date.today().isoformat()},
+                ensure_ascii=False), encoding="utf-8")
     except (nett.NettFeil, nett.HttpFeil) as e:
-        raise SystemExit(
-            f"FEIL: fikk ikke fasittallet fra Kudos: {e}\n"
-            f"  Uten meta.total vet vi ikke hva en komplett base er.\n"
-            f"  Prøv igjen senere, eller sjekk {KILDE_URL}."
-        ) from e
+        lagret = None
+        if fasitfil.exists():
+            try:
+                lagret = json.loads(fasitfil.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                lagret = None
+        if not (lagret and isinstance(lagret.get("total"), int)):
+            raise SystemExit(
+                f"FEIL: fikk ikke fasittallet fra Kudos: {e}\n"
+                f"  Uten meta.total vet vi ikke hva en komplett base er, og\n"
+                f"  vi har ikke sett tallet før heller.\n"
+                f"  Prøv igjen senere, eller sjekk {KILDE_URL}."
+            ) from e
+        print(f"  ⚠ Kudos svarte ikke på fasitkallet ({e}).", flush=True)
+        print(f"    Bruker det lagrede tallet {lagret['total']} fra "
+              f"{lagret['dato']} og fortsetter.", flush=True)
+        print("    Har basen vokst siden da, oppdages det som et avvik til slutt.",
+              flush=True)
+        fasit = {"total": lagret["total"]}
     total = fasit.get("total")
     if not isinstance(total, int):
         raise SystemExit(f"FEIL: mangler meta.total.\n{json.dumps(fasit)[:300]}")
