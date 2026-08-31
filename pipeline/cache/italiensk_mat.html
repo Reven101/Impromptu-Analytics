@@ -1,0 +1,393 @@
+<title>Italiensk mat i Norge</title>
+<style>
+  :root {
+    color-scheme: light;
+    --plane:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,0.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+    --tynn:#e1e0d9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --plane:#0d0d0d; --surface:#1a1a19;
+      --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,0.10);
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+      --tynn:#2c2c2a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,0.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --tynn:#2c2c2a;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--plane); color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1120px; margin:0 auto; padding:48px 24px 96px; }
+  header { margin-bottom:40px; }
+  h1 { font-size:clamp(28px,4vw,42px); line-height:1.12; margin:0 0 12px; letter-spacing:-0.02em; }
+  .dek { color:var(--ink-2); font-size:17px; max-width:64ch; margin:0; }
+  .kilde { color:var(--muted); font-size:13px; margin-top:14px; }
+  h2 { font-size:20px; margin:0 0 6px; letter-spacing:-0.01em; }
+  .h2sub { color:var(--ink-2); font-size:14.5px; margin:0 0 20px; max-width:70ch; }
+  section { margin-top:56px; }
+
+  .hero {
+    background:var(--surface); border:1px solid var(--ring); border-radius:14px;
+    padding:28px 30px; display:flex; flex-wrap:wrap; gap:36px; align-items:flex-end;
+  }
+  .heroval { font-size:clamp(44px,7vw,68px); font-weight:600; line-height:0.95; letter-spacing:-0.03em; }
+  .herolab { color:var(--ink-2); font-size:14px; margin-top:8px; max-width:34ch; }
+  .stat { border-left:1px solid var(--grid); padding-left:24px; }
+  .statval { font-size:26px; font-weight:600; letter-spacing:-0.02em; }
+  .statlab { color:var(--muted); font-size:12.5px; margin-top:3px; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:14px; }
+  .facet {
+    background:var(--surface); border:1px solid var(--ring); border-radius:12px;
+    padding:14px 14px 8px;
+  }
+  /* Fast hoyde pa tittel og flagg: uten den skyver en tittel som brytes til to
+     linjer kurven nedover, og sparklines i samme rad slutter a ligge pa linje —
+     som er nettopp den sammenligningen small multiples finnes for. */
+  .ftitle { font-size:13.5px; font-weight:600; line-height:1.3; min-height:35px; }
+  .fval { font-size:12.5px; color:var(--ink-2); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .fflag { font-size:11.5px; color:var(--muted); margin-top:4px; min-height:30px; }
+  svg { display:block; width:100%; overflow:visible; }
+  .gridline { stroke:var(--grid); stroke-width:1; }
+  .axisline { stroke:var(--axis); stroke-width:1; }
+  .tick { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+
+  .cardwide {
+    background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:22px 24px 14px;
+  }
+  .legend { display:flex; flex-wrap:wrap; gap:18px; margin:0 0 14px; padding:0; list-style:none; }
+  .legend li { display:flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2); }
+  .key { width:14px; height:3px; border-radius:2px; flex:none; }
+
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  th,td { text-align:right; padding:7px 10px; border-bottom:1px solid var(--grid); font-variant-numeric:tabular-nums; }
+  th:first-child, td:first-child { text-align:left; font-variant-numeric:normal; }
+  thead th { color:var(--ink-2); font-weight:600; font-size:12px; position:sticky; top:0; background:var(--surface); }
+  .tblwrap { overflow-x:auto; max-height:520px; overflow-y:auto; border:1px solid var(--ring); border-radius:12px; background:var(--surface); }
+  button.toggle {
+    font:inherit; font-size:13.5px; color:var(--ink); background:var(--surface);
+    border:1px solid var(--axis); border-radius:8px; padding:7px 14px; cursor:pointer;
+  }
+  button.toggle:hover { border-color:var(--ink-2); }
+  .caveat { background:var(--surface); border:1px solid var(--ring); border-left:3px solid var(--s2); border-radius:10px; padding:16px 20px; margin-bottom:12px; }
+  .caveat h3 { font-size:14.5px; margin:0 0 5px; }
+  .caveat p { margin:0; font-size:13.5px; color:var(--ink-2); }
+  #tip {
+    position:fixed; pointer-events:none; opacity:0; transition:opacity .09s;
+    background:var(--surface); border:1px solid var(--axis); border-radius:8px;
+    padding:8px 11px; font-size:12.5px; box-shadow:0 4px 16px rgba(0,0,0,.14); z-index:9;
+    font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  @media (max-width:640px){ .hero{gap:22px} .stat{border-left:0;padding-left:0} }
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Italiensk mat i Norge, 1988–2025</h1>
+  <p class="dek">Norsk import av matvarer fra Italia, hentet på varenummernivå fra SSBs
+  utenrikshandelsstatistikk og gruppert i ti varegrupper. Alle beløp er i faste
+  2025-kroner om ikke annet står.</p>
+  <p class="kilde">Kilde: SSB tabell 08801 (varenummer × land), deflatert med tabell 08981.
+  Hentet 2026-08-31. Kontrollert mot SSBs publiserte SITC-aggregat (tabell 08809);
+  største avvik 1,8 % over 38 år.</p>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="heroval">5,9 mrd</div>
+    <div class="herolab">kroner brukt på mat og drikke fra Italia i 2025, i faste kroner</div>
+  </div>
+  <div class="stat">
+    <div class="statval">8,5×</div>
+    <div class="statlab">realvekst siden 1988</div>
+  </div>
+  <div class="stat">
+    <div class="statval">43 %</div>
+    <div class="statlab">av verdien ligger i de ti gruppene<br>(resten er mest vin, epler og druer)</div>
+  </div>
+</div>
+
+<section>
+  <h2>Ti varegrupper, hver sin kurve</h2>
+  <p class="h2sub">Faste 2025-kroner, 1988–2025. Hvert felt har sin egen y-akse —
+  formen skal sammenlignes, ikke nivået, og nivået står som tall over kurven.
+  Det <span style="color:var(--ink-2)">skraverte feltet</span> er år der gruppen
+  omsatte for under 2 mill. kroner: for få forsendelser til at kurven måler noe.</p>
+  <div class="grid" id="facets"></div>
+</section>
+
+<section>
+  <h2>De tre kjernevarene</h2>
+  <p class="h2sub">Ost, pasta og tomatprodukter — de tre gruppene som fantes i målbart
+  omfang allerede i 1988, og derfor kan følges hele veien uten forbehold.</p>
+  <div class="cardwide">
+    <ul class="legend" id="legend3"></ul>
+    <div id="kjerne"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Forbehold</h2>
+  <div id="caveats"></div>
+</section>
+
+<section>
+  <h2>Tallene</h2>
+  <p class="h2sub">Alle ti gruppene, per år, i både faste og løpende kroner og i kilo.</p>
+  <p style="margin:0 0 14px"><button class="toggle" id="tbtn" aria-expanded="false">Vis tabellen</button></p>
+  <div class="tblwrap" id="tblwrap" hidden><table id="tbl"></table></div>
+</section>
+</div>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const D = {"aarene": [1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "forste": 1988, "siste": 2025, "grupper": [{"id": "brod_kjeks", "navn": "Brød, kjeks og bakverk", "note": null, "faste": [498744.0, 1158407.0, 26061888.0, 14524055.0, 19761848.0, 23339867.0, 19826094.0, 4598812.0, 11315825.0, 16624783.0, 26411234.0, 36041056.0, 31020928.0, 33171771.0, 44180399.0, 45071923.0, 61806076.0, 72088719.0, 99213874.0, 126691049.0, 124992122.0, 111668066.0, 97600997.0, 132232720.0, 128841224.0, 145756764.0, 180798228.0, 201265662.0, 180355532.0, 174200015.0, 176769927.0, 289726712.0, 351501629.0, 307317299.0, 331878429.0, 409328436.0, 441905908.0, 537708096.0], "lopende": [199208, 483721, 11337016, 6528969, 9098774, 10983467, 9459509, 2247640, 5604497, 8439160, 13713894, 19159080, 17008570, 18717840, 25250526, 26414700, 36356515, 43085705, 60666726, 78020341, 79878771, 72904569, 65279970, 89595590, 87859048, 101511065, 128541369, 146162427, 135692325, 133464790, 139156573, 233127957, 286408735, 259110664, 295967110, 385250293, 428748216, 537708096], "kg": [10579, 28635, 202640, 308070, 475915, 530930, 463787, 110368, 268843, 438048, 688330, 982841, 873930, 928493, 1360481, 1239011, 1661681, 1980092, 1862425, 2415571, 2281714, 1872346, 1875999, 2659100, 2819826, 3114970, 3549395, 4012006, 3598584, 3657499, 3592139, 6303539, 6862158, 6698223, 6849772, 7214344, 7436565, 8606217], "solid": 1990, "tynn": "1988-1989", "brudd": [1995, 1996], "under": [{"navn": "kjeks smakaker", "verdi": 24005630}]}, {"id": "meieri", "navn": "Meieriprodukter", "note": "Ost er HS 0406 og er skilt ut. Resten er melk, fløte, yoghurt, smør og myse (0401-0405).", "faste": [5764533.0, 5441212.0, 5857514.0, 6475846.0, 4719489.0, 6126347.0, 6736227.0, 7106345.0, 8409394.0, 7481042.0, 2881029.0, 15689717.0, 18642289.0, 23346177.0, 31761000.0, 41297522.0, 47505910.0, 62724358.0, 67019278.0, 71990521.0, 80855234.0, 83912698.0, 84038726.0, 78397148.0, 93197010.0, 126640958.0, 171791745.0, 189303857.0, 208259619.0, 211213631.0, 220818468.0, 256782136.0, 326486607.0, 348283046.0, 384412377.0, 459340344.0, 481293656.0, 534435036.0], "lopende": [2302464, 2272111, 2548040, 2911074, 2172953, 2882987, 3214017, 3473181, 4165001, 3797566, 1495959, 8340503, 10221444, 13173551, 18152438, 24202687, 27944653, 37488850, 40980561, 44334032, 51672190, 54783962, 56208908, 53118765, 63552645, 88198024, 122138067, 137475568, 156686249, 161823080, 173832403, 206619177, 266026124, 293650411, 342816557, 432320324, 466963199, 534435036], "kg": [40466, 36681, 39191, 46589, 37231, 47712, 51773, 55052, 59255, 56103, 20049, 147831, 189101, 229953, 340110, 403374, 457046, 676276, 727592, 774303, 807777, 815487, 893873, 858402, 1011456, 1354287, 1894022, 2037252, 2565675, 2602581, 2823442, 3132169, 3704369, 4281492, 4716442, 4921567, 5378820, 5659449], "solid": 1988, "tynn": null, "brudd": [], "under": [{"navn": "ost", "verdi": 533146260}]}, {"id": "gronnsaker", "navn": "Hermetiserte og bearbeidede grønnsaker", "note": "Tomatprodukter (HS 2002: hele/oppdelte tomater og tomatpuré) er skilt ut. Tomatsaus og ketchup ligger i sausgruppen, ikke her.", "faste": [30374232.0, 44870359.0, 43027758.0, 47449189.0, 44328573.0, 63275413.0, 56055218.0, 52349444.0, 57137579.0, 51905946.0, 67011973.0, 58729908.0, 49331693.0, 55151492.0, 57849590.0, 65472342.0, 78208757.0, 75326873.0, 77917010.0, 93254823.0, 99914169.0, 127396488.0, 123626081.0, 116051668.0, 125266552.0, 135052326.0, 174823281.0, 180349653.0, 218429669.0, 242723580.0, 247184143.0, 236512870.0, 296952032.0, 274990959.0, 307938880.0, 407861959.0, 405155787.0, 426387120.0], "lopende": [12132046, 18736715, 18717231, 21329737, 20409815, 29776665, 26745300, 25585458, 28299077, 26348770, 34795614, 31220256, 27048241, 31120341, 33062910, 38370501, 46005151, 45021072, 47644243, 57429259, 63852192, 83173161, 82686725, 78631958, 85421418, 94056050, 124293386, 130972878, 164337790, 185964689, 194587953, 190309557, 241960915, 231855122, 274617970, 383870079, 393092325, 426387120], "kg": [2304405, 3075986, 2929157, 3635779, 4342160, 5448200, 5315987, 5563671, 5547425, 6090061, 6242053, 5788095, 5685374, 6401130, 7068776, 6828847, 7935102, 7675958, 8166740, 9404036, 8800451, 9397670, 11435435, 11516390, 12237271, 12467518, 14637603, 14469070, 17759690, 19922556, 19067545, 18282997, 20375868, 19135408, 19977614, 20787652, 21039930, 23033679], "solid": 1988, "tynn": null, "brudd": [], "under": [{"navn": "tomat", "verdi": 292701905}]}, {"id": "pasta", "navn": "Pasta og melprodukter", "note": "Couscous (19024000) er holdt utenfor. Gnocchi har ingen egen HS-linje: ferske potetgnocchi føres normalt på 190220/190230, men kan også havne på 200520 (potetprodukter) — tallet er derfor et minimum for gnocchi spesielt.", "faste": [20922293.0, 31750718.0, 38485771.0, 32932219.0, 28744929.0, 30659836.0, 41000850.0, 39523059.0, 55352935.0, 58756880.0, 75403544.0, 73749306.0, 70897439.0, 65914364.0, 66629587.0, 71546934.0, 78794709.0, 81533611.0, 83920931.0, 105457948.0, 144518937.0, 132090413.0, 119654116.0, 139492621.0, 152441058.0, 163542499.0, 194425110.0, 237088875.0, 236663989.0, 237073507.0, 242394576.0, 267948087.0, 334803650.0, 324902972.0, 382038195.0, 402849976.0, 390355048.0, 387345785.0], "lopende": [8356762, 13258288, 16741450, 14803953, 13234775, 14428158, 19562497, 19316644, 27415179, 29826477, 39152893, 39204424, 38872597, 37193508, 38080962, 41930556, 46349829, 48730691, 51315486, 64944328, 92357781, 86237677, 80030095, 94514608, 103952181, 113897790, 138229617, 172177832, 178056567, 181635839, 190817517, 215603835, 272802974, 273937800, 340699276, 379152919, 378732276, 387345785], "kg": [1033800, 1760474, 2141467, 1653578, 1553165, 1680434, 2092384, 2223950, 3059718, 3440261, 4607695, 4822083, 5053935, 4900811, 5206187, 5987039, 6454939, 7295876, 7839023, 9015173, 9246152, 9510308, 9554749, 10339274, 10444113, 10416089, 11379933, 12337183, 12819413, 13301650, 13065398, 14117002, 16444677, 16296021, 17700463, 15642777, 16233451, 17318506], "solid": 1988, "tynn": null, "brudd": [], "under": [{"navn": "torrpasta", "verdi": 289258251}, {"navn": "fylt pasta", "verdi": 94772196}]}, {"id": "sauser", "navn": "Sauser og smakstilsetninger", "note": "Pesto har ingen egen HS-linje og ligger i samlekoden 21039099 «sauser og preparater for tillaging av sauser, i.e.n.» sammen med alt annet som ikke er soyasaus, tomatsaus, sennep eller majones. Artisjokk på glass er en grønnsak i HS og ligger i oliven/kapers-gruppen, ikke her.", "faste": [1299315.0, 469516.0, 590253.0, 1291659.0, 1040751.0, 871501.0, 987422.0, 667497.0, 1780786.0, 3368268.0, 7755268.0, 8756951.0, 12233764.0, 17688712.0, 19278376.0, 21352417.0, 29993651.0, 30829504.0, 36762318.0, 43095162.0, 44994279.0, 47679199.0, 49019841.0, 55871834.0, 61914142.0, 64242947.0, 75097280.0, 98001615.0, 97976812.0, 106180415.0, 105233686.0, 118500830.0, 148954180.0, 140375084.0, 156915158.0, 199814702.0, 211574158.0, 200222495.0], "lopende": [518971, 196058, 256762, 580637, 479184, 410118, 471123, 326235, 881987, 1709818, 4026882, 4655111, 6707692, 9981212, 11018215, 12513726, 17643324, 18426058, 22479210, 26539359, 28754514, 31128250, 32786691, 37856515, 42220319, 44741457, 53391603, 71170381, 73713854, 81351008, 82841914, 95351430, 121370073, 118355463, 139935958, 188060896, 205274564, 200222495], "kg": [47600, 20662, 17689, 50541, 54374, 47487, 59322, 18874, 54215, 157325, 246734, 224755, 324834, 542247, 559822, 611221, 883029, 772428, 962587, 1174677, 1104936, 1135135, 1266903, 1422292, 1497242, 1574628, 1796971, 2495224, 2539074, 2859064, 2997140, 3429752, 3729431, 3554497, 4021412, 4284398, 4700872, 4380005], "solid": 1997, "tynn": "1988-1996", "brudd": [], "under": [{"navn": "tomatsaus ketchup", "verdi": 83503718}]}, {"id": "olivenolje_eddik", "navn": "Olivenolje og eddik", "note": "1509 er olivenolje av oliven, 1510 er pressrestolje (pomace). Fra 2022 skiller tariffen extra virgin (150920) fra virgin (150930) og øvrig (150940); før det lå alt i 150910/150990. Varianter «til dyrefor» er tatt med — de var ikke egne koder før 1995, så å utelate dem ville laget en kunstig knekk.", "faste": [694534.0, 1699424.0, 1196038.0, 3169543.0, 5037235.0, 4848504.0, 5706693.0, 4457746.0, 8817521.0, 14723424.0, 21279915.0, 32849212.0, 36353420.0, 32539063.0, 26891199.0, 26680638.0, 32425683.0, 32417096.0, 44525792.0, 51999578.0, 47113803.0, 48994083.0, 46265231.0, 53714249.0, 56239119.0, 67328516.0, 68687430.0, 74483481.0, 69802250.0, 89888650.0, 82337065.0, 77015672.0, 110928324.0, 106985000.0, 107823274.0, 129573365.0, 183072737.0, 198516192.0], "lopende": [277410, 709636, 520281, 1424798, 2319250, 2281649, 2722801, 2178695, 4367138, 7473982, 11049484, 17462326, 19932340, 18360822, 15369189, 15636365, 19073931, 19374924, 27226374, 32022979, 30109039, 31986696, 30944283, 36394622, 38350423, 46890375, 48834418, 54091126, 52516435, 68868937, 64817268, 61970490, 90386042, 90203039, 96156122, 121951402, 177621770, 198516192], "kg": [9483, 30393, 19717, 59360, 133243, 147942, 181958, 100801, 133656, 327702, 478081, 777030, 922373, 723143, 528357, 485949, 588817, 568704, 745909, 887868, 860242, 874446, 881264, 977493, 1014019, 1035776, 1020085, 897961, 912686, 1094159, 1072470, 1059420, 1407210, 1478232, 1575779, 1425509, 1604982, 2072834], "solid": 1991, "tynn": "1988-1990", "brudd": [], "under": [{"navn": "olivenolje", "verdi": 164603078}, {"navn": "eddik", "verdi": 33913114}]}, {"id": "spekemat", "navn": "Spekemat og bearbeidede kjøttprodukter", "note": "HS skiller ikke pancetta fra guanciale — begge er sideflesk av svin, saltet/tørket/røkt (02101200). Spekeskinke ligger i 021011*.", "faste": [0, 0, 3710.0, 0, 0, 0, 0, 403979.0, 736903.0, 2877353.0, 4749028.0, 6372483.0, 8891769.0, 12109019.0, 15619771.0, 24133838.0, 27952410.0, 31979681.0, 41757553.0, 58971404.0, 47569717.0, 42236419.0, 39758049.0, 38841309.0, 44079899.0, 49044582.0, 60256880.0, 69150729.0, 84920055.0, 88461712.0, 101567684.0, 93853320.0, 131078092.0, 135705522.0, 143962243.0, 156751556.0, 163572041.0, 179604123.0], "lopende": [0, 0, 1614, 0, 0, 0, 0, 197442, 364973, 1460617, 2465908, 3387551, 4875298, 6832758, 8927204, 14143796, 16442594, 19113491, 25533667, 36316449, 30400400, 27574830, 26591985, 26317314, 30058842, 34156684, 42840585, 50218394, 63890470, 67775676, 79955969, 75518866, 106804371, 114418381, 128384629, 147530876, 158701704, 179604123], "kg": [0, 0, 12, 0, 0, 0, 0, 2458, 4425, 14876, 22750, 32283, 49629, 63072, 88290, 127255, 131964, 170996, 234591, 303723, 251861, 257942, 271760, 287176, 337577, 367886, 461470, 475456, 575271, 594723, 609829, 521982, 630719, 709425, 792669, 769891, 826616, 912827], "solid": 1997, "tynn": "1988-1996", "brudd": [], "under": [{"navn": "sideflesk pancetta guanciale", "verdi": 1278526}, {"navn": "skinke prosciutto", "verdi": 13314341}, {"navn": "polser salami", "verdi": 66909425}]}, {"id": "oliven_kapers", "navn": "Oliven, kapers og artisjokk", "note": "VIKTIG BRUDD: fra 2007 slo tolltariffen sammen kapers, artisjokk og søte pepperfrukter til én kode (20059901). Etter 2006 kan de tre ikke skilles i SSBs tall. Undergruppene «kapers_ren» og «artisjokk_ren» er derfor bare komplette til og med 2006; hovedgruppen er sammenlignbar hele veien. Oliven (20019020 i eddik, 20057000 ellers) er uendret 1988-.", "faste": [0, 0, 0, 4474.0, 2643.0, 0, 154928.0, 307834.0, 573504.0, 816275.0, 1550837.0, 1895119.0, 1541883.0, 1291972.0, 2303941.0, 3031656.0, 3482288.0, 4934177.0, 6666698.0, 10488456.0, 18646642.0, 16290143.0, 16224109.0, 14977651.0, 14419885.0, 16603869.0, 21696658.0, 20974895.0, 15495853.0, 18935610.0, 17017110.0, 18712994.0, 17536576.0, 15672956.0, 22072775.0, 24209794.0, 26490366.0, 29329829.0], "lopende": [0, 0, 0, 2011, 1217, 0, 73920, 150452, 284045, 414362, 805264, 1007427, 845404, 729021, 1316777, 1776722, 2048405, 2949040, 4076514, 6459122, 11916518, 10635322, 10851419, 10148256, 9833168, 11563624, 15425583, 15232313, 11658463, 14507675, 13396185, 15057369, 14289062, 13214453, 19684363, 22785688, 25701619, 29329829], "kg": [0, 0, 0, 330, 19, 0, 4275, 4240, 8239, 8871, 25649, 23922, 25192, 22050, 52235, 49833, 62979, 76879, 100291, 177099, 256744, 181903, 195031, 177407, 198067, 231533, 301607, 248909, 199986, 249218, 239754, 258558, 207975, 252608, 357676, 348271, 358894, 401082], "solid": 2002, "tynn": "1988-2001", "brudd": [], "under": [{"navn": "oliven", "verdi": 17345238}, {"navn": "kapers ren", "verdi": 527428}, {"navn": "artisjokk ren", "verdi": 395537}]}, {"id": "sjomat", "navn": "Hermetisert sjømat", "note": "HS 1604 er tilberedt/konservert fisk. Skalldyr og bløtdyr (HS 1605) er ikke med.", "faste": [13747.0, 68876.0, 105799.0, 0, 0, 39869.0, 76592.0, 87060.0, 583341.0, 205075.0, 559524.0, 654015.0, 272371.0, 503291.0, 800698.0, 721186.0, 689012.0, 2262593.0, 1112588.0, 1657421.0, 1587531.0, 2627694.0, 1760395.0, 2782296.0, 2377325.0, 1991850.0, 2180570.0, 2297629.0, 1543556.0, 1697087.0, 2766444.0, 2503365.0, 3092438.0, 2631196.0, 3491631.0, 3629814.0, 4438967.0, 5079444.0], "lopende": [5491, 28761, 46023, 0, 0, 18762, 36544, 42550, 288917, 104101, 290530, 347668, 149339, 283992, 457625, 422656, 405301, 1352298, 680319, 1020692, 1014544, 1715539, 1177432, 1885172, 1621139, 1387207, 1550311, 1668576, 1161310, 1300237, 2177796, 2014327, 2519764, 2218459, 3113815, 3416296, 4306797, 5079444], "kg": [75, 280, 274, 0, 0, 1024, 1550, 1146, 11462, 3426, 6225, 6893, 3295, 6581, 7687, 8429, 6234, 17017, 8003, 17858, 15687, 29637, 21584, 36878, 38084, 24908, 19779, 19688, 11875, 11425, 23938, 22254, 24332, 14997, 20824, 15857, 20657, 25366], "solid": 2005, "tynn": "1988-2004, 2006-2008, 2010, 2013, 2016-2017", "brudd": [1996, 1997, 2005], "under": [{"navn": "tunfisk", "verdi": 1366881}, {"navn": "sardin ansjos", "verdi": 3358069}]}, {"id": "troffel", "navn": "Trøffelprodukter", "note": "Fersk trøffel: 07095200 (1988-2006) → 07095910 (2007-2021) → 07095600 (2022-). Konservert: 20032000 (1988-2011) → 20039010 (2012-). Trøffelolje og trøffelkrem har ingen egen HS-linje og er IKKE med — de ligger spredt i sausekoder og oljekoder.", "faste": [0, 0, 3897.0, 10444.0, 0, 4467.0, 7870.0, 0, 47486.0, 12767.0, 45412.0, 111785.0, 177274.0, 172150.0, 727759.0, 436175.0, 377096.0, 658981.0, 861107.0, 1191295.0, 730187.0, 815919.0, 1000527.0, 1549101.0, 1028447.0, 759522.0, 1189271.0, 1525066.0, 1656423.0, 1624885.0, 2083820.0, 2436533.0, 1882206.0, 1870954.0, 4273879.0, 3849883.0, 4815316.0, 3544219.0], "lopende": [0, 0, 1695, 4695, 0, 2102, 3755, 0, 23519, 6481, 23580, 59424, 97198, 97139, 415938, 255623, 221821, 393857, 526545, 733637, 466641, 532688, 669198, 1049609, 701316, 528963, 845531, 1107528, 1246227, 1244919, 1640422, 1960551, 1533649, 1577471, 3811419, 3623419, 4671941, 3544219], "kg": [0, 0, 1, 2, 0, 1, 3, 0, 15, 126, 102, 56, 241, 283, 432, 309, 285, 377, 267, 450, 264, 282, 380, 379, 318, 345, 435, 478, 492, 671, 855, 962, 889, 862, 1817, 1956, 2386, 1691], "solid": 2018, "tynn": "1988-2017, 2020-2021", "brudd": [2022], "under": [{"navn": "fersk", "verdi": 2685367}, {"navn": "konservert", "verdi": 858852}]}], "total_faste": [687973678.0, 706079503.0, 719774652.0, 739301078.0, 821543557.0, 953871974.0, 1010847937.0, 892899560.0, 1016111000.0, 1013308907.0, 1082643623.0, 1172650976.0, 1210391406.0, 1390985734.0, 1536763746.0, 1709950582.0, 1713107454.0, 1968391315.0, 2060420639.0, 2495289880.0, 2729882800.0, 2730021372.0, 2785986729.0, 2958799046.0, 3184306686.0, 3396657703.0, 3779811491.0, 4199147106.0, 4237099789.0, 4242313571.0, 4199089329.0, 4345559687.0, 5205369429.0, 4951103211.0, 5106990791.0, 5736236249.0, 5626656109.0, 5869874398.0], "total_lopende": [274789777, 294840751, 313104587, 332336505, 378256075, 448880929, 482299996, 436398986, 503259043, 514381210, 562157001, 623370018, 663649609, 784891732, 878310144, 1002127901, 1007710267, 1176460459, 1259894102, 1536678154, 1744587410, 1782345108, 1863394174, 2004763624, 2171433535, 2365573520, 2687316957, 3049489547, 3187825259, 3250283818, 3305601186, 3496644977, 4241412127, 4174459570, 4554382492, 5398810587, 5459123138, 5869874398], "hentet": "2026-08-31", "kontroll": 0.017673847032617325, "andel_utenfor": 0.5737, "utenfor": [{"varenummer": "22042109_1990", "navn": "Vin; druemost hvor gjæringen er hindret el avbrutt ved tilsetning av alkohol, unnt musserende vin, emballasje med innhold høyst 2 liter, alkoholinnhold over 2,5 volum% (1990-) (M1=kg,  M2=liter)", "verdi": 877568708}, {"varenummer": "22042209_2017", "navn": "Vin; druemost hvor gjæringen er hindret el avbrutt ved tilsetning av alkohol, unnt musserende vin, emballasje med innhold 2-10 liter, alkoholinnhold over 2,5 volum% (2017-) (M1=kg,  M2=liter)", "verdi": 255389514}, {"varenummer": "08081022_2001", "navn": "Epler, friske, i tiden 1. desember - 30. april (2001-) (M1=kg,  M2=nei)", "verdi": 248428168}, {"varenummer": "22041009_1990", "navn": "Musserende vin, med alkoholinnhold over 2,5 volum% (1990-) (M1=kg,  M2=liter)", "verdi": 207127831}, {"varenummer": "08081011_1995", "navn": "Epler, friske, i tiden 1. mai - 30. november (1995-) (M1=kg,  M2=nei)", "verdi": 173654440}, {"varenummer": "21069098_2022", "navn": "Tilberedte næringsmidler, ikke nevnt eller innbefattet annet sted, ikke til dyrefor (2022-) (M1=kg,  M2=nei)", "verdi": 96001796}]};
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a={}) => { const e = document.createElementNS(NS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const nf = n => n.toLocaleString("nb-NO", {maximumFractionDigits:0});
+const kort = v => v >= 1e9 ? (v/1e9).toFixed(1).replace(".",",")+" mrd"
+                : v >= 1e6 ? (v/1e6).toFixed(v>=1e7?0:1).replace(".",",")+" mill."
+                : v >= 1e3 ? (v/1e3).toFixed(0)+" 000" : Math.round(v);
+
+const tip = document.getElementById("tip");
+function visTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY - r.height - 12;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y < 8) y = e.clientY + 18;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const skjulTip = () => tip.style.opacity = 0;
+
+/* ---------- small multiples ---------- */
+const W = 232, H = 96, PB = 18, PT = 8;
+function facet(g){
+  const card = document.createElement("div");
+  card.className = "facet";
+  const t = document.createElement("div");
+  t.className = "ftitle"; t.textContent = g.navn;
+  const v = document.createElement("div");
+  v.className = "fval";
+  v.textContent = kort(g.faste[g.faste.length-1]) + " kr i " + D.siste;
+  card.append(t, v);
+
+  const max = Math.max(...g.faste) || 1;
+  const x = i => (i / (D.aarene.length - 1)) * W;
+  const y = val => PT + (1 - val / max) * (H - PT - PB);
+
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img",
+    "aria-label":`${g.navn}: ${kort(g.faste[0])} kroner i ${D.forste}, ${kort(g.faste[g.faste.length-1])} kroner i ${D.siste}`});
+
+  // skravert felt for de tynne arene
+  if (g.solid && g.solid > D.forste){
+    const bredde = x(D.aarene.indexOf(g.solid));
+    svg.append(el("rect", {x:0, y:PT, width:Math.max(bredde,1), height:H-PT-PB,
+      fill:"var(--tynn)", opacity:"0.55"}));
+  }
+  svg.append(el("line", {x1:0, y1:H-PB, x2:W, y2:H-PB, class:"axisline"}));
+
+  const pts = g.faste.map((val,i) => [x(i), y(val)]);
+  const dLine = pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  svg.append(el("path", {d:`${dLine} L ${W} ${H-PB} L 0 ${H-PB} Z`,
+    fill:"var(--s1)", opacity:"0.10"}));
+  svg.append(el("path", {d:dLine, fill:"none", stroke:"var(--s1)",
+    "stroke-width":"2", "stroke-linejoin":"round", "stroke-linecap":"round"}));
+  // sluttpunkt med 2px ring i flatefargen
+  svg.append(el("circle", {cx:x(pts.length-1), cy:pts[pts.length-1][1], r:"4",
+    fill:"var(--s1)", stroke:"var(--surface)", "stroke-width":"2"}));
+
+  const t0 = el("text", {x:0, y:H-6, class:"tick"}); t0.textContent = D.forste;
+  const t1 = el("text", {x:W, y:H-6, class:"tick", "text-anchor":"end"}); t1.textContent = D.siste;
+  svg.append(t0, t1);
+
+  // treffsone per ar, bredere enn marken
+  const hit = el("rect", {x:0, y:0, width:W, height:H, fill:"transparent"});
+  hit.style.cursor = "crosshair";
+  const kryss = el("line", {y1:PT, y2:H-PB, stroke:"var(--axis)", "stroke-width":"1", opacity:"0"});
+  const dot = el("circle", {r:"4", fill:"var(--s1)", stroke:"var(--surface)",
+    "stroke-width":"2", opacity:"0"});
+  svg.append(kryss, dot, hit);
+  hit.addEventListener("pointermove", e => {
+    const b = svg.getBoundingClientRect();
+    const i = Math.round(((e.clientX-b.left)/b.width) * (D.aarene.length-1));
+    const j = Math.max(0, Math.min(D.aarene.length-1, i));
+    kryss.setAttribute("x1",x(j)); kryss.setAttribute("x2",x(j));
+    kryss.setAttribute("opacity","1");
+    dot.setAttribute("cx",x(j)); dot.setAttribute("cy",y(g.faste[j]));
+    dot.setAttribute("opacity","1");
+    const tynt = g.solid && D.aarene[j] < g.solid;
+    visTip(e, `<b>${g.navn}</b><br>${D.aarene[j]}: ${nf(g.faste[j])} kr (faste)<br>
+      <span style="color:var(--muted)">${nf(g.lopende[j])} kr løpende · ${nf(g.kg[j])} kg</span>
+      ${tynt ? '<br><span style="color:var(--muted)">for tynt til å måle</span>' : ''}`);
+  });
+  hit.addEventListener("pointerleave", () => {
+    kryss.setAttribute("opacity","0"); dot.setAttribute("opacity","0"); skjulTip();
+  });
+
+  card.append(svg);
+  // Alltid til stede, ogsa tom: reserverer hoyden slik at kortene i en rad
+  // fortsatt har kurvene sine pa samme linje.
+  const f = document.createElement("div");
+  f.className = "fflag";
+  f.textContent = g.tynn ? "tynt grunnlag " + g.tynn : "";
+  card.append(f);
+  return card;
+}
+const fw = document.getElementById("facets");
+D.grupper.forEach(g => fw.append(facet(g)));
+
+/* ---------- kjernevarene: 3 serier ---------- */
+const KJERNE = [
+  {id:"meieri",   navn:"Meieriprodukter (mest ost)", farge:"var(--s1)"},
+  {id:"pasta",    navn:"Pasta og melprodukter",      farge:"var(--s2)"},
+  {id:"gronnsaker",navn:"Bearbeidede grønnsaker (mest tomat)", farge:"var(--s3)"},
+];
+(function(){
+  const w = 900, h = 340, ml = 62, mr = 168, mt = 14, mb = 34;
+  const serier = KJERNE.map(k => ({...k, d: D.grupper.find(g=>g.id===k.id)}));
+  const max = Math.max(...serier.flatMap(s => s.d.faste));
+  const steg = Math.pow(10, Math.floor(Math.log10(max)));
+  const topp = Math.ceil(max/steg)*steg;
+  const x = i => ml + (i/(D.aarene.length-1))*(w-ml-mr);
+  const y = v => mt + (1 - v/topp)*(h-mt-mb);
+
+  const svg = el("svg", {viewBox:`0 0 ${w} ${h}`, role:"img",
+    "aria-label":"Meieriprodukter, pasta og bearbeidede grønnsaker fra Italia, faste kroner"});
+  for (let i=0;i<=4;i++){
+    const v = topp*i/4;
+    svg.append(el("line",{x1:ml,y1:y(v),x2:w-mr,y2:y(v),class: i? "gridline":"axisline"}));
+    const tk = el("text",{x:ml-9,y:y(v)+3.5,class:"tick","text-anchor":"end"});
+    tk.textContent = kort(v); svg.append(tk);
+  }
+  D.aarene.forEach((a,i) => { if (a%5===0 || i===D.aarene.length-1){
+    const tk = el("text",{x:x(i),y:h-12,class:"tick","text-anchor":"middle"});
+    tk.textContent = a; svg.append(tk);
+  }});
+  serier.forEach(s => {
+    const pts = s.d.faste.map((v,i)=>[x(i),y(v)]);
+    s._last = pts[pts.length-1];
+    svg.append(el("path",{d:pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" "),
+      fill:"none", stroke:s.farge, "stroke-width":"2",
+      "stroke-linejoin":"round","stroke-linecap":"round"}));
+    svg.append(el("circle",{cx:s._last[0],cy:s._last[1],r:"4",fill:s.farge,
+      stroke:"var(--surface)","stroke-width":"2"}));
+  });
+
+  // Etikettene til hoyre kolliderer nar seriene lukker seg mot slutten (2025 skiller
+  // gronnsaker og pasta med 39 mill. av en akse pa 600). A stable dem oppa hverandre
+  // gjor dem uleselige; a dytte dem fra hverandre uten mer losriver dem fra kurven.
+  // Losningen er a dytte OG tegne en tynn foringslinje tilbake til sluttpunktet.
+  const LH = 30;                       // to tekstlinjer + luft
+  const plassert = serier.map(s => ({s, y:s._last[1]})).sort((a,b)=>a.y-b.y);
+  for (let i=1;i<plassert.length;i++)
+    plassert[i].y = Math.max(plassert[i].y, plassert[i-1].y + LH);
+  const overskudd = plassert[plassert.length-1].y - (h-mb);
+  if (overskudd > 0) plassert.forEach(p => p.y -= overskudd);
+
+  plassert.forEach(({s,y:ly}) => {
+    const [lx,lyy] = s._last;
+    svg.append(el("polyline",{
+      points:`${lx+6},${lyy} ${lx+14},${lyy} ${lx+20},${ly} ${lx+28},${ly}`,
+      fill:"none", stroke:s.farge, "stroke-width":"1.5",
+      "stroke-linejoin":"round","stroke-linecap":"round", opacity:"0.85"}));
+    const lab = el("text",{x:lx+34,y:ly-2,"font-size":"12.5",
+      fill:"var(--ink)","font-weight":"600"});
+    lab.textContent = kort(s.d.faste[s.d.faste.length-1]) + " kr";
+    const lab2 = el("text",{x:lx+34,y:ly+12,"font-size":"11.5",fill:"var(--muted)"});
+    lab2.textContent = s.navn.split(" (")[0];
+    svg.append(lab, lab2);
+  });
+
+  const kryss = el("line",{y1:mt,y2:h-mb,stroke:"var(--axis)","stroke-width":"1",opacity:"0"});
+  svg.append(kryss);
+  const hit = el("rect",{x:ml,y:mt,width:w-ml-mr,height:h-mt-mb,fill:"transparent"});
+  hit.style.cursor="crosshair"; svg.append(hit);
+  hit.addEventListener("pointermove", e => {
+    const b = svg.getBoundingClientRect();
+    const px = (e.clientX-b.left)/b.width*w;
+    const j = Math.max(0,Math.min(D.aarene.length-1,
+      Math.round((px-ml)/((w-ml-mr)/(D.aarene.length-1)))));
+    kryss.setAttribute("x1",x(j)); kryss.setAttribute("x2",x(j)); kryss.setAttribute("opacity","1");
+    visTip(e, `<b>${D.aarene[j]}</b><br>` + serier.map(s =>
+      `<span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.farge};margin-right:6px"></span>`+
+      `${s.navn.split(" (")[0]}: ${nf(s.d.faste[j])} kr`).join("<br>"));
+  });
+  hit.addEventListener("pointerleave", ()=>{kryss.setAttribute("opacity","0"); skjulTip();});
+  document.getElementById("kjerne").append(svg);
+
+  const lg = document.getElementById("legend3");
+  serier.forEach(s => { const li=document.createElement("li");
+    li.innerHTML = `<span class="key" style="background:${s.farge}"></span>${s.navn}`;
+    lg.append(li); });
+})();
+
+/* ---------- forbehold ---------- */
+const FORBEHOLD = [
+  ["Varenumrene er daterte, og flere varer bytter nummer underveis",
+   "SSBs varekoder er HS-nummer pluss året versjonen trådte i kraft. Trøffel på glass "+
+   "er 20032000 til 2011 og 20039010 fra 2012. Gruppene her er bygget på alle versjoner "+
+   "av hvert nummer, men to av seriene har likevel hopp som faller sammen med en "+
+   "tariffrevisjon — brød i 1995/96 og hermetisert sjømat i 1996/97."],
+  ["Kapers og artisjokk kan ikke skilles etter 2006",
+   "Fra 2007 slo tolltariffen sammen kapers, artisjokk og søte pepperfrukter til én "+
+   "kode (20059901). Gruppen «oliven, kapers og artisjokk» er sammenlignbar hele veien, "+
+   "men de tre kan bare skilles fra hverandre til og med 2006."],
+  ["Nullene før 1995 er ekte, men de er politikk og ikke smak",
+   "Spekemat og oliven ligger på null fram til midten av 1990-tallet. Spekeskinke var "+
+   "null fra alle land til 1996 — det var veterinære importrestriksjoner, ikke "+
+   "manglende interesse. Oliven importerte Norge allerede i 1988, bare fra Spania og "+
+   "Hellas. Bruddet rundt 1994/95 følger EØS-avtalen."],
+  ["Pesto, gnocchi og trøffelolje har ingen egen varelinje",
+   "Pesto ligger i samlekoden 21039099 sammen med alle andre sauser som ikke er soya, "+
+   "tomat, sennep eller majones. Gnocchi føres dels som pasta, dels som potetprodukt. "+
+   "Trøffelolje og trøffelkrem er ikke med i trøffeltallet i det hele tatt. For disse "+
+   "tre er tallene her et minimum."],
+  ["Landet er opprinnelsesland, og de ti gruppene er ikke all italiensk mat",
+   "Gruppene dekker 43 % av verdien i 2025. Resten er i hovedsak vin (som er "+
+   "den desidert største enkeltposten), epler, druer og friske grønnsaker."],
+];
+const cw = document.getElementById("caveats");
+FORBEHOLD.forEach(([h,p]) => { const d=document.createElement("div");
+  d.className="caveat"; d.innerHTML=`<h3>${h}</h3><p>${p}</p>`; cw.append(d); });
+
+/* ---------- tabellvisning ---------- */
+(function(){
+  const tbl = document.getElementById("tbl");
+  const thead = document.createElement("thead");
+  thead.innerHTML = "<tr><th>År</th>" + D.grupper.map(g=>`<th>${g.navn}</th>`).join("")
+    + "<th>Alle matvarer</th></tr>";
+  const tb = document.createElement("tbody");
+  D.aarene.forEach((a,i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${a}</td>` + D.grupper.map(g =>
+      `<td title="${nf(g.lopende[i])} kr løpende · ${nf(g.kg[i])} kg">${nf(g.faste[i])}</td>`).join("")
+      + `<td>${nf(D.total_faste[i])}</td>`;
+    tb.append(tr);
+  });
+  tbl.append(thead, tb);
+  const btn = document.getElementById("tbtn"), wrap = document.getElementById("tblwrap");
+  btn.addEventListener("click", () => {
+    const vis = wrap.hasAttribute("hidden");
+    wrap.toggleAttribute("hidden", !vis);
+    btn.setAttribute("aria-expanded", String(vis));
+    btn.textContent = vis ? "Skjul tabellen" : "Vis tabellen";
+  });
+})();
+</script>
