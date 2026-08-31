@@ -67,16 +67,26 @@ class HttpFeil(Exception):
 
 
 def hent_bytes(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT,
-               forsok_maks: int = FORSOK) -> bytes:
-    """GET med retry. Returnerer kroppen som bytes.
+               forsok_maks: int = FORSOK, json_kropp: dict | None = None) -> bytes:
+    """GET — eller POST når `json_kropp` er satt — med retry. Kroppen som bytes.
 
     Kaster HttpFeil på 4xx som ikke skal prøves igjen, og NettFeil når alle
     forsøk er brukt opp — den siste feilen står i meldingen.
+
+    `json_kropp` finnes fordi SSBs PxWeb-API krever POST for alt annet enn de
+    aller minste uttrekkene: GET-URL-en tar bare ~2100 tegn, og en spørring med
+    noen hundre varenummer er langt over. Uten dette har hvert SSB-script rullet
+    sin egen urlopen uten retry — og mistet både backoff og Retry-After.
     """
     siste: Exception | None = None
+    hoder = {"User-Agent": brukeragent}
+    kropp = None
+    if json_kropp is not None:
+        kropp = json.dumps(json_kropp).encode("utf-8")
+        hoder["Content-Type"] = "application/json"
     for forsok in range(forsok_maks):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": brukeragent})
+            req = urllib.request.Request(url, data=kropp, headers=hoder)
             with urllib.request.urlopen(req, timeout=timeout) as svar:
                 return svar.read()
         except urllib.error.HTTPError as e:
@@ -103,6 +113,8 @@ def hent_bytes(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT,
 
 
 def hent_json(url: str, brukeragent: str, timeout: int = STANDARD_TIMEOUT,
-              forsok_maks: int = FORSOK) -> dict:
+              forsok_maks: int = FORSOK, json_kropp: dict | None = None) -> dict:
     """Som hent_bytes, men tolker svaret som JSON."""
-    return json.loads(hent_bytes(url, brukeragent, timeout, forsok_maks).decode("utf-8"))
+    return json.loads(
+        hent_bytes(url, brukeragent, timeout, forsok_maks, json_kropp).decode("utf-8")
+    )
