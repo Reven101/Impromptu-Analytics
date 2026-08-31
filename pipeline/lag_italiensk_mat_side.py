@@ -57,6 +57,7 @@ def bygg(d: dict) -> str:
             "faste": faste,
             "lopende": [g["verdi_lopende"].get(str(a), 0) for a in aarene],
             "kg": [g["kg"].get(str(a), 0) for a in aarene],
+            "importpris": [g.get("verdi_faste_importpris", {}).get(str(a)) for a in aarene],
             # Liter finnes bare for vin; None der SSB ikke maalte volum det aaret.
             "liter": [g["liter"].get(str(a)) for a in aarene] if "liter" in g else None,
             "solid": dk["forste_solide_aar"],
@@ -93,7 +94,8 @@ def bygg(d: dict) -> str:
                .replace("__FORSTE__", str(forste)) \
                .replace("__HENTET__", d["meta"]["dato_hentet"]) \
                .replace("__AVVIK__", f"{100 * d['kontroll_mot_sitc']['storste_avvik']:.1f}".replace(".", ",")) \
-               .replace("__DEKN__", f"{100 * (1 - d['utenfor_gruppene']['andel_siste_aar']):.0f}")                .replace("__ANTALL__", str(len(grupper)))
+               .replace("__DEKN__", f"{100 * (1 - d['utenfor_gruppene']['andel_siste_aar']):.0f}")                .replace("__ANTALL__", str(len(grupper)))                .replace("__VOLUM__",
+                        f"{tot['kg'][str(siste)] / tot['kg']['1989']:.1f}".replace(".", ","))
 
 
 SIDE = r"""<title>Italiensk mat i Norge</title>
@@ -200,7 +202,8 @@ SIDE = r"""<title>Italiensk mat i Norge</title>
   <p class="dek">Norsk import av matvarer fra Italia, hentet på varenummernivå fra SSBs
   utenrikshandelsstatistikk og gruppert i __ANTALL__ varegrupper. Alle beløp er i faste
   __SISTE__-kroner om ikke annet står.</p>
-  <p class="kilde">Kilde: SSB tabell 08801 (varenummer × land), deflatert med tabell 08981.
+  <p class="kilde">Kilde: SSB tabell 08801 (varenummer × land). Deflatert med tabell 08981
+  (KPI) og tabell 06322 (prisindeks for vareimport) — begge seriene ligger i datasettet.
   Hentet __HENTET__. Kontrollert mot SSBs publiserte SITC-aggregat (tabell 08809);
   største avvik __AVVIK__ % over 38 år.</p>
 </header>
@@ -212,7 +215,11 @@ SIDE = r"""<title>Italiensk mat i Norge</title>
   </div>
   <div class="stat">
     <div class="statval">__VEKST__×</div>
-    <div class="statlab">realvekst siden __FORSTE__</div>
+    <div class="statlab">målt i kjøpekraft (KPI-deflatert)<br>siden __FORSTE__</div>
+  </div>
+  <div class="stat">
+    <div class="statval">__VOLUM__×</div>
+    <div class="statlab">målt i kilo siden 1989<br>— volumveksten, ikke kronene</div>
   </div>
   <div class="stat">
     <div class="statval">__DEKN__ %</div>
@@ -333,7 +340,10 @@ function facet(g){
     const tynt = g.solid && D.aarene[j] < g.solid;
     visTip(e, `<b>${g.navn}</b><br>${D.aarene[j]}: ${nf(g.faste[j])} kr (faste)<br>
       <span style="color:var(--muted)">${nf(g.lopende[j])} kr løpende · ${nf(g.kg[j])} kg${
-        g.liter && g.liter[j] != null ? " · " + nf(g.liter[j]) + " liter" : ""}</span>
+        g.liter && g.liter[j] != null ? " · " + nf(g.liter[j]) + " liter" : ""}</span>${
+        g.importpris[j] != null
+          ? '<br><span style="color:var(--muted)">' + nf(g.importpris[j]) +
+            " kr importpris-deflatert (volum)</span>" : ""}
       ${tynt ? '<br><span style="color:var(--muted)">for tynt til å måle</span>' : ''}`);
   });
   hit.addEventListener("pointerleave", () => {
@@ -439,6 +449,13 @@ const KJERNE = [
 
 /* ---------- forbehold ---------- */
 const FORBEHOLD = [
+  ["«Vekst» betyr tre forskjellige ting her",
+   "Samme tall, samme periode 1989–__SISTE__, gir 19,9× i løpende kroner, 8,3× "+
+   "KPI-deflatert, 5,6× deflatert med SSBs importprisindeks (tabell 06322) og "+
+   "4,8× målt i kilo. KPI svarer på <em>hva beløpet er verdt i dagens penger</em>; "+
+   "importert mat har steget 3,5× i pris mot KPIs 2,4×, og den forskjellen blir "+
+   "liggende igjen i «realveksten». Skal du si at nordmenn spiser mer italiensk, "+
+   "er tallet 4,8×. Alle fire ligger i datasettet."],
   ["Varenumrene er daterte, og flere varer bytter nummer underveis",
    "SSBs varekoder er HS-nummer pluss året versjonen trådte i kraft. Trøffel på glass "+
    "er 20032000 til 2011 og 20039010 fra 2012. Gruppene her er bygget på alle versjoner "+

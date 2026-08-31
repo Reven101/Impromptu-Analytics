@@ -60,16 +60,34 @@ alle versjoner av et varenummer er derfor trygt og gir ingen dobbelttelling.
   i `UTENFOR_SITC_01` trekkes fra først. For Italia er største avvik +1,8 % over
   38 år.
 
-## Løpende og faste kroner
+## Tre mål på «vekst», og de svarer ikke på det samme
 
-38 år i løpende kroner er mest prisvekst. Scriptet deflaterer med KPI (tabell
-08981, årsgjennomsnitt) og skriver **begge** seriene. Bruk faste kroner når du
-sammenligner 1988 med i dag; løpende når du siterer et enkeltår.
+38 år i løpende kroner er mest prisvekst. Scriptet skriver derfor tre serier, og
+valget mellom dem er ikke en detalj — for italiensk mat samlet spriker de fra
+19,9x til 4,8x for **samme periode og samme tall**:
 
-Merk at KPI er en generell konsumprisindeks, ikke en importprisindeks for mat.
-Den svarer på «hva er dette verdt i dagens penger», ikke «hvor mye dyrere er
-pastaen blitt». Til det siste finnes mengdeserien: kr/kg er regnet ut per gruppe
-og år, og er det nærmeste vi kommer en enhetspris.
+| Serie | 1989→2025 | Svarer på |
+|---|---|---|
+| `verdi_lopende` | 19,9x | ingenting alene |
+| `verdi_faste` (KPI, tabell 08981) | 8,3x | hva beløpet er verdt i dagens penger |
+| `verdi_faste_importpris` (tabell 06322) | 5,6x | volum, indeksmålt |
+| `kg` | 4,8x | volum, målt direkte |
+
+**KPI er ikke feil, men den er ofte ikke det man tror man spør om.** Importerte
+matvarer har steget 3,5x i pris siden 1989 mot KPIs 2,4x. Deflaterer du med KPI,
+blir den forskjellen liggende igjen i «realveksten» og ser ut som mer mat. Skal
+du si «nordmenn spiser mer italiensk», er tallet 4,8x — ikke 8,3x. Skal du si
+«nordmenn bruker mer penger på italiensk mat, målt i dagens kroner», er det 8,3x.
+
+At `verdi_faste_importpris` og `kg` lander nær hverandre for pasta (10,3 mot 9,8),
+vin (10,2 mot 9,2) og grønnsaker (8,4 mot 7,5), er kontrollen på at deflateringen
+gjør det den skal. Der de spriker — meieri, 68x mot 154x — har sammensetningen
+inne i gruppen endret seg, og det er i seg selv et funn.
+
+Hver gruppe deflateres med prisindeksen for sin egen SITC-gruppe, ikke med én
+felles matvareindeks. Se `velg_prisindeks()` for hvorfor noen grupper likevel
+faller ned på seksjonsnivå: divisjonene 01, 02, 03 og 11 starter først i 2000, og
+å skjøte dem bakover ville skjult en antagelse i en serie som ser målt ut.
 
 Skriver snapshot til pipeline/cache/ssb_italiensk_mat_<land>.json. Dette er ikke
 en publisert historie — skal tallene bli en, se kontrakt.py.
@@ -91,6 +109,7 @@ from nett import hent_json
 API = "https://data.ssb.no/api/v0/no/table/"
 TABELL = "08801"
 KPI_TABELL = "08981"
+PRISINDEKS_TABELL = "06322"   # prisindekser for utenrikshandel, etter SITC
 KILDE_URL = "https://www.ssb.no/statbank/table/08801"
 
 CACHE_DIR = Path(__file__).resolve().parent / "cache"
@@ -132,6 +151,7 @@ PIZZAKODER = ["19059005", "19059006", "19059008",
 VAREGRUPPER: list[dict] = [
     {
         "id": "meieri",
+        "prisindeks": "02",
         "navn": "Meieriprodukter",
         "prefiks": ["0401", "0402", "0403", "0404", "0405", "0406"],
         "undergrupper": {"ost": ["0406"]},
@@ -140,6 +160,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "spekemat",
+        "prisindeks": "01",
         "navn": "Spekemat og bearbeidede kjøttprodukter",
         "prefiks": ["0210", "1601", "1602"],
         "undergrupper": {
@@ -160,6 +181,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "pasta",
+        "prisindeks": "04",
         "navn": "Pasta og melprodukter",
         "prefiks": ["1902"],
         "unntatt": ["19024000"],  # couscous — ikke italiensk, egen HS-linje
@@ -174,6 +196,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "brod_kjeks",
+        "prisindeks": "04",
         "navn": "Brød og kjeks",
         "prefiks": ["1905"],
         "unntatt": PIZZAKODER,
@@ -189,6 +212,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "pizza",
+        "prisindeks": "04",
         "navn": "Pizza og pizzabunner",
         # Pizza har egne varenummer hele veien, men de ble omnummerert i 1995:
         # 19059005/06 (pizza) og 19059008 (bunner) gjelder til og med 1994,
@@ -205,6 +229,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "gronnsaker",
+        "prisindeks": "05",
         "navn": "Hermetiserte og bearbeidede grønnsaker",
         "prefiks": ["2001", "2002", "2004", "2005"],
         # Oliven, kapers og artisjokk har egen gruppe nedenfor.
@@ -220,6 +245,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "sauser",
+        "prisindeks": "0",
         "navn": "Sauser og smakstilsetninger",
         "prefiks": ["2103"],
         "undergrupper": {"tomatsaus_ketchup": ["210320"]},
@@ -231,6 +257,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "olivenolje_eddik",
+        "prisindeks": "4",
         "navn": "Olivenolje og eddik",
         "prefiks": ["1509", "1510", "2209"],
         "undergrupper": {"olivenolje": ["1509", "1510"], "eddik": ["2209"]},
@@ -242,6 +269,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "troffel",
+        "prisindeks": "05",
         "navn": "Trøffelprodukter",
         # Trøffel er den mest omnummererte varen i utvalget: fersk trøffel har
         # tre koder over perioden, konservert har to.
@@ -257,6 +285,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "sjomat",
+        "prisindeks": "03",
         "navn": "Hermetisert sjømat",
         "prefiks": ["1604"],
         # 160415 er makrell og hører ikke hjemme under «sardin og ansjos». Den gir
@@ -272,6 +301,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "oliven_kapers",
+        "prisindeks": "05",
         "navn": "Oliven, kapers og artisjokk",
         "prefiks": [
             "20019010", "20019020", "20057000",
@@ -291,6 +321,7 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "vin",
+        "prisindeks": "11",
         "navn": "Vin og vermut",
         # Eddik (2209) ligger i olivenolje-gruppen. Skulle den havnet her også,
         # stopper disjunkthetsporten kjøringen framfor å telle den to ganger.
@@ -651,6 +682,86 @@ def nevnerkontroll_mot_sitc(land: str, serier: dict, aarene: list[int],
             "kapitler_trukket_fra": list(UTENFOR_SITC_01)}
 
 
+def hent_prisindeks(aarene: list[int]) -> dict[str, dict[int, float]]:
+    """Prisindekser for norsk vareimport, etter SITC (tabell 06322, 2000=100).
+
+    Hvorfor denne finnes ved siden av KPI: de to svarer på hvert sitt spørsmål, og
+    forskjellen er stor nok til å snu en påstand. KPI måler hva norske husholdninger
+    betaler for alt de kjøper, og deflatert med den blir tallet «hva er dette verdt
+    i dagens penger». Importprisindeksen måler hva *disse varene* faktisk kostet
+    over grensen, og deflatert med den blir tallet et volumanslag.
+
+    For italiensk mat samlet er sprikte 8,3x mot 5,7x siden 1989 — importert mat har
+    steget klart mer i pris enn norsk konsum generelt, og KPI lar den differansen bli
+    liggende igjen i «realveksten».
+
+    Hver varegruppe deflateres med SITC-gruppen den faktisk tilhører (`prisindeks` i
+    VAREGRUPPER), ikke med én felles matvareindeks: ost og olivenolje har ikke fulgt
+    samme prisbane. Indeksen starter i 1989, så 1988 får ingen verdi — den utelates
+    framfor å bli ekstrapolert.
+    """
+    koder = sorted({g["prisindeks"] for g in VAREGRUPPER} | {"0", "1"})
+    aar = [str(a) for a in aarene if a >= 1989]
+    stat = _post(PRISINDEKS_TABELL, [
+        {"code": "ImpEks", "selection": {"filter": "item", "values": ["1"]}},
+        {"code": "ImpEkspGr", "selection": {"filter": "item", "values": koder}},
+        {"code": "ContentsCode", "selection": {"filter": "item", "values": ["Prisindeks"]}},
+        {"code": "Tid", "selection": {"filter": "item", "values": aar}},
+    ])
+    order, size = stat["id"], stat["size"]
+    idx = {d: stat["dimension"][d]["category"]["index"] for d in order}
+    ut: dict[str, dict[int, float]] = {}
+    for kode, ki in idx["ImpEkspGr"].items():
+        rad = {}
+        for a, ti in idx["Tid"].items():
+            koord = {d: 0 for d in order}
+            koord["ImpEkspGr"], koord["Tid"] = ki, ti
+            f = 0
+            for i, dim in enumerate(order):
+                f = f * size[i] + koord[dim]
+            if stat["value"][f]:
+                rad[int(a)] = stat["value"][f]
+        ut[kode] = rad
+    mangler = [g["id"] for g in VAREGRUPPER if not ut.get(g["prisindeks"])]
+    if mangler:
+        raise SystemExit(
+            f"Tabell {PRISINDEKS_TABELL} mangler prisindeks for gruppene {mangler}. "
+            "SITC-inndelingen i indeksen er endret — sjekk «prisindeks» i VAREGRUPPER."
+        )
+    return ut
+
+
+def velg_prisindeks(onsket: str, prisindeks: dict[str, dict[int, float]],
+                    aarene: list[int]) -> tuple[str, str | None]:
+    """Den mest presise indeksen som dekker HELE perioden. (kode, merknad).
+
+    SSB fører ikke alle SITC-nivåer like langt tilbake: seksjonene (0, 1, 4) og
+    divisjonene 04 og 05 starter i 1989, mens 01 kjøtt, 02 meieri, 03 fisk og
+    11 drikkevarer først starter i 2000.
+
+    Alternativet ville vært å skjøte: bruke divisjonen fra 2000 og skjøte den
+    bakover med seksjonens vekstrater. Det er en vanlig teknikk, men den legger
+    inn en antagelse — at kjøttprisene fulgte matvareprisene generelt på
+    1990-tallet — og skjuler den inne i en serie som ser målt ut. Det er nøyaktig
+    den feilen resten av dette scriptet er bygget for å unngå.
+
+    Derfor faller vi heller ned på seksjonsnivået for hele perioden, og sier fra
+    at vi gjorde det. Presisjonen som tapes, er synlig; en skjøt ville ikke vært.
+    """
+    trengs = {a for a in aarene if a >= 1989}
+    if trengs <= set(prisindeks.get(onsket, {})):
+        return onsket, None
+    seksjon = onsket[0]
+    if trengs <= set(prisindeks.get(seksjon, {})):
+        start = min(prisindeks[onsket]) if prisindeks.get(onsket) else "?"
+        return seksjon, (f"SITC {onsket} finnes først fra {start}; bruker seksjon "
+                         f"{seksjon} for hele perioden framfor å skjøte to indekser")
+    raise SystemExit(
+        f"Verken SITC {onsket} eller seksjon {seksjon} dekker {min(trengs)}-"
+        f"{max(trengs)} i tabell {PRISINDEKS_TABELL}."
+    )
+
+
 def hent_kpi(aarene: list[int]) -> dict[int, float]:
     stat = _post(KPI_TABELL, [
         {"code": "Maaned", "selection": {"filter": "item", "values": ["90"]}},
@@ -770,17 +881,56 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
     serier = hent_serier_cachet(list(alle), landkode, aarene, land, frisk)
     sitc_kontroll = nevnerkontroll_mot_sitc(landkode, serier, aarene)
     kpi = hent_kpi(aarene)
+    prisindeks = hent_prisindeks(aarene)
     basis = kpi[max(kpi)]
     print(f"  KPI: {min(kpi)}={kpi[min(kpi)]} … {max(kpi)}={basis} (basisår for faste kroner)")
 
     def fast(rad: dict[int, float]) -> dict[int, float]:
+        """KPI-deflatert: hva belopet er verdt i dagens penger."""
         return {a: v * basis / kpi[a] for a, v in rad.items() if a in kpi}
+
+    def fast_import(rad: dict[int, float], sitc: str) -> dict[int, float]:
+        """Deflatert med importprisindeksen for varegruppens egen SITC-gruppe.
+
+        Dette er volumanslaget: hva belopet tilsvarer nar prisen pa nettopp disse
+        varene holdes fast. Indeksen starter 1989, sa 1988 faller ut.
+        """
+        pi = prisindeks[sitc]
+        if not pi:
+            return {}
+        p_basis = pi[max(pi)]
+        return {a: v * p_basis / pi[a] for a, v in rad.items() if a in pi}
 
     # Nevner: alt i kapittel 01-24.
     total_verdi = summer(list(alle), serier, "verdi")
     total_kg = summer(list(alle), serier, "kg")
 
+    # Totalen spenner over bade mat (SITC 0) og drikke/tobakk (SITC 1), og de to
+    # har ulik prisbane - vin har steget langt mer enn matvarer. A deflatere hele
+    # summen med matvareindeksen ville lagt vinprisveksten inn i "volumet".
+    # Derfor en verdivektet indeks: hvert ars vekt er arets egen fordeling mellom
+    # kapittel 22/24 (drikke og tobakk) og resten.
+    DRIKKEKAP = ("22", "24")
+    drikke_verdi = summer([k for k in alle if k[:2] in DRIKKEKAP], serier, "verdi")
+
+    def fast_import_total(rad: dict[int, float]) -> dict[int, float]:
+        p0, p1 = prisindeks["0"], prisindeks["1"]
+        felles = set(p0) & set(p1)
+        if not felles:
+            return {}
+        b0, b1 = p0[max(felles)], p1[max(felles)]
+        ut = {}
+        for aar, v in rad.items():
+            if aar not in felles or not v:
+                continue
+            w1 = drikke_verdi.get(aar, 0) / v          # drikkeandel dette aret
+            indeks = (1 - w1) * p0[aar] / b0 + w1 * p1[aar] / b1
+            if indeks:
+                ut[aar] = v / indeks
+        return ut
+
     grupper_ut = []
+    byttet: list[str] = []
     sum_gruppe: dict[int, float] = {}
     for gruppe in VAREGRUPPER:
         koder = fordelt[gruppe["id"]]
@@ -795,6 +945,9 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
                 "verdi": {str(a): v for a, v in sorted(summer(uk, serier, "verdi").items())},
                 "kg": {str(a): v for a, v in sorted(summer(uk, serier, "kg").items())},
             }
+        pi_kode, pi_merknad = velg_prisindeks(gruppe["prisindeks"], prisindeks, aarene)
+        if pi_merknad:
+            byttet.append(f"{gruppe['id']}: {pi_merknad}")
         rad = {
             "id": gruppe["id"],
             "navn": gruppe["navn"],
@@ -803,6 +956,11 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
             "varenummer": {k: alle[k] for k in koder},
             "verdi_lopende": {str(a): v for a, v in sorted(verdi.items())},
             "verdi_faste": {str(a): round(v, 0) for a, v in sorted(fast(verdi).items())},
+            "verdi_faste_importpris": {
+                str(a): round(v, 0)
+                for a, v in sorted(fast_import(verdi, pi_kode).items())},
+            "prisindeks_sitc": pi_kode,
+            "prisindeks_merknad": pi_merknad,
             "kg": {str(a): v for a, v in sorted(kg.items())},
             "kr_per_kg": {str(a): round(verdi[a] / kg[a], 2)
                           for a in sorted(verdi) if kg.get(a)},
@@ -831,6 +989,9 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
                 "Grupperingen lekker — en varekode telles to ganger eller ingen."
             )
 
+    for linje in byttet:
+        print(f"  ! prisindeks {linje}")
+
     siste = max(a for a in aarene if total_verdi.get(a))
     storste_rest = sorted(
         ({"varenummer": k, "navn": alle[k], "verdi": serier[k]["verdi"][siste]}
@@ -845,6 +1006,10 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
             "kilde_url": KILDE_URL,
             "tabell": TABELL,
             "deflator": f"SSB {KPI_TABELL}, KPI årsgjennomsnitt, faste {max(kpi)}-kroner",
+            "deflator_alternativ": (
+                f"SSB {PRISINDEKS_TABELL}, prisindeks for vareimport etter SITC, "
+                f"faste {max(kpi)}-kroner. Gir volumvekst; KPI gir kjøpekraft. "
+                "Starter 1989."),
             "dato_hentet": date.today().isoformat(),
             "land": land,
             "landkode": landkode,
@@ -859,6 +1024,9 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
         "all_mat_kap_01_24": {
             "verdi_lopende": {str(a): v for a, v in sorted(total_verdi.items())},
             "verdi_faste": {str(a): round(v, 0) for a, v in sorted(fast(total_verdi).items())},
+            "verdi_faste_importpris": {
+                str(a): round(v, 0)
+                for a, v in sorted(fast_import_total(total_verdi).items())},
             "kg": {str(a): v for a, v in sorted(total_kg.items())},
             "antall_varenummer": len(alle),
         },
@@ -880,8 +1048,9 @@ def skriv_csv(data: dict, sti: Path) -> None:
     with sti.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(["gruppe_id", "gruppe", "nivaa", "aar", "verdi_kr_lopende",
-                    f"verdi_kr_faste_{data['meta']['siste_aar']}", "mengde_kg", "kr_per_kg",
-                    "mengde_liter"])
+                    f"verdi_kr_faste_KPI_{data['meta']['siste_aar']}",
+                    f"verdi_kr_faste_IMPORTPRIS_{data['meta']['siste_aar']}",
+                    "mengde_kg", "kr_per_kg", "mengde_liter", "prisindeks_sitc"])
         for g in data["grupper"]:
             for aar in data["meta"]["aarene"]:
                 a = str(aar)
@@ -889,22 +1058,24 @@ def skriv_csv(data: dict, sti: Path) -> None:
                     continue
                 w.writerow([g["id"], g["navn"], "gruppe", aar,
                             g["verdi_lopende"][a], g["verdi_faste"].get(a, ""),
+                            g.get("verdi_faste_importpris", {}).get(a, ""),
                             g["kg"].get(a, ""), g["kr_per_kg"].get(a, ""),
-                            g.get("liter", {}).get(a, "")])
+                            g.get("liter", {}).get(a, ""), g.get("prisindeks_sitc", "")])
             for uid, u in g["undergrupper"].items():
                 for aar in data["meta"]["aarene"]:
                     a = str(aar)
                     if a not in u["verdi"]:
                         continue
                     w.writerow([f"{g['id']}.{uid}", uid, "undergruppe", aar,
-                                u["verdi"][a], "", u["kg"].get(a, ""), "", ""])
+                                u["verdi"][a], "", "", u["kg"].get(a, ""), "", "", ""])
         tot = data["all_mat_kap_01_24"]
         for aar in data["meta"]["aarene"]:
             a = str(aar)
             if a in tot["verdi_lopende"]:
                 w.writerow(["_alle_matvarer", "All mat/drikke (HS 01-24)", "nevner", aar,
                             tot["verdi_lopende"][a], tot["verdi_faste"].get(a, ""),
-                            tot["kg"].get(a, ""), "", ""])
+                            tot.get("verdi_faste_importpris", {}).get(a, ""),
+                            tot["kg"].get(a, ""), "", "", ""])
     print(f"✓ CSV: {sti}")
 
 
