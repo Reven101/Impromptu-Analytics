@@ -504,15 +504,41 @@ FORBEHOLD.forEach(([h,p]) => { const d=document.createElement("div");
 
 
 def main() -> None:
+    """Skriver fragmentet, og med --frittstaende også en komplett fil.
+
+    Standardutskriften er et *fragment*: den begynner på `<title>` og har ingen
+    doctype, `<html>`, `<head>` eller `<body>` — fordi Artifact-verktøyet legger
+    på den innpakningen selv ved publisering, og doble tagger gir rot.
+
+    Sendes den fila videre som den er, mangler den `<meta charset>`. Nettleseren
+    gjetter da ofte windows-1252 på en `file://`-adresse, og «Trøffelprodukter»
+    blir til «TrÃ¸ffelprodukter». Innholdet er UTF-8; det er bare ingen som har
+    sagt det. Derfor flagget.
+    """
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--inn", type=Path, default=CACHE / "ssb_italiensk_mat_italia.json")
     p.add_argument("--ut", type=Path, default=CACHE / "italiensk_mat.html")
+    p.add_argument("--frittstaende", type=Path, default=None,
+                   help="skriv i tillegg en komplett HTML-fil med doctype og "
+                        "meta charset, til deling utenfor Artifact")
     args = p.parse_args()
 
     d = json.loads(args.inn.read_text(encoding="utf-8"))
+    fragment = bygg(d)
     args.ut.parent.mkdir(parents=True, exist_ok=True)
-    args.ut.write_text(bygg(d), encoding="utf-8")
-    print(f"✓ Side: {args.ut}")
+    args.ut.write_text(fragment, encoding="utf-8")
+    print(f"✓ Side (fragment, til Artifact): {args.ut}")
+
+    if args.frittstaende:
+        hode, _, kropp = fragment.partition("</style>")
+        args.frittstaende.parent.mkdir(parents=True, exist_ok=True)
+        args.frittstaende.write_text(
+            '<!doctype html>\n<html lang="nb">\n<head>\n'
+            '<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+            f"{hode}</style>\n</head>\n<body>\n{kropp}\n</body>\n</html>\n",
+            encoding="utf-8")
+        print(f"✓ Frittstående fil (til deling): {args.frittstaende}")
 
 
 if __name__ == "__main__":
