@@ -37,6 +37,7 @@ on:
           - budsjettspor
           - historie
           - alle
+          - berg
 
 permissions:
   contents: read
@@ -208,18 +209,70 @@ jobs:
               python3 pipeline/kontrakt.py
               python3 pipeline/bygg_manifest.py
             fi
+            if [ "$VALG" = "berg" ]; then
+              echo "########## BERGING — henter sjekkpunktene ut av Actions-cachen ##########"
+              # Ingenting hentes fra kildene, og ingenting skrives. Poenget er
+              # bare å få rådataene ut som en nedlastbar artefakt før cachen
+              # blir kastet: GitHub sletter cacheoppføringer som ikke er brukt
+              # på sju dager, og snapshotene lar seg ikke gjenskape senere —
+              # Kudos vokser hver uke, så en ny henting gir andre tall enn de
+              # historien er skrevet på.
+              #
+              # Steget «Berg rådataene» under gjør selve opplastingen. Her
+              # skriver vi bare en innholdsliste, så sammendraget viser hva
+              # som faktisk lå i cachen.
+              echo
+              if [ -d "$RUNNER_TEMP/raadata" ]; then
+                du -sh "$RUNNER_TEMP/raadata"
+                find "$RUNNER_TEMP/raadata" -type f | wc -l \
+                  | xargs echo "Filer i alt:"
+                echo
+                find "$RUNNER_TEMP/raadata" -type f \
+                  -printf '%10s  %P\n' | sort -k2 | head -60
+              else
+                echo "✗ Fant ingen rådatamappe. Cachen er trolig allerede kastet."
+                echo "  Sjekk at workflowen kjøres fra SAMME grein som hentingene."
+                exit 1
+              fi
+            fi
           } 2>&1 | tee kjoring.txt
 
       # Lagres uansett utfall. En kjøring som gikk på tidsgrensa har som regel
       # hentet det meste, og det er den neste kjøringen som skal slippe å
       # betale for det på nytt.
+      # «berg» er med vilje utelatt. Den kjøringen henter ingenting, så det den
+      # ville lagret er i beste fall en kopi av det som alt ligger der — og i
+      # verste fall et tomt tre under en ferskere nøkkel. Restore-nøkkelen
+      # «raadata-» plukker nyeste treff, så et tomt tre ville skygget for det
+      # gode og gjort bergingen til nettopp det tapet den skal hindre.
       - name: Lagre sjekkpunkter
-        if: always()
+        if: always() && inputs.kilde != 'berg'
         uses: actions/cache/save@v5
         continue-on-error: true
         with:
           path: ${{ runner.temp }}/raadata
           key: raadata-${{ inputs.kilde }}-${{ github.run_id }}
+
+      # Rådataene ut av cachen og ned på en maskin. Dette er den ene gangen de
+      # forlater kjøreren, og det er trygt: artefakten er ikke repo-treet, så
+      # Vercel serverer den ikke (SIKKERHET.md gjelder det som commites). Alt
+      # Kudos, Stortinget og statsregnskapet gir ut er dessuten allerede
+      # publisert — det er samme vurdering som ligger bak at cachen er åpen.
+      #
+      # Pakk zip-en ut i «impromptu_raadata/» ved siden av repoet; det er der
+      # scriptene leter når KUDOS_DIR og de andre ikke er satt.
+      #
+      # if-no-files-found: error, ikke warn. En tom berging er nettopp det
+      # tilfellet du må få vite om med en gang — da er cachen borte, og en
+      # grønn hake ville fått deg til å tro at snapshotene var reddet.
+      - name: Berg rådataene
+        if: always() && inputs.kilde == 'berg'
+        uses: actions/upload-artifact@v5
+        with:
+          name: raadata
+          path: ${{ runner.temp }}/raadata
+          if-no-files-found: error
+          retention-days: 90
 
       # Temacachen ligger i repo-treet, ikke i rådatamappa, fordi den skal
       # sjekkes inn — den er både sporingslogg og kostnadssparer. Workflowen
