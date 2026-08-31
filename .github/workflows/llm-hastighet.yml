@@ -15,6 +15,15 @@
 name: LLM-hastighet
 
 on:
+  # MIDLERTIDIG: workflow_dispatch krever at fila ligger på standardgreina, og
+  # det gjør den ikke ennå. Push-triggeren er eneste måte å faktisk kjøre
+  # målingen fra denne greina. Fjernes når målingen er tatt.
+  push:
+    branches:
+      - claude/gpt-oss-20b-speed-test-eeyt9s
+    paths:
+      - pipeline/mal_llm_hastighet.py
+      - .github/workflows/llm-hastighet.yml
   workflow_dispatch:
     inputs:
       modell:
@@ -67,22 +76,32 @@ jobs:
           PYTHONUNBUFFERED: "1"
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          # Valgene går via miljøet framfor rett inn i skallkommandoen: en input
+          # som interpoleres inn i en run-blokk er tekst som blir til kode. Og på
+          # et push-anrop finnes ingen inputs i det hele tatt — da må
+          # standardverdiene stå her, ellers kjører scriptet på tomme argumenter.
+          MODELL: ${{ inputs.modell || 'openai/gpt-oss-20b' }}
+          RUNDER: ${{ inputs.runder || '3' }}
+          PARALLELL: ${{ inputs.parallell || '4' }}
+          RESONNERING: ${{ inputs.resonnering || 'low' }}
         run: |
           # pipefail, ellers spiser tee exit-koden og en halv tabell ser grønn ut.
           set -o pipefail
           python3 pipeline/mal_llm_hastighet.py \
-            --modell "${{ inputs.modell }}" \
-            --runder "${{ inputs.runder }}" \
-            --parallell "${{ inputs.parallell }}" \
-            --resonnering "${{ inputs.resonnering }}" 2>&1 | tee kjoring.txt
+            --modell "$MODELL" \
+            --runder "$RUNDER" \
+            --parallell "$PARALLELL" \
+            --resonnering "$RESONNERING" 2>&1 | tee kjoring.txt
 
       - name: Legg tabellen i kjøringssammendraget
         # Også når målingen feilet — det er nettopp da du vil lese den. Feilet én
         # leverandør, står den andres tall fortsatt i utskriften.
         if: always()
+        env:
+          MODELL: ${{ inputs.modell || 'openai/gpt-oss-20b' }}
         run: |
           {
-            echo "## LLM-hastighet — ${{ inputs.modell }} — $(date -u '+%d.%m.%Y %H:%M UTC')"
+            echo "## LLM-hastighet — $MODELL — $(date -u '+%d.%m.%Y %H:%M UTC')"
             echo
             if [ -f kjoring.txt ]; then
               echo '```'
