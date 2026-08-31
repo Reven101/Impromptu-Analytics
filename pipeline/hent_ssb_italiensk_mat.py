@@ -14,7 +14,7 @@ svare på spørsmål om varegrupper.
 Vi henter **hele HS-kapittel 01–24** for landet i én omgang og grupperer lokalt.
 Det koster ett uttrekk, og gir til gjengjeld en *eksakt nevner*: gruppene er en
 delmengde av all matimport fra landet, så scriptet kan si nøyaktig hvor stor andel
-de ti gruppene dekker, og navngi de største varene som faller utenfor. Å hente
+gruppene dekker, og navngi de største varene som faller utenfor. Å hente
 gruppe for gruppe gir ingen slik kontroll — da vet du aldri om du glemte en vare.
 Å endre gruppeinndelingen etterpå koster heller ingenting: rådataene ligger i
 cachen.
@@ -47,7 +47,9 @@ alle versjoner av et varenummer er derfor trygt og gir ingen dobbelttelling.
 - **Enhet.** `Mengde1` er kg for alle koder i kapittel 01–24, men enheten står i
   varetekstene (`M1=kg`), ikke i dimensjonens metadata — der står det bare
   «hovedsakelig kg». Scriptet leser `M1=` av hver etikett og nekter å summere
-  mengde for en gruppe der en kode måler noe annet enn kg.
+  mengde for en gruppe der en kode måler noe annet enn kg. Samme regel gjelder
+  `Mengde2`: vin og eddik oppgir `M2=liter`, og literserien skrives bare for
+  grupper der *hver* kode gjør det.
 - **Nevnerkontroll, internt.** Summen av gruppene pluss restposten skal være lik
   summen over alle kapittel 01–24. Slår det ikke til, er grupperingen lekk.
 - **Nevnerkontroll, eksternt.** Den forrige porten er sirkulær: gruppene summerer
@@ -101,6 +103,12 @@ MATKAPITLER = tuple(f"{n:02d}" for n in range(1, 25))
 # Kodenes gyldighetsspenn står i etiketten: «... (1988-2011) (M1=kg, M2=nei)».
 SPENN = re.compile(r"\((\d{4})-(\d{4})?\)\s*\(M1=")
 ENHET_M1 = re.compile(r"M1=\s*([^,)]*)")
+ENHET_M2 = re.compile(r"M2=\s*([^,)]*)")
+
+# Måltallene vi henter. Ligger i cachefila slik at en senere kjøring oppdager at
+# lista er endret — uten det ville en cache hentet før literstøtten ble lagt inn
+# blitt gjenbrukt i stillhet, og vin ville manglet volum uten noen feilmelding.
+MAALTALL = {"Verdi": "verdi", "Mengde1": "kg", "Mengde2": "liter"}
 
 
 # ---------------------------------------------------------------------------
@@ -113,6 +121,14 @@ ENHET_M1 = re.compile(r"M1=\s*([^,)]*)")
 # Rekkefølgen er brukerens liste. `del_av` markerer en undergruppe som rapporteres
 # for seg *inne i* hovedgruppen — den telles ikke en gang til i totalen.
 # ---------------------------------------------------------------------------
+
+# Pizzakodene står som egen konstant fordi de brukes to steder — som «unntatt» i
+# brødgruppen og som «prefiks» i pizzagruppen. Skrevet to ganger ville de før
+# eller siden gått fra hverandre, og da havner pizza enten i begge grupper
+# (disjunkthetsporten stopper det) eller i ingen (ingenting stopper det).
+PIZZAKODER = ["19059005", "19059006", "19059008",
+              "19059010", "19059021", "19059022"]
+
 VAREGRUPPER: list[dict] = [
     {
         "id": "meieri",
@@ -127,14 +143,20 @@ VAREGRUPPER: list[dict] = [
         "navn": "Spekemat og bearbeidede kjøttprodukter",
         "prefiks": ["0210", "1601", "1602"],
         "undergrupper": {
-            # Pancetta og guanciale er begge svinesideflesk, saltet/tørket/røkt:
-            # 02101200, gyldig uendret 1988-. Prosciutto ligger i 021011*.
-            "sideflesk_pancetta_guanciale": ["02101200"],
+            # Pancetta er sideflesk (buk) og ligger i 02101200. Guanciale er
+            # kjake, ikke buk, og faller derfor i 02101900 — «svinekjøtt unntatt
+            # skinker og sideflesk». De to skal ikke slås sammen.
+            "pancetta_sideflesk": ["02101200"],
+            "guanciale_coppa_mv": ["02101900"],
             "skinke_prosciutto": ["02101100", "02101101", "02101109"],
             "polser_salami": ["1601"],
+            "tilberedt_svin": ["16024100", "16024200", "16024900"],
         },
-        "note": "HS skiller ikke pancetta fra guanciale — begge er sideflesk av "
-                "svin, saltet/tørket/røkt (02101200). Spekeskinke ligger i 021011*.",
+        "note": "Pancetta er sideflesk og ligger i 02101200 (1,3 mill. i 2025). "
+                "Guanciale er svinekjake og havner i 02101900 sammen med coppa, "
+                "speck og lonzino — 68,9 mill. i 2025, den største kurerte "
+                "kjøttposten. HS kan ikke isolere guanciale fra de andre i den "
+                "posten. Spekeskinke (prosciutto) ligger i 021011*.",
     },
     {
         "id": "pasta",
@@ -152,9 +174,34 @@ VAREGRUPPER: list[dict] = [
     },
     {
         "id": "brod_kjeks",
-        "navn": "Brød, kjeks og bakverk",
+        "navn": "Brød og kjeks",
         "prefiks": ["1905"],
-        "undergrupper": {"kjeks_smakaker": ["19053001", "19053100"]},
+        "unntatt": PIZZAKODER,
+        "undergrupper": {
+            "kjeks_smakaker": ["19053001", "19053100"],
+            "vafler": ["19053002", "19053200"],
+            "brod_og_brodvarer": ["19059091", "19059092"],
+        },
+        "note": "Pizza er skilt ut i egen gruppe. Uten den delingen var denne "
+                "gruppen 538 mill. i 2025, hvorav 370 mill. var pizza — en "
+                "overskrift som sa «brød og kjeks» om noe som i hovedsak var "
+                "ferdigpizza.",
+    },
+    {
+        "id": "pizza",
+        "navn": "Pizza og pizzabunner",
+        # Pizza har egne varenummer hele veien, men de ble omnummerert i 1995:
+        # 19059005/06 (pizza) og 19059008 (bunner) gjelder til og med 1994,
+        # deretter 19059010/21 og 19059022.
+        "prefiks": PIZZAKODER,
+        "undergrupper": {
+            "med_kjott": ["19059005", "19059010"],
+            "uten_kjott": ["19059006", "19059021"],
+            "pizzabunner": ["19059008", "19059022"],
+        },
+        "note": "Skilt ut av HS 1905 fordi pizza utgjorde 69 % av bakverkgruppen "
+                "i 2025. Andelen lå på 29 % i 2015 og 67 % i 2020 — hoppet er "
+                "reell handel, ikke omnummerering: kodene er uendret siden 1995.",
     },
     {
         "id": "gronnsaker",
@@ -212,7 +259,14 @@ VAREGRUPPER: list[dict] = [
         "id": "sjomat",
         "navn": "Hermetisert sjømat",
         "prefiks": ["1604"],
-        "undergrupper": {"tunfisk": ["160414"], "sardin_ansjos": ["160413", "160415", "160416"]},
+        # 160415 er makrell og hører ikke hjemme under «sardin og ansjos». Den gir
+        # 0 kr fra Italia i dag, så den forurenset ingen tall — men den lå i
+        # prefikslista og ville slukt makrellen stille den dagen importen startet.
+        "undergrupper": {
+            "tunfisk": ["160414"],
+            "sardin_ansjos": ["160413", "160416"],
+            "makrell": ["160415"],
+        },
         "note": "HS 1604 er tilberedt/konservert fisk. Skalldyr og bløtdyr "
                 "(HS 1605) er ikke med.",
     },
@@ -234,6 +288,22 @@ VAREGRUPPER: list[dict] = [
                 "«artisjokk_ren» er derfor bare komplette til og med 2006; "
                 "hovedgruppen er sammenlignbar hele veien. Oliven (20019020 i "
                 "eddik, 20057000 ellers) er uendret 1988-.",
+    },
+    {
+        "id": "vin",
+        "navn": "Vin og vermut",
+        # Eddik (2209) ligger i olivenolje-gruppen. Skulle den havnet her også,
+        # stopper disjunkthetsporten kjøringen framfor å telle den to ganger.
+        "prefiks": ["2204", "2205"],
+        "undergrupper": {
+            "musserende": ["220410"],
+            "stille_vin": ["220421", "220422", "220429"],
+            "vermut": ["2205"],
+        },
+        "note": "HS 2204 er vin av friske druer, 2205 er vermut. Øl, likør, sprit "
+                "og mineralvann i kapittel 22 er ikke med. Denne gruppen har "
+                "mengde i LITER (M2), ikke bare kilo — bruk literserien når du "
+                "siterer volum.",
     },
 ]
 
@@ -284,6 +354,36 @@ def spenn(etikett: str) -> tuple[int, int] | None:
 def enhet_m1(etikett: str) -> str:
     m = ENHET_M1.search(etikett)
     return m.group(1).strip().lower() if m else ""
+
+
+def enhet_m2(etikett: str) -> str:
+    """M2 er et sekundært mengdemål. For de fleste varer står det «nei»; for vin,
+    eddik og brennevin står det «liter», og da er liter det siterbare volumet."""
+    m = ENHET_M2.search(etikett)
+    return m.group(1).strip().lower() if m else ""
+
+
+def liter_per_aar(koder: list[str], alle: dict[str, str],
+                  serier: dict) -> dict[int, float]:
+    """Litersum per år, men **bare for år der summen er komplett**.
+
+    Regelen kan ikke være «alle koder i gruppen oppgir liter», slik kg-porten er.
+    Vin har 27 kodeversjoner med `M2=liter` og 6 med `M2=nei` — de seks er
+    1988/89-versjonene, fra før SSB registrerte volum på vin i det hele tatt. Med
+    en alt-eller-ingenting-regel ville hele vingruppen mistet literserien på grunn
+    av to årganger.
+
+    I stedet avgjøres det år for år: bidrar en kode med omsetning det året uten å
+    oppgi liter, er årets litersum ufullstendig, og året utelates. For vin gir det
+    en serie som starter når SSB faktisk begynte å måle liter, og ingen stille
+    undervurdering i årene før.
+    """
+    ut: dict[int, float] = {}
+    for aar in {a for k in koder for a in serier.get(k, {}).get("verdi", {})}:
+        bidrar = [k for k in koder if serier.get(k, {}).get("verdi", {}).get(aar)]
+        if bidrar and all(enhet_m2(alle[k]) == "liter" for k in bidrar):
+            ut[aar] = sum(serier[k].get("liter", {}).get(aar, 0) for k in bidrar)
+    return ut
 
 
 def matkoder(varekoder: dict) -> dict[str, str]:
@@ -397,14 +497,18 @@ def hent_serier_cachet(koder: list[str], landkode: str, aarene: list[int],
     ellers blir terskelen for å rette en feilplassert kode høyere enn terskelen
     for å la den ligge.
     """
+    felt = sorted(MAALTALL.values())
     sti = raa_cache(land)
     if sti.exists() and not frisk:
         lagret = json.loads(sti.read_text(encoding="utf-8"))
-        if lagret.get("aarene") == aarene and sorted(lagret.get("koder", [])) == sorted(koder):
+        # Måltallene er med i gyldighetssjekken: uten dem ville en cache hentet
+        # før literstøtten kom blitt gjenbrukt i stillhet, og vin manglet volum.
+        if (lagret.get("aarene") == aarene
+                and sorted(lagret.get("koder", [])) == sorted(koder)
+                and sorted(lagret.get("maaltall", [])) == felt):
             print(f"  bruker rå-cache {sti.name} "
                   f"({len(lagret['serier'])} varenummer, hentet {lagret['hentet']})")
-            return {k: {"verdi": {int(a): v for a, v in r["verdi"].items()},
-                        "kg": {int(a): v for a, v in r["kg"].items()}}
+            return {k: {m: {int(a): v for a, v in r.get(m, {}).items()} for m in felt}
                     for k, r in lagret["serier"].items()}
         print("  rå-cachen gjelder et annet uttrekk — henter på nytt")
     serier = hent_serier(koder, landkode, aarene)
@@ -412,8 +516,8 @@ def hent_serier_cachet(koder: list[str], landkode: str, aarene: list[int],
     sti.write_text(json.dumps({
         "hentet": date.today().isoformat(), "tabell": TABELL, "land": land,
         "landkode": landkode, "aarene": aarene, "koder": sorted(koder),
-        "serier": {k: {"verdi": {str(a): v for a, v in r["verdi"].items()},
-                       "kg": {str(a): v for a, v in r["kg"].items()}}
+        "maaltall": felt,
+        "serier": {k: {m: {str(a): v for a, v in r.get(m, {}).items()} for m in felt}
                    for k, r in serier.items()},
     }, ensure_ascii=False), encoding="utf-8")
     print(f"  ✓ rå-cache skrevet: {sti.name}")
@@ -422,9 +526,9 @@ def hent_serier_cachet(koder: list[str], landkode: str, aarene: list[int],
 
 def hent_serier(koder: list[str], landkode: str, aarene: list[int],
                 bunt: int = 700) -> dict[str, dict[str, dict[int, float]]]:
-    """kode -> {"verdi"|"kg" -> {år: tall}}. Henter i bunter for cellegrensen.
+    """kode -> {"verdi"|"kg"|"liter" -> {år: tall}}. Henter i bunter for cellegrensen.
 
-    800 000 celler er taket. 700 koder x 38 år x 2 måltall = 53 200 — god margin,
+    800 000 celler er taket. 700 koder x 38 år x 3 måltall = 79 800 — god margin,
     og få nok forespørsler til å holde seg under 30 i minuttet.
     """
     ut: dict[str, dict[str, dict[int, float]]] = {}
@@ -436,7 +540,7 @@ def hent_serier(koder: list[str], landkode: str, aarene: list[int],
             {"code": "ImpEks", "selection": {"filter": "item", "values": ["1"]}},
             {"code": "Land", "selection": {"filter": "item", "values": [landkode]}},
             {"code": "ContentsCode",
-             "selection": {"filter": "item", "values": ["Verdi", "Mengde1"]}},
+             "selection": {"filter": "item", "values": list(MAALTALL)}},
             {"code": "Tid", "selection": {"filter": "item",
                                           "values": [str(a) for a in aarene]}},
         ])
@@ -455,10 +559,10 @@ def _les(stat: dict) -> dict[str, dict[str, dict[int, float]]]:
             f = f * size[i] + koord[dim]
         return f
 
-    maal = {"Verdi": "verdi", "Mengde1": "kg"}
+    maal = MAALTALL
     ut: dict[str, dict[str, dict[int, float]]] = {}
     for kode, ki in idx["Varekoder"].items():
-        rad = {"verdi": {}, "kg": {}}
+        rad = {navn: {} for navn in maal.values()}
         for cc, navn in maal.items():
             if cc not in idx["ContentsCode"]:
                 continue
@@ -596,6 +700,13 @@ def datakvalitet(koder: list[str], alle: dict[str, str], verdi: dict[int, float]
       det er at 199 000 kr er for lite til å være en målt størrelse.
       En vekstrate regnet fra en slik base sier mer om nevneren enn om
       utviklingen.
+
+    Bruddsøket har i tillegg sitt eget støygulv (`terskel`, 1 % av siste års
+    verdi). Uten det ville hvert eneste år der en gruppe svinger mellom 0 og
+    200 000 kr blitt rapportert som brudd. Bivirkningen er verdt å kjenne til:
+    i en gruppe som har vokst hundre ganger, er de tidligste årene i praksis
+    unntatt bruddsøk — de ligger under gulvet uansett. Der er det
+    `spinkelt_grunnlag` som er advarselen, ikke bruddlista.
     """
     rev = revisjonsaar(koder, alle)
     siste = max((a for a in aarene if verdi.get(a)), default=None)
@@ -684,7 +795,7 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
                 "verdi": {str(a): v for a, v in sorted(summer(uk, serier, "verdi").items())},
                 "kg": {str(a): v for a, v in sorted(summer(uk, serier, "kg").items())},
             }
-        grupper_ut.append({
+        rad = {
             "id": gruppe["id"],
             "navn": gruppe["navn"],
             "note": gruppe.get("note"),
@@ -697,7 +808,14 @@ def bygg(land: str, csv_ut: Path | None, vis_koder: bool, frisk: bool) -> dict:
                           for a in sorted(verdi) if kg.get(a)},
             "undergrupper": under,
             "datakvalitet": datakvalitet(koder, alle, verdi, fast(verdi), aarene),
-        })
+        }
+        # Liter der målet finnes og året er komplett. Gjelder i praksis vin.
+        liter = liter_per_aar(koder, alle, serier)
+        if liter:
+            rad["liter"] = {str(a): v for a, v in sorted(liter.items())}
+            rad["kr_per_liter"] = {str(a): round(verdi[a] / liter[a], 2)
+                                   for a in sorted(verdi) if liter.get(a)}
+        grupper_ut.append(rad)
 
     # Nevnerkontroll: gruppene + restposten = alt i kapittel 01-24.
     dekket = {k for koder in fordelt.values() for k in koder}
@@ -762,7 +880,8 @@ def skriv_csv(data: dict, sti: Path) -> None:
     with sti.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(["gruppe_id", "gruppe", "nivaa", "aar", "verdi_kr_lopende",
-                    f"verdi_kr_faste_{data['meta']['siste_aar']}", "mengde_kg", "kr_per_kg"])
+                    f"verdi_kr_faste_{data['meta']['siste_aar']}", "mengde_kg", "kr_per_kg",
+                    "mengde_liter"])
         for g in data["grupper"]:
             for aar in data["meta"]["aarene"]:
                 a = str(aar)
@@ -770,21 +889,22 @@ def skriv_csv(data: dict, sti: Path) -> None:
                     continue
                 w.writerow([g["id"], g["navn"], "gruppe", aar,
                             g["verdi_lopende"][a], g["verdi_faste"].get(a, ""),
-                            g["kg"].get(a, ""), g["kr_per_kg"].get(a, "")])
+                            g["kg"].get(a, ""), g["kr_per_kg"].get(a, ""),
+                            g.get("liter", {}).get(a, "")])
             for uid, u in g["undergrupper"].items():
                 for aar in data["meta"]["aarene"]:
                     a = str(aar)
                     if a not in u["verdi"]:
                         continue
                     w.writerow([f"{g['id']}.{uid}", uid, "undergruppe", aar,
-                                u["verdi"][a], "", u["kg"].get(a, ""), ""])
+                                u["verdi"][a], "", u["kg"].get(a, ""), "", ""])
         tot = data["all_mat_kap_01_24"]
         for aar in data["meta"]["aarene"]:
             a = str(aar)
             if a in tot["verdi_lopende"]:
                 w.writerow(["_alle_matvarer", "All mat/drikke (HS 01-24)", "nevner", aar,
                             tot["verdi_lopende"][a], tot["verdi_faste"].get(a, ""),
-                            tot["kg"].get(a, ""), ""])
+                            tot["kg"].get(a, ""), "", ""])
     print(f"✓ CSV: {sti}")
 
 
@@ -804,7 +924,7 @@ def skriv_ut(d: dict) -> None:
     print(f"  All mat/drikke (HS 01-24), {siste}: {kr(tot['verdi_lopende'][str(siste)])} kr")
     print(f"  Samme, {forste}: {kr(tot['verdi_lopende'][str(forste)])} kr løpende / "
           f"{kr(tot['verdi_faste'][str(forste)])} kr i {siste}-kroner")
-    print(f"  De ti gruppene dekker "
+    print(f"  De {len(d['grupper'])} gruppene dekker "
           f"{100 * (1 - d['utenfor_gruppene']['andel_siste_aar']):.0f} % av verdien i {siste}\n")
 
     print(f"{'Varegruppe':<40}{siste + 0:>13}{'':2}{forste:>12} {'realvekst':>11}  {'kr/kg':>8}")
@@ -821,7 +941,7 @@ def skriv_ut(d: dict) -> None:
         print(f"{g['navn'][:39]:<40}{kr(n):>13}{'':2}{kr(g['verdi_lopende'].get(str(forste), 0)):>12}"
               f" {vekst:>11}  {g['kr_per_kg'].get(str(siste), '–'):>8}")
     print("-" * 92)
-    print(f"{'SUM ti grupper':<40}"
+    print(f"{'SUM ' + str(len(d['grupper'])) + ' grupper':<40}"
           f"{kr(sum(g['verdi_lopende'].get(str(siste), 0) for g in d['grupper'])):>13}")
     print("  * vekst regnet fra et basisar scriptet har flagget som for tynt — se datakvalitet.")
     print("\n  Datakvalitet — år serien ikke bør leses som sammenhengende utvikling:")

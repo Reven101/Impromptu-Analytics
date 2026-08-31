@@ -4,8 +4,8 @@
 
 Formen er valgt, ikke arvet:
 
-- **Ti grupper er for mange for kategorifarger.** Paletten har åtte plasser, og
-  skal aldri sykles. Derfor small multiples: ti små linjediagram med hver sin
+- **Tolv grupper er for mange for kategorifarger.** Paletten har åtte plasser, og
+  skal aldri sykles. Derfor small multiples: tolv små linjediagram med hver sin
   ramme, alle i samme blåtone. Fargen koder ingenting — identiteten ligger i
   overskriften over hvert felt — og da finnes det heller ingen palettgrense å
   bryte.
@@ -15,8 +15,8 @@ Formen er valgt, ikke arvet:
   gruppen omsatte for under 2 mill. faste kroner, ligger et skravert felt bak
   kurven. En leser som ser brødkurven starte på null skal se med det samme at
   starten ikke er en målt størrelse.
-- **Hver akse er sin egen.** Trøffel (3,5 mill.) og brød (538 mill.) i samme skala
-  ville gjort ni av ti felt til flate streker. Small multiples med individuell
+- **Hver akse er sin egen.** Trøffel (3,5 mill.) og vin (1,4 mrd.) i samme skala
+  ville gjort elleve av tolv felt til flate streker. Small multiples med individuell
   y-akse sammenligner *form*, ikke nivå — og nivået står som tall i overskriften.
 """
 
@@ -57,6 +57,8 @@ def bygg(d: dict) -> str:
             "faste": faste,
             "lopende": [g["verdi_lopende"].get(str(a), 0) for a in aarene],
             "kg": [g["kg"].get(str(a), 0) for a in aarene],
+            # Liter finnes bare for vin; None der SSB ikke maalte volum det aaret.
+            "liter": [g["liter"].get(str(a)) for a in aarene] if "liter" in g else None,
             "solid": dk["forste_solide_aar"],
             "tynn": dk["spinkelt_grunnlag"],
             "brudd": [b["aar"] for b in dk["mulige_omnummereringsbrudd"]],
@@ -91,7 +93,7 @@ def bygg(d: dict) -> str:
                .replace("__FORSTE__", str(forste)) \
                .replace("__HENTET__", d["meta"]["dato_hentet"]) \
                .replace("__AVVIK__", f"{100 * d['kontroll_mot_sitc']['storste_avvik']:.1f}".replace(".", ",")) \
-               .replace("__DEKN__", f"{100 * (1 - d['utenfor_gruppene']['andel_siste_aar']):.0f}")
+               .replace("__DEKN__", f"{100 * (1 - d['utenfor_gruppene']['andel_siste_aar']):.0f}")                .replace("__ANTALL__", str(len(grupper)))
 
 
 SIDE = r"""<title>Italiensk mat i Norge</title>
@@ -196,7 +198,7 @@ SIDE = r"""<title>Italiensk mat i Norge</title>
 <header>
   <h1>Italiensk mat i Norge, __FORSTE__–__SISTE__</h1>
   <p class="dek">Norsk import av matvarer fra Italia, hentet på varenummernivå fra SSBs
-  utenrikshandelsstatistikk og gruppert i ti varegrupper. Alle beløp er i faste
+  utenrikshandelsstatistikk og gruppert i __ANTALL__ varegrupper. Alle beløp er i faste
   __SISTE__-kroner om ikke annet står.</p>
   <p class="kilde">Kilde: SSB tabell 08801 (varenummer × land), deflatert med tabell 08981.
   Hentet __HENTET__. Kontrollert mot SSBs publiserte SITC-aggregat (tabell 08809);
@@ -214,12 +216,12 @@ SIDE = r"""<title>Italiensk mat i Norge</title>
   </div>
   <div class="stat">
     <div class="statval">__DEKN__ %</div>
-    <div class="statlab">av verdien ligger i de ti gruppene<br>(resten er mest vin, epler og druer)</div>
+    <div class="statlab">av verdien ligger i de __ANTALL__ gruppene<br>(resten er mest epler, druer og fersk frukt)</div>
   </div>
 </div>
 
 <section>
-  <h2>Ti varegrupper, hver sin kurve</h2>
+  <h2>Tolv varegrupper, hver sin kurve</h2>
   <p class="h2sub">Faste __SISTE__-kroner, __FORSTE__–__SISTE__. Hvert felt har sin egen y-akse —
   formen skal sammenlignes, ikke nivået, og nivået står som tall over kurven.
   Det <span style="color:var(--ink-2)">skraverte feltet</span> er år der gruppen
@@ -244,7 +246,7 @@ SIDE = r"""<title>Italiensk mat i Norge</title>
 
 <section>
   <h2>Tallene</h2>
-  <p class="h2sub">Alle ti gruppene, per år, i både faste og løpende kroner og i kilo.</p>
+  <p class="h2sub">Alle __ANTALL__ gruppene, per år, i faste kroner. Hold over en celle for løpende kroner og mengde.</p>
   <p style="margin:0 0 14px"><button class="toggle" id="tbtn" aria-expanded="false">Vis tabellen</button></p>
   <div class="tblwrap" id="tblwrap" hidden><table id="tbl"></table></div>
 </section>
@@ -330,7 +332,8 @@ function facet(g){
     dot.setAttribute("opacity","1");
     const tynt = g.solid && D.aarene[j] < g.solid;
     visTip(e, `<b>${g.navn}</b><br>${D.aarene[j]}: ${nf(g.faste[j])} kr (faste)<br>
-      <span style="color:var(--muted)">${nf(g.lopende[j])} kr løpende · ${nf(g.kg[j])} kg</span>
+      <span style="color:var(--muted)">${nf(g.lopende[j])} kr løpende · ${nf(g.kg[j])} kg${
+        g.liter && g.liter[j] != null ? " · " + nf(g.liter[j]) + " liter" : ""}</span>
       ${tynt ? '<br><span style="color:var(--muted)">for tynt til å måle</span>' : ''}`);
   });
   hit.addEventListener("pointerleave", () => {
@@ -455,9 +458,18 @@ const FORBEHOLD = [
    "tomat, sennep eller majones. Gnocchi føres dels som pasta, dels som potetprodukt. "+
    "Trøffelolje og trøffelkrem er ikke med i trøffeltallet i det hele tatt. For disse "+
    "tre er tallene her et minimum."],
-  ["Landet er opprinnelsesland, og de ti gruppene er ikke all italiensk mat",
-   "Gruppene dekker __DEKN__ % av verdien i __SISTE__. Resten er i hovedsak vin (som er "+
-   "den desidert største enkeltposten), epler, druer og friske grønnsaker."],
+  ["Pizza er skilt ut av brødgruppen",
+   "Ved første gjennomgang lå pizza og pizzabunner inne i «brød, kjeks og bakverk» "+
+   "og utgjorde 69 % av den i __SISTE__ — 370 av 538 mill. Andelen var 29 % i 2015 og "+
+   "67 % i 2020. Pizza har egne varenummer hele veien og er derfor lagt som egen "+
+   "gruppe; «brød og kjeks» er nå det navnet sier."],
+  ["Vin måles i liter, resten i kilo",
+   "Vingruppen har egen literserie, men først fra 1989 — 1988-versjonene av "+
+   "varenumrene registrerte ikke volum. År der en bidragsytende kode mangler "+
+   "litermål er utelatt fra serien framfor å telles som null."],
+  ["Landet er opprinnelsesland, og gruppene er ikke all italiensk mat",
+   "Gruppene dekker __DEKN__ % av verdien i __SISTE__. Resten er i hovedsak fersk "+
+   "frukt — epler alene er 422 mill. — druer, friske grønnsaker, ris og øl."],
 ];
 const cw = document.getElementById("caveats");
 FORBEHOLD.forEach(([h,p]) => { const d=document.createElement("div");
@@ -473,7 +485,8 @@ FORBEHOLD.forEach(([h,p]) => { const d=document.createElement("div");
   D.aarene.forEach((a,i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${a}</td>` + D.grupper.map(g =>
-      `<td title="${nf(g.lopende[i])} kr løpende · ${nf(g.kg[i])} kg">${nf(g.faste[i])}</td>`).join("")
+      `<td title="${nf(g.lopende[i])} kr løpende · ${nf(g.kg[i])} kg${
+        g.liter && g.liter[i] != null ? " · " + nf(g.liter[i]) + " liter" : ""}">${nf(g.faste[i])}</td>`).join("")
       + `<td>${nf(D.total_faste[i])}</td>`;
     tb.append(tr);
   });
