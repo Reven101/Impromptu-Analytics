@@ -227,8 +227,14 @@ jobs:
                 find "$RUNNER_TEMP/raadata" -type f | wc -l \
                   | xargs echo "Filer i alt:"
                 echo
+                # awk, ikke «head -60». head lukker røret når den har fått sine
+                # linjer, sort dør på EPIPE — og med set -e (GitHubs standard)
+                # pluss pipefail blir en avkortet visning til en FEILET
+                # kjøring. Berginga ville da sett mislykket ut selv om
+                # artefakten lå der. awk leser strømmen ut og teller selv.
                 find "$RUNNER_TEMP/raadata" -type f \
-                  -printf '%10s  %P\n' | sort -k2 | head -60
+                  -printf '%10s  %P\n' | sort -k2 | awk 'NR<=60
+                    END { if (NR>60) printf "… og %d filer til\n", NR-60 }'
               else
                 echo "✗ Fant ingen rådatamappe. Cachen er trolig allerede kastet."
                 echo "  Sjekk at workflowen kjøres fra SAMME grein som hentingene."
