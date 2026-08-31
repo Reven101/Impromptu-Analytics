@@ -61,6 +61,24 @@ MODELL = "openai/gpt-oss-20b"
 # Nøkkelen er prefikset llm_klient._del_modell() forstår; None = OpenRouter.
 LEVERANDORER = [("OpenRouter", None), ("NVIDIA", "nvidia")]
 
+# Tidsavbrudd per leverandør, i sekunder. Ikke en målt størrelse — bare hvor lenge
+# vi venter før vi gir opp. Målt 31.08.2026: NVIDIAs gratislag brukte 59 sekunder
+# på første token, og 180 var da for kort til å skille «treg kø» fra «svarer ikke».
+# Sonderingsworkflowen ga de samme modellene 300 av samme grunn.
+TIDSAVBRUDD = {None: 180, "nvidia": 300}
+
+# Antall bomskudd på rad før resten av rundene hos en leverandør droppes. Uten
+# strømbryteren koster en leverandør som har sluttet å svare runder × tidsavbrudd,
+# og jobben dør på tidsgrensa før den rekker å skrive ut det den alt har målt.
+AVBRYT_ETTER = 2
+
+# Tidsbudsjett per leverandør, i sekunder. Strømbryteren over holder ÉN
+# arbeidsmengde i sjakk, men ikke summen: med 300 s tidsavbrudd, to forsøk og to
+# arbeidsmengder kan en leverandør som svarer annenhver gang koste en time helt
+# lovlig — og da dør jobben på GitHubs tidsgrense før den rekker å skrive tabellen.
+# Budsjettet er hard stopp, og det som er målt til da rapporteres.
+BUDSJETT = 600
+
 
 # To arbeidsmengder, fordi de måler hver sin ting. Den korte er pipelinens egen
 # jobb — en klassifisering med fast kategoriliste, der svaret er ett ord per tekst
@@ -130,7 +148,8 @@ class Maaling:
 
 
 def _strom_kall(modell: str, meldinger: list[dict], maks_tokens: int,
-                resonnering: str | None, tidsavbrudd: int) -> Maaling:
+                resonnering: str | None, tidsavbrudd: int,
+                tjener: str | None = None) -> Maaling:
     """Ett strømmet kall. Kaster ved feil; kalleren styrer forsøkene."""
     # Ruting og nøkkeloppslag hentes fra produksjonsklienten framfor å gjentas her.
     # En kopi ville kommet i utakt første gang et endepunkt endres, og da måler vi
@@ -155,6 +174,12 @@ def _strom_kall(modell: str, meldinger: list[dict], maks_tokens: int,
         kropp["stream_options"] = {"include_usage": True}
     else:
         kropp["usage"] = {"include": True}
+        if tjener:
+            # OpenRouter er en ruter: samme modell kan serveres av flere
+            # maskinparker med vidt ulik hastighet, og den velger fritt mellom
+            # dem mellom to kall. Skal to kjøringer kunne sammenlignes, må
+            # maskinparken låses — og fallback slås av, ellers svarer en annen.
+            kropp["provider"] = {"order": [tjener], "allow_fallbacks": False}
 
     req = urllib.request.Request(
         url,
@@ -213,12 +238,13 @@ def _strom_kall(modell: str, meldinger: list[dict], maks_tokens: int,
 
 
 def kall(modell: str, meldinger: list[dict], maks_tokens: int, resonnering: str | None,
-         tidsavbrudd: int, forsok: int) -> Maaling:
+         tidsavbrudd: int, forsok: int, tjener: str | None = None) -> Maaling:
     """Som _strom_kall, men prøver igjen på det som pleier å gå over av seg selv."""
     siste = ""
     for n in range(forsok):
         try:
-            return _strom_kall(modell, meldinger, maks_tokens, resonnering, tidsavbrudd)
+            return _strom_kall(modell, meldinger, maks_tokens, resonnering,
+                               tidsavbrudd, tjener)
         except urllib.error.HTTPError as e:
             siste = f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:200]}"
             if e.code not in llm_klient.STATUS_SOM_PROVES_IGJEN:
@@ -242,25 +268,63 @@ def spenn(verdier: list[float]) -> str:
     return f"[{min(verdier):.2f}–{max(verdier):.2f}]".replace(".", ",")
 
 
-def mal_leverandor(navn: str, prefiks: str | None, modell: str, args) -> dict | None:
+def mal_leverandor(navn: str, prefiks: str | None, modell: str, args) -> dict:
     """Kjører oppvarming + runder + eventuell parallelltest for én leverandør."""
     fullt = f"{prefiks}:{modell}" if prefiks else modell
-    print(f"\n{'=' * 72}\n{navn} — {fullt}\n{'=' * 72}", flush=True)
+    tidsavbrudd = args.tidsavbrudd or TIDSAVBRUDD[prefiks]
+    print(f"\n{'=' * 72}\n{navn} — {fullt}  (tidsavbrudd {tidsavbrudd} s)\n{'=' * 72}",
+          flush=True)
     resultat: dict = {"navn": navn, "modell": fullt}
+    frist = time.perf_counter() + args.budsjett
+
+    def budsjett_brukt(hva: str) -> bool:
+        if time.perf_counter() < frist:
+            return False
+        print(f"    ⏹ tidsbudsjettet på {args.budsjett} s er brukt opp — "
+              f"hopper over {hva} hos {navn}.", flush=True)
+        return True
 
     for arbeid, (meldinger, maks) in ARBEID.items():
+        if budsjett_brukt(f"[{arbeid}]"):
+            resultat.setdefault("bomskudd", []).append(f"{arbeid} (rakk ikke)")
+            continue
         print(f"\n  [{arbeid}] oppvarming …", flush=True)
-        oppvarming = kall(fullt, meldinger, maks, args.resonnering,
-                          args.tidsavbrudd, args.forsok)
-        print(f"    første kall: {t(oppvarming.total)} "
-              f"(TTFT {t(oppvarming.ttft)}, {oppvarming.ut} tokens ut)"
-              + (f" — servert av {oppvarming.oppstroms}" if oppvarming.oppstroms else ""),
-              flush=True)
+        try:
+            oppvarming = kall(fullt, meldinger, maks, args.resonnering,
+                              tidsavbrudd, args.forsok, args.tjener)
+            print(f"    første kall: {t(oppvarming.total)} "
+                  f"(TTFT {t(oppvarming.ttft)}, {oppvarming.ut} tokens ut)"
+                  + (f" — servert av {oppvarming.oppstroms}"
+                     if oppvarming.oppstroms else ""), flush=True)
+        except SystemExit as e:
+            # Et dødt oppvarmingskall er en opplysning, ikke en grunn til å gi opp:
+            # neste kall kan gå. Vi noterer det og går videre til rundene.
+            print(f"    ✗ oppvarmingen svarte ikke: {e}", flush=True)
+            oppvarming = None
 
-        maalinger = []
+        # En leverandør som svarer på to av fem runder er et FUNN, ikke et krasj.
+        # Første versjon lot ett dødt kall rive med seg hele kolonnen, og da ble
+        # forskjellen mellom «treg» og «svarer ikke» borte i en feilmelding.
+        maalinger, bomskudd, paa_rad = [], 0, 0
         for i in range(args.runder):
-            m = kall(fullt, meldinger, maks, args.resonnering,
-                     args.tidsavbrudd, args.forsok)
+            if budsjett_brukt(f"resten av [{arbeid}]"):
+                break
+            try:
+                m = kall(fullt, meldinger, maks, args.resonnering,
+                         tidsavbrudd, args.forsok, args.tjener)
+            except SystemExit as e:
+                bomskudd += 1
+                paa_rad += 1
+                print(f"    runde {i + 1}/{args.runder}: ✗ {e}", flush=True)
+                # Strømbryter. Uten den koster en leverandør som har sluttet å
+                # svare runder × tidsavbrudd, og jobben dør på tidsgrensa før
+                # den rekker å skrive ut det den allerede har målt.
+                if paa_rad >= AVBRYT_ETTER:
+                    print(f"    ⏹ {paa_rad} bomskudd på rad — dropper resten av "
+                          f"[{arbeid}] hos {navn}.", flush=True)
+                    break
+                continue
+            paa_rad = 0
             maalinger.append(m)
             print(f"    runde {i + 1}/{args.runder}: {t(m.total)} "
                   f"(TTFT {t(m.ttft)}, {m.ut} tokens, "
@@ -269,8 +333,14 @@ def mal_leverandor(navn: str, prefiks: str | None, modell: str, args) -> dict | 
                 print(f"    ⚠ avkuttet på {maks} tokens — hev taket for [{arbeid}]",
                       flush=True)
 
+        if not maalinger:
+            print(f"    ✗ ingen målte runder for [{arbeid}] hos {navn}.", flush=True)
+            resultat.setdefault("bomskudd", []).append(f"{arbeid} ({bomskudd} forsøk)")
+            continue
+
         resultat[arbeid] = {
-            "oppvarming": oppvarming.total,
+            "svarte": f"{len(maalinger)}/{args.runder}",
+            "oppvarming": oppvarming.total if oppvarming else None,
             "ttft": statistics.median(x.ttft for x in maalinger),
             "ttft_spenn": spenn([x.ttft for x in maalinger]),
             "ttfs": (statistics.median(x.ttfs for x in maalinger)
@@ -286,7 +356,7 @@ def mal_leverandor(navn: str, prefiks: str | None, modell: str, args) -> dict | 
             "oppstroms": next((x.oppstroms for x in maalinger if x.oppstroms), ""),
         }
 
-    if args.parallell > 1:
+    if args.parallell > 1 and not budsjett_brukt("parallelltesten"):
         # Bulkjobbene er det disse modellene faktisk brukes til, og der er det
         # samlet gjennomstrømning som teller — ikke hvor raskt ett kall går.
         # NVIDIAs pulje har en hard grense på samtidige forespørsler som deles med
@@ -297,20 +367,33 @@ def mal_leverandor(navn: str, prefiks: str | None, modell: str, args) -> dict | 
         start = time.perf_counter()
         with concurrent.futures.ThreadPoolExecutor(max_workers=args.parallell) as pool:
             futures = [pool.submit(kall, fullt, meldinger, maks, args.resonnering,
-                                   args.tidsavbrudd, args.forsok)
+                                   tidsavbrudd, args.forsok, args.tjener)
                        for _ in range(args.parallell)]
-            samtidige = [f.result() for f in futures]
+            samtidige, falt = [], 0
+            for f in futures:
+                try:
+                    samtidige.append(f.result())
+                except SystemExit:
+                    falt += 1
         vegg = time.perf_counter() - start
-        resultat["parallell"] = {
-            "antall": args.parallell,
-            "vegg": vegg,
-            "tok_s": sum(x.ut for x in samtidige) / vegg,
-            "tregeste": max(x.total for x in samtidige),
-        }
-        print(f"    {args.parallell} kall på {t(vegg)} — "
-              f"{resultat['parallell']['tok_s']:.1f} tokens/s samlet, "
-              f"tregeste enkeltkall {t(resultat['parallell']['tregeste'])}"
-              .replace(".", ","), flush=True)
+        if samtidige:
+            resultat["parallell"] = {
+                "antall": args.parallell,
+                "falt": falt,
+                "vegg": vegg,
+                # Gjennomstrømningen regnes av kallene som FAKTISK kom fram. Falt
+                # noen, står det i egen rad — ellers ville en leverandør som
+                # droppet halve lasten sett raskere ut enn en som tok hele.
+                "tok_s": sum(x.ut for x in samtidige) / vegg,
+                "tregeste": max(x.total for x in samtidige),
+            }
+            print(f"    {len(samtidige)}/{args.parallell} kall på {t(vegg)} — "
+                  f"{resultat['parallell']['tok_s']:.1f} tokens/s samlet, "
+                  f"tregeste enkeltkall {t(resultat['parallell']['tregeste'])}"
+                  .replace(".", ","), flush=True)
+        else:
+            print(f"    ✗ ingen av de {args.parallell} samtidige kallene kom fram.",
+                  flush=True)
 
     return resultat
 
@@ -321,6 +404,9 @@ def skriv_tabell(resultater: list[dict]) -> None:
         print(f"\n[{arbeid}]")
         print(f"  {'':<18}" + "".join(f"{r['navn']:>22}" for r in resultater))
         rader = [
+            # «svarte» står øverst med vilje: en median av én runde ser ut som en
+            # median av fem, og forskjellen avgjør om tallet under betyr noe.
+            ("svarte", lambda d: d["svarte"]),
             ("oppvarming", lambda d: t(d["oppvarming"])),
             ("TTFT", lambda d: f"{t(d['ttft'])} {d['ttft_spenn']}"),
             ("første svartoken", lambda d: t(d["ttfs"])),
@@ -340,6 +426,7 @@ def skriv_tabell(resultater: list[dict]) -> None:
         print("\n[parallell]")
         print(f"  {'':<18}" + "".join(f"{r['navn']:>22}" for r in resultater))
         for etikett, hent in [
+            ("kall som kom fram", lambda p: f"{p['antall'] - p['falt']}/{p['antall']}"),
             ("veggtid", lambda p: t(p["vegg"])),
             ("tokens/s samlet", lambda p: f"{p['tok_s']:.1f}".replace(".", ",")),
             ("tregeste kall", lambda p: t(p["tregeste"])),
@@ -349,10 +436,15 @@ def skriv_tabell(resultater: list[dict]) -> None:
             print(f"  {etikett:<18}{felt}")
 
     # Dommen, med tall — en tabell uten konklusjon blir lest som «omtrent likt».
-    if len(resultater) == 2 and all("lang" in r for r in resultater):
-        a, b = resultater
+    if len(resultater) == 2:
         for arbeid in ARBEID:
-            rask, treg = sorted((a, b), key=lambda r: r[arbeid]["total"])
+            med_tall = [r for r in resultater if arbeid in r]
+            if len(med_tall) < 2:
+                mangler = [r["navn"] for r in resultater if arbeid not in r]
+                print(f"\n  [{arbeid}] ingen sammenligning: "
+                      f"{', '.join(mangler)} ga ingen målte runder.")
+                continue
+            rask, treg = sorted(med_tall, key=lambda r: r[arbeid]["total"])
             faktor = treg[arbeid]["total"] / rask[arbeid]["total"]
             print(f"\n  [{arbeid}] {rask['navn']} er {faktor:.1f}×".replace(".", ",")
                   + f" raskere enn {treg['navn']} på totaltid "
@@ -369,8 +461,17 @@ def main() -> int:
                    help="samtidige kall i egen bulktest (1 = hopp over)")
     p.add_argument("--resonnering", default="low", choices=["low", "medium", "high"],
                    help="reasoning_effort — gpt-oss tenker som standard (standard: low)")
-    p.add_argument("--tidsavbrudd", type=int, default=180)
-    p.add_argument("--forsok", type=int, default=3)
+    p.add_argument("--tidsavbrudd", type=int, default=0,
+                   help=f"lesetidsavbrudd i sekunder; 0 = per leverandør {TIDSAVBRUDD}")
+    p.add_argument("--budsjett", type=int, default=BUDSJETT,
+                   help=f"hard tidsstopp per leverandør i sekunder "
+                        f"(standard: {BUDSJETT})")
+    p.add_argument("--forsok", type=int, default=2,
+                   help="forsøk per kall før runden telles som bomskudd (standard: 2)")
+    p.add_argument("--tjener",
+                   help="lås OpenRouter til én maskinpark, f.eks. «Fireworks». "
+                        "Uten den velger ruteren fritt, og to kjøringer kan ha "
+                        "ulik motor under seg")
     p.add_argument("--bare", choices=["openrouter", "nvidia"],
                    help="mål bare én av leverandørene")
     args = p.parse_args()
@@ -383,17 +484,25 @@ def main() -> int:
         if args.bare and args.bare != (prefiks or "openrouter"):
             continue
         try:
-            resultater.append(mal_leverandor(navn, prefiks, args.modell, args))
+            r = mal_leverandor(navn, prefiks, args.modell, args)
         except SystemExit as e:
             # En død leverandør skal ikke ta den andres tall med seg. Feilen
             # skrives ut her og gjentas i feilkoden til slutt.
             print(f"\n✗ {navn} feilet: {e}", flush=True)
-            feilet.append(navn)
+            feilet.append(f"{navn} ({e})")
+            continue
+        resultater.append(r)
+        if r.get("bomskudd"):
+            feilet.append(f"{navn}: {', '.join(r['bomskudd'])}")
 
     if resultater:
         skriv_tabell(resultater)
     if feilet:
-        print(f"\n✗ Ingen tall fra: {', '.join(feilet)}")
+        # Feilkode selv om tabellen står: en halv måling som passerer stille blir
+        # lest som en hel neste gang noen ser på kjøringen.
+        print("\n✗ Manglende tall:")
+        for f in feilet:
+            print(f"    {f}")
         return 1
     print("\n✓ Målingen fullført.")
     return 0

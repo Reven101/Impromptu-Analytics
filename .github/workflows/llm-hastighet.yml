@@ -34,7 +34,7 @@ on:
       runder:
         description: "Målte runder per arbeidsmengde (etter oppvarming)"
         required: true
-        default: "3"
+        default: "5"
         type: string
       parallell:
         description: "Samtidige kall i bulktesten (1 = hopp over)"
@@ -58,7 +58,9 @@ jobs:
   mal:
     name: Mål hastigheten begge steder
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Budsjettet i scriptet (600 s per leverandør) er den egentlige bremsen;
+    # dette taket er bare et sikkerhetsnett rundt det.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v7
@@ -81,7 +83,7 @@ jobs:
           # et push-anrop finnes ingen inputs i det hele tatt — da må
           # standardverdiene stå her, ellers kjører scriptet på tomme argumenter.
           MODELL: ${{ inputs.modell || 'openai/gpt-oss-20b' }}
-          RUNDER: ${{ inputs.runder || '3' }}
+          RUNDER: ${{ inputs.runder || '5' }}
           PARALLELL: ${{ inputs.parallell || '4' }}
           RESONNERING: ${{ inputs.resonnering || 'low' }}
         run: |
