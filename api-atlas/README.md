@@ -88,6 +88,54 @@ Entur) — scriptene setter den, med kontakt@impromptu.no som avsender.
    lisens). Nettsiden spør aldri API-et direkte — den leser snapshots.
    Da er du immun mot nedetid, endringer og rate limits i produksjon.
 
+## Åtte ting som koster tid første gang (målt, august 2026)
+
+Feltnotater fra å bygge én historie på tre av kildene samtidig. De er sortert
+etter hvor mye de sparte da vi endelig skjønte dem — og de gjelder på tvers,
+ikke bare for kilden de ble oppdaget på.
+
+1. **Be API-et fortelle deg reglene sine.** Send en ugyldig parameter med
+   vilje. Kudos' 422 lister `allowed_parameters` og røper at `per_page` har
+   tak på 50. Stortingets 400 navngir parameteren som mangler. Det er den
+   billigste dokumentasjonen som finnes, og den er alltid fersk.
+
+2. **Les kildens egen kolonnebeskrivelse, ikke bare kolonnenavnene.**
+   Statsregnskapet leverer en CSV med én forklaring per kolonne. Vi brukte
+   fire kjøringer på å tolke tallene baklengs før vi leste den. Svaret sto
+   der hele tiden.
+
+3. **Sonder før du planlegger.** Skriv et lite script som bare fastslår hva
+   kilden faktisk gir, og som konkluderer eksplisitt. `sonder_stortinget.py`
+   avgjorde om fulltekst i det hele tatt var tilgjengelig — hele analysen
+   sto og falt på det, og et gjett ville gitt en stille degradering til noe
+   svakere enn det vi hadde lovet i teksten.
+
+4. **Let etter koblingsnøkkelen framfor å gjette den.** Skal to datasett
+   kobles, ta verdier du VET finnes i det ene og søk rekursivt etter dem i
+   det andre. Da fant vi at Stortingets `henvisning` inneholder
+   publikasjonsreferansen som delstreng. Feltnavnet ville vi aldri gjettet,
+   og eksakt likhet ville gitt null treff.
+
+5. **Verifiser en total mot et tall du kjenner utenfra.** Er summen av
+   statens bevilgninger 1 897 mrd i året, er filteret riktig. Er den 22, er
+   det ikke det — uansett hvor pen resten av analysen ser ut.
+
+6. **`meta.total` er ikke det samme som det du får servert.** Kudos teller
+   7 138 og serverer 7 112, fordi nye dokumenter dyttes inn foran mens du
+   paginerer. Krev dekning, ikke identitet, og skriv mankoen inn i
+   snapshotet.
+
+7. **Hent i skiver på noe stabilt, ikke på sidetall.** Er kilden sortert
+   etter nyeste, driver pagineringen mens den går. Årsskiver
+   (`published_year_from/to`) gjør hver spørring kort, og et nytt dokument i
+   år rører ikke fjoråret.
+
+8. **Preflight før en lang kjøring, og lagre ved ethvert avbrudd.** Et
+   minimalt kall med kort tidsavbrudd skiller «tjenesten er nede» fra
+   «modellen er treg» på tretti sekunder i stedet for tjue minutter. Og et
+   sjekkpunkt som bare skrives ved normal slutt, finnes ikke den dagen du
+   trenger det.
+
 ## Lisensnotat
 
 De fleste kildene er NLOD (Norsk lisens for offentlige data) eller

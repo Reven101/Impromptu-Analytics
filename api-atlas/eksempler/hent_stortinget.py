@@ -14,7 +14,42 @@ Endepunkter (XML som standard, legg på format=json for JSON):
   GET https://data.stortinget.no/eksport/sesjoner?format=json
   GET https://data.stortinget.no/eksport/saker?sesjonid=<id>&format=json
   GET https://data.stortinget.no/eksport/voteringer?sakid=<id>&format=json
+  GET https://data.stortinget.no/eksport/publikasjoner?publikasjontype=<type>&sesjonid=<id>
+  GET https://data.stortinget.no/eksport/publikasjon?publikasjonid=<eksport_id>
   ... og mange flere — se dokumentasjonen.
+
+Tre ting som kostet tid å finne ut (verifisert 2026-08-29):
+
+  1. `publikasjoner` KREVER `publikasjontype`. Uten den: HTTP 400 med
+     «manglende eller ugyldig parameter: 'PublikasjonType'». Feilmeldingen
+     lister ikke de gyldige verdiene. Disse virker:
+         referat, innstilling, dok8, dok12, lovvedtak, innberetning
+     Disse gjør ikke: innstillinger, sporretime, alle.
+     Volum i sesjon 2025-2026: 471 innstillinger, 325 dok8, 107 referater,
+     96 lovvedtak, 4 innberetninger, 0 dok12.
+
+  2. `publikasjon` svarer XML uansett `format=json`. Det er her fulltekstene
+     ligger — et representantforslag ga 4 850 tegn tekst utenfor taggene.
+     Alle andre endepunkter respekterer format=json.
+
+  3. `sesjoner` lister sesjoner som ikke har begynt (2028-2029 finnes i
+     august 2026, tom). Bruk `innevaerende_sesjon` — som er et OBJEKT med
+     id inni, ikke en streng — og regn eldre sesjoner som det som ligger
+     etter den i lista.
+
+  4. KOBLINGEN PUBLIKASJON → SAK ligger på feltet `henvisning` i
+     saksobjektet fra `saker?sesjonid=`, og den er en DELSTRENG — feltet
+     inneholder «Innst. 101 S (2025-2026), jf. Prop. 1 S», ikke bare
+     referansen. Krever du eksakt likhet, finner du null. Krever du
+     delstreng uten ordgrensesjekk, treffer «Innst. 10 S» inne i
+     «Innst. 101 S». Verifisert 2026-08-30: 106 av 106 saksbundne
+     dokumenter lot seg knytte til en sak på denne måten.
+     `voteringer?sakid=` gir deretter vedtaket; les `vedtatt` defensivt,
+     API-et har levert den både som bool og som strengen «true».
+
+  5. REFERATER KAN IKKE FØLGES TIL ETT VEDTAK. Et referat dekker en hel
+     møtedag og mange saker. Skal du bygge en trakt fra omtale til vedtak,
+     tell referattreff for seg — de hører hjemme på omtalenivået.
 
 Gull å grave i:
   - Hvor ofte nevnes «kultur» i saker per sesjon — politisk oppmerksomhet

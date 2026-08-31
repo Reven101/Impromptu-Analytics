@@ -27,6 +27,38 @@ desimalkomma i Beløp. 28 kolonner, bl.a. År, Periode (ÅÅÅÅMM),
 Fagdepartement, Kapittel_id/Kapittel, Post_id/Post, Kontoklasse,
 Artskonto, Virksomhet_id (orgnr!) og Beløp.
 
+Fire feller, alle målt 2026-08-30 og alle dyre å oppdage sent:
+
+  1. DE TO NEDLASTINGENE HAR ULIK FORM. Bevilgningsfila har 18 kolonner og
+     INGEN virksomhetsdimensjon — Stortinget bevilger til kapittel og post,
+     ikke til etater. Beløpskolonnen heter «Bevilgning_beløp», ikke «Beløp».
+     Regnskapsfila har 28 kolonner og er den eneste med Virksomhet_id.
+     Skal du koble orgnr til kapittel, MÅ det gjøres via regnskapet.
+
+  2. INNTEKTER ER FØRT MED MOTSATT FORTEGN, i begge filene. Utgiftskapitler
+     ligger under 3000, inntektskapitler fra 3000 og opp. Summerer du alt,
+     får du budsjettBALANSEN — altså nær null. Målt: hele bevilgningsfila
+     2014–2026 summerte til 289 mrd, og «Saldert budsjett 2018» til MINUS
+     62 mrd. Filtrer på Kapittel_id < 3000, så lander et typisk år på
+     1 897 mrd, som er statsbudsjettet.
+
+  3. REGNSKAPSFILA INNEHOLDER BALANSEKONTOER. Kontoklasse «Eiendeler»
+     summerer til 185 495 mrd over tretten år og «Statens kapital og gjeld»
+     til minus 184 032 — det er en løpende beholdning lagt sammen måned for
+     måned. Vil du ha pengestrøm, hold deg til driftsklassene (lønn,
+     varekostnad, driftskostnad), som gir rundt 280 mrd i året.
+
+  4. BEVILGNINGSFILA ER EN HOVEDBOK, IKKE ET NIVÅ. Kolonnen «Bevilgning»
+     er «dato og beskrivelse», og radene er vedtak: saldert budsjett, hver
+     tilleggsproposisjon, overføringer inn og ut, årsavslutning,
+     lønnsoppgjør. Å summere per (år, kapittel) er riktig — det gir årets
+     samlede bevilgning — men én rad er ikke et budsjett.
+
+Og en arbeidsregel som fulgte av alt dette: kolonnebeskrivelsen
+(«..._beskrivelse_av_kolonner.csv») har en forklaring per kolonne, ikke bare
+et navn. Les forklaringen. Vi brukte flere kjøringer på å tolke tallene
+baklengs før vi leste dokumentasjonen kilden selv leverer.
+
 Gull å grave i:
   - Kulturbudsjettet kapittel for kapittel over tid (KUD-kapitlene) —
     bevilgning mot faktisk regnskap, år for år

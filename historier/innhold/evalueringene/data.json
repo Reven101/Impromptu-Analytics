@@ -1,0 +1,550 @@
+{
+  "meta": {
+    "tittel": "7 138 evalueringer — hvor mange fikk konsekvenser?",
+    "kilde": "Kudos (DFØ), Stortinget, statsregnskapet.no (DFØ)",
+    "kilde_url": "https://kudos.dfo.no/apne-data",
+    "dato_hentet": "2026-08-30",
+    "geografi": "Norge",
+    "enhet": "evalueringer",
+    "oppdateringsfrekvens": "løpende",
+    "beskrivelse": "Forvaltningen har publisert 7 138 evalueringer av seg selv. Vi talte hvor mange av dem som navngis i et stortingsdokument, og hva som skjer med bestillerens budsjett etterpå.",
+    "utkast": true
+  },
+  "visninger": {
+    "hero": {
+      "type": "hero",
+      "eyebrow": "Kunnskapsgrunnlaget",
+      "sporsmal": "Hvor mye kunnskap produserer forvaltningen om seg selv — og hvor blir den av?",
+      "rader": [
+        {
+          "etikett": "Evalueringer i Kudos",
+          "verdi": "7 138",
+          "detalj": "7 112 hentet"
+        },
+        {
+          "etikett": "Oppdragsgivere",
+          "verdi": "254",
+          "detalj": "Norad (NORAD) har flest"
+        },
+        {
+          "etikett": "Nye per uke",
+          "verdi": "5,3",
+          "detalj": "snitt siste ti år"
+        },
+        {
+          "etikett": "Navngitt på Stortinget",
+          "verdi": "3,6 %",
+          "detalj": "81 av 2255 med søkbar tittel"
+        }
+      ],
+      "fotnote": "Kudos oppgir 7138 dokumenter og serverte 7112; de siste 26 skyves forbi siste side mens pagineringen står på. Andelen navngitt er en nedre grense: den teller ordrett navngiving i ['2016-2017', '2017-2018', '2018-2019', '2019-2020', '2020-2021', '2021-2022', '2022-2023', '2023-2024', '2024-2025', '2025-2026'] stortingssesjoner (2016–2026)."
+    },
+    "tempo": {
+      "type": "tidslinje",
+      "tittel": "Toppåret var 2009, med 638 evalueringer",
+      "undertekst": "Evalueringer i Kudos per publiseringsår",
+      "enhet": "evalueringer",
+      "stil": "søyle",
+      "x_navn": "Publiseringsår",
+      "serier": [
+        {
+          "navn": "Evalueringer",
+          "punkter": [
+            [
+              1990,
+              1
+            ],
+            [
+              1991,
+              1
+            ],
+            [
+              1993,
+              1
+            ],
+            [
+              1994,
+              4
+            ],
+            [
+              1995,
+              7
+            ],
+            [
+              1996,
+              9
+            ],
+            [
+              1997,
+              9
+            ],
+            [
+              1998,
+              15
+            ],
+            [
+              1999,
+              18
+            ],
+            [
+              2000,
+              36
+            ],
+            [
+              2001,
+              29
+            ],
+            [
+              2002,
+              60
+            ],
+            [
+              2003,
+              53
+            ],
+            [
+              2004,
+              90
+            ],
+            [
+              2005,
+              194
+            ],
+            [
+              2006,
+              271
+            ],
+            [
+              2007,
+              327
+            ],
+            [
+              2008,
+              322
+            ],
+            [
+              2009,
+              638
+            ],
+            [
+              2010,
+              415
+            ],
+            [
+              2011,
+              436
+            ],
+            [
+              2012,
+              395
+            ],
+            [
+              2013,
+              304
+            ],
+            [
+              2014,
+              287
+            ],
+            [
+              2015,
+              331
+            ],
+            [
+              2016,
+              285
+            ],
+            [
+              2017,
+              275
+            ],
+            [
+              2018,
+              300
+            ],
+            [
+              2019,
+              259
+            ],
+            [
+              2020,
+              273
+            ],
+            [
+              2021,
+              260
+            ],
+            [
+              2022,
+              262
+            ],
+            [
+              2023,
+              252
+            ],
+            [
+              2024,
+              366
+            ],
+            [
+              2025,
+              206
+            ]
+          ]
+        }
+      ]
+    },
+    "bestillerne": {
+      "type": "rangering",
+      "tittel": "Hvem bestiller kunnskapen",
+      "undertekst": "De 15 oppdragsgiverne med flest evalueringer i Kudos",
+      "enhet": "evalueringer",
+      "rader": [
+        {
+          "navn": "Norad (NORAD)",
+          "verdi": 1355
+        },
+        {
+          "navn": "Norges forskningsråd (NFR)",
+          "verdi": 659
+        },
+        {
+          "navn": "Utdanningsdirektoratet (UDIR)",
+          "verdi": 514
+        },
+        {
+          "navn": "Kommunal- og distriktsdepartementet (KDD)",
+          "verdi": 361
+        },
+        {
+          "navn": "NAV Arbeids- og velferdsetaten (NAV)",
+          "verdi": 300
+        },
+        {
+          "navn": "Helsedirektoratet",
+          "verdi": 282
+        },
+        {
+          "navn": "Miljødirektoratet",
+          "verdi": 238
+        },
+        {
+          "navn": "Statens vegvesen (SVV)",
+          "verdi": 214
+        },
+        {
+          "navn": "Arbeids- og inkluderingsdepartementet (AID)",
+          "verdi": 199
+        },
+        {
+          "navn": "Kunnskapsdepartementet (KD)",
+          "verdi": 184
+        },
+        {
+          "navn": "Innovasjon Norge",
+          "verdi": 161
+        },
+        {
+          "navn": "Husbanken",
+          "verdi": 158
+        },
+        {
+          "navn": "Nærings- og fiskeridepartementet (NFD)",
+          "verdi": 152
+        },
+        {
+          "navn": "Justis- og beredskapsdepartementet (JD)",
+          "verdi": 145
+        },
+        {
+          "navn": "Direktoratet for forvaltning og økonomistyring (DFØ)",
+          "verdi": 143
+        }
+      ]
+    },
+    "temaene": {
+      "type": "rangering",
+      "tittel": "Hva evalueres",
+      "undertekst": "Evalueringer per politikkområde, klassifisert av en språkmodell",
+      "enhet": "evalueringer",
+      "rader": [
+        {
+          "navn": "Utdanning og forskning",
+          "verdi": 1352
+        },
+        {
+          "navn": "Arbeid og velferd",
+          "verdi": 718
+        },
+        {
+          "navn": "Klima, miljø og energi",
+          "verdi": 632
+        },
+        {
+          "navn": "Helse og omsorg",
+          "verdi": 600
+        },
+        {
+          "navn": "Utenriks og bistand",
+          "verdi": 498
+        },
+        {
+          "navn": "Kommunal og distrikt",
+          "verdi": 404
+        },
+        {
+          "navn": "Kultur og frivillighet",
+          "verdi": 393
+        },
+        {
+          "navn": "Næring og fiskeri",
+          "verdi": 355
+        },
+        {
+          "navn": "Samferdsel",
+          "verdi": 350
+        },
+        {
+          "navn": "Annet",
+          "verdi": 305
+        },
+        {
+          "navn": "Barn og familie",
+          "verdi": 297
+        },
+        {
+          "navn": "Justis og beredskap",
+          "verdi": 286
+        },
+        {
+          "navn": "Digitalisering og forvaltning",
+          "verdi": 260
+        },
+        {
+          "navn": "Innvandring og integrering",
+          "verdi": 230
+        },
+        {
+          "navn": "Finans og skatt",
+          "verdi": 194
+        },
+        {
+          "navn": "Landbruk og mat",
+          "verdi": 139
+        },
+        {
+          "navn": "For lite tekst til å avgjøre",
+          "verdi": 69
+        },
+        {
+          "navn": "Forsvar",
+          "verdi": 30
+        }
+      ]
+    },
+    "trakten": {
+      "type": "rangering",
+      "tittel": "Fallet skjer på ett trinn",
+      "undertekst": "Evalueringer publisert i dekningsvinduet, og hvor langt de kom",
+      "enhet": "evalueringer",
+      "sorter": false,
+      "rader": [
+        {
+          "navn": "Publisert i dekningsvinduet",
+          "verdi": 2855,
+          "detalj": "i sesjonene vi har fulltekst for"
+        },
+        {
+          "navn": "Tittel distinkt nok til å søke på",
+          "verdi": 2255,
+          "detalj": "600 for generiske til at et treff beviser noe"
+        },
+        {
+          "navn": "Navngitt i et dokument",
+          "verdi": 81,
+          "detalj": "ordrett tittelmatch"
+        },
+        {
+          "navn": "Knyttet til en sak",
+          "verdi": 70,
+          "detalj": "resten er nevnt i referat, som dekker mange saker"
+        },
+        {
+          "navn": "Saken fikk et vedtak",
+          "verdi": 66,
+          "detalj": "at saken ble avgjort — ikke at evalueringen avgjorde den"
+        }
+      ]
+    },
+    "hvem_blir_lest": {
+      "type": "rangering",
+      "tittel": "Hvem får sin evaluering navngitt",
+      "undertekst": "Andel navngitt på Stortinget, oppdragsgivere med minst 40 evalueringer i vinduet",
+      "fotnote": "Spennet fra øverst til nederst er 10.1 prosentpoeng. Det er større enn tilfeldig omfordeling av treffene gir (p = 0.034).",
+      "enhet": "prosent",
+      "rader": [
+        {
+          "navn": "Helsedirektoratet",
+          "verdi": 10.1,
+          "detalj": "12 av 119"
+        },
+        {
+          "navn": "Kommunal- og distriktsdepartementet (KDD)",
+          "verdi": 7.4,
+          "detalj": "8 av 108"
+        },
+        {
+          "navn": "Utdanningsdirektoratet (UDIR)",
+          "verdi": 7.0,
+          "detalj": "13 av 185"
+        },
+        {
+          "navn": "Arbeids- og inkluderingsdepartementet (AID)",
+          "verdi": 6.2,
+          "detalj": "3 av 48"
+        },
+        {
+          "navn": "Integrerings- og mangfoldsdirektoratet (IMDI)",
+          "verdi": 5.6,
+          "detalj": "3 av 54"
+        },
+        {
+          "navn": "NAV Arbeids- og velferdsetaten (NAV)",
+          "verdi": 4.5,
+          "detalj": "3 av 67"
+        },
+        {
+          "navn": "Miljødirektoratet",
+          "verdi": 4.3,
+          "detalj": "3 av 69"
+        },
+        {
+          "navn": "Barne-, ungdoms, og familiedirektoratet (BUFDIR)",
+          "verdi": 3.3,
+          "detalj": "3 av 90"
+        },
+        {
+          "navn": "Norad (NORAD)",
+          "verdi": 0.0,
+          "detalj": "0 av 316"
+        },
+        {
+          "navn": "Innovasjon Norge",
+          "verdi": 0.0,
+          "detalj": "0 av 54"
+        },
+        {
+          "navn": "Norges forskningsråd (NFR)",
+          "verdi": 0.0,
+          "detalj": "0 av 295"
+        },
+        {
+          "navn": "Statens vegvesen (SVV)",
+          "verdi": 0.0,
+          "detalj": "0 av 62"
+        }
+      ]
+    },
+    "budsjettsporet": {
+      "type": "tidslinje",
+      "tittel": "Budsjettet beveger seg ikke målbart etter en evaluering",
+      "undertekst": "Kapitlets andel av statsbudsjettet, indeksert til 100 i evalueringsåret",
+      "enhet": "indeks",
+      "x_navn": "År fra evalueringen",
+      "serier": [
+        {
+          "navn": "Evaluert (n=1909)",
+          "punkter": [
+            [
+              -2,
+              102.87
+            ],
+            [
+              -1,
+              99.71
+            ],
+            [
+              0,
+              100.0
+            ],
+            [
+              1,
+              98.59
+            ],
+            [
+              2,
+              97.58
+            ]
+          ]
+        },
+        {
+          "navn": "Kontroll (n=313)",
+          "punkter": [
+            [
+              -2,
+              102.08
+            ],
+            [
+              -1,
+              99.79
+            ],
+            [
+              0,
+              100.0
+            ],
+            [
+              1,
+              98.96
+            ],
+            [
+              2,
+              97.29
+            ]
+          ]
+        }
+      ]
+    },
+    "forbeholdene": {
+      "type": "kortgalleri",
+      "tittel": "Hva som ikke er med",
+      "undertekst": "Tall som ellers ville forsvunnet i metoden",
+      "kort": [
+        {
+          "overtittel": "Aldri servert",
+          "verdi": "26",
+          "detalj": "av 7138 Kudos teller"
+        },
+        {
+          "overtittel": "Uten publiseringsår",
+          "verdi": "0",
+          "detalj": "faller ut av tempokurven"
+        },
+        {
+          "overtittel": "Uten tema",
+          "verdi": "0",
+          "detalj": "ikke klassifisert"
+        },
+        {
+          "overtittel": "Utenfor dekningsvinduet",
+          "verdi": "4257",
+          "detalj": "publisert før sesjonene vi søkte i"
+        },
+        {
+          "overtittel": "For generisk tittel",
+          "verdi": "600",
+          "detalj": "et treff ville ikke bevist noe"
+        },
+        {
+          "overtittel": "Uten sakstilknytning",
+          "verdi": "36",
+          "detalj": "nevnt i referat, som dekker mange saker"
+        },
+        {
+          "overtittel": "Kontrollgruppe i akt 3",
+          "verdi": "14 %",
+          "detalj": "av vinduene — evalueringene dekker nesten alt"
+        }
+      ]
+    }
+  }
+}
