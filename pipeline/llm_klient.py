@@ -43,6 +43,31 @@ BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
 #
 # MERK: NVIDIA rapporterer ikke pris i svaret. forbruk_oppsummert() sier derfor
 # «pris ikke oppgitt» framfor «$0,0000», som ville lest som gratis.
+#
+# HASTIGHET: samme modell, samme prompt, to leverandører. Målt 31.08.2026 fra en
+# GitHub-kjører med mal_llm_hastighet.py, gpt-oss-20b, reasoning_effort «low»,
+# median av fem runder (og fem av fem svarte begge steder):
+#
+#                          OpenRouter      NVIDIA
+#   klassifisering, total     3,5 s        44,5 s     ← 12,8×
+#   250 ords tekst, total    13,1 s        32,3 s     ←  2,5×
+#   tokens/s                 43–135        15,0
+#   4 samtidige kall         18,1 s       132,9 s
+#
+# Forskjellen ligger i køen, ikke i modellen: NVIDIAs TTFT svingte fra 1,1 til
+# 61 sekunder på fem like kall, mot 0,26–2,9 hos OpenRouter. En time senere
+# svarte NVIDIA på første kall (72 s) og deretter ikke i det hele tatt — tre
+# forsøk på 180 s gikk i tidsavbrudd. Gratislaget er en delt pulje, og
+# hastigheten er derfor en egenskap ved tidspunktet, ikke ved endepunktet.
+#
+# Konsekvens: NVIDIA er for bulk et sted å hente kapasitet man ikke betaler for,
+# ikke et sted å hente fart. Skal en jobb bli ferdig innen et tidsrom, gå
+# gjennom OpenRouter — men mål på nytt før du velger, tallene over er ett døgn.
+#
+# OpenRouter er samtidig en RUTER: de samme ti kallene ble servert av CoreWeave,
+# Novita, SiliconFlow og Amazon Bedrock, og spennet innad hos OpenRouter var
+# 0,8–4,2 s på klassifiseringen. Skal to kjøringer sammenlignes, lås
+# maskinparken (mal_llm_hastighet.py --tjener).
 LEVERANDORER = {
     "nvidia": {
         "navn": "NVIDIA",

@@ -15,15 +15,10 @@
 name: LLM-hastighet
 
 on:
-  # MIDLERTIDIG: workflow_dispatch krever at fila ligger på standardgreina, og
-  # det gjør den ikke ennå. Push-triggeren er eneste måte å faktisk kjøre
-  # målingen fra denne greina. Fjernes når målingen er tatt.
-  push:
-    branches:
-      - claude/gpt-oss-20b-speed-test-eeyt9s
-    paths:
-      - pipeline/mal_llm_hastighet.py
-      - .github/workflows/llm-hastighet.yml
+  # MERK at «Run workflow»-knappen først dukker opp når denne fila ligger på
+  # standardgreina — workflow_dispatch leter bare der. Målingene 31.08.2026 ble
+  # kjørt med en midlertidig push-trigger på arbeidsgreina; den er tatt ut igjen,
+  # for ellers kjører en full måling hver gang noen retter en kommentar her.
   workflow_dispatch:
     inputs:
       modell:
