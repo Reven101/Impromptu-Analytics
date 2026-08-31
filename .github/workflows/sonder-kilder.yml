@@ -9,9 +9,11 @@
 # Ingen tidsplan: dette er ikke overvåking, det er en engangsmåling vi tar når
 # vi trenger å vite hva kildene faktisk inneholder.
 #
-# Ingenting commites. Rådataene lastes ned til den midlertidige kjøreren og
-# forsvinner med den — de skal ikke inn i repoet (SIKKERHET.md). Det vi trenger
-# herfra er utskriften, ikke filene.
+# Ingenting commites. Rådataene skrives til kjørerens midlertidige område, aldri
+# til repo-treet (SIKKERHET.md) — det vi trenger herfra er utskriften, ikke
+# filene. Sidene mellomlagres i Actions-cachen så en avbrutt kjøring kan
+# fortsette, men de er fortsatt utenfor repoet. Alt Kudos gir ut er dessuten
+# allerede publisert, så en offentlig cache er uproblematisk her.
 name: Sonder kildene
 
 on:
@@ -25,9 +27,17 @@ on:
         options:
           - kudos
           - kudos-full
+          - kudos-temaer
+          - kudos-temaer-alle
           - stortinget
+          - stortinget-fulltekst
+          - koble
+          - vedtak
           - statsregnskapet
+          - budsjettspor
+          - historie
           - alle
+          - berg
 
 permissions:
   contents: read
@@ -36,22 +46,72 @@ jobs:
   sonder:
     name: Se hva kildene inneholder
     runs-on: ubuntu-latest
-    # Statsregnskapets fullhistorikk er på hundrevis av megabyte og tar tid å
-    # både laste ned og strømme gjennom. De andre er ferdige på minutter.
-    timeout-minutes: 45
+    # Skriverett, men bare for temacachen. Den er den ene fila her som SKAL inn
+    # i repoet (CLAUDE.md: cachen sjekkes inn — den er sporingslogg og
+    # kostnadssparer). Alt annet workflowen produserer er rådata som ikke skal
+    # inn, og commit-steget navngir derfor én sti og bruker aldri «git add -A».
+    permissions:
+      contents: write
+    # Kudos-korpuset er 143 sider som hentes sekvensielt, og kilden er tregere
+    # under vedvarende paginering enn ved enkeltkall — en kjøring på 45 minutter
+    # ble drept midt i. Sjekkpunktene gjør at en kjøring som likevel går på
+    # tidsgrensa kan fortsette der den slapp, men taket er hevet så det normale
+    # tilfellet ikke treffer det i det hele tatt. GitHubs eget tak for en jobb
+    # er 360 minutter; vi legger oss under det.
+    timeout-minutes: 330
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full historikk. Commit-steget nederst rebaser mot greina, og en
+          # grunn klone gjør det upålitelig. Repoet er under fire megabyte, så
+          # det koster ingenting å hente alt.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v7
         with:
           # Pipelinen er stdlib-only. Ingenting å installere.
           python-version: "3.11"
 
+      # Sjekkpunktene overlever mellom kjøringer her — men bare hvis de
+      # faktisk blir lagret. Den kombinerte actions/cache lagrer i et
+      # etter-steg som hoppes over når jobben feiler eller avbrytes, og
+      # samtlige av våre kjøringer har endt slik. Resultatet var at hver
+      # kjøring startet på null uansett hvor mye som lå på disk.
+      #
+      # Derfor er restore og save delt: save kjører med if: always(), og
+      # lagrer også når hentingen strandet. Det er nettopp da vi trenger den.
+      #
+      # Cachen er ÉN mappe for alle kildene, og den akkumulerer: hvert valg
+      # henter det nyeste cachetreffet, legger sitt til, og lagrer hele treet
+      # igjen. Derfor må stegene kjøres i rekkefølge — «koble» trenger både
+      # kudos/ og stortinget/, «vedtak» trenger det «koble» skrev. Steget «Vis
+      # hva som ligger lagret» nederst sier hva som faktisk fulgte med, så en
+      # kjøring som mangler forutsetningen ikke ser ut som et funn.
+      - name: Hent sjekkpunkter fra forrige kjøring
+        uses: actions/cache/restore@v5
+        continue-on-error: true
+        with:
+          path: ${{ runner.temp }}/raadata
+          key: raadata-${{ inputs.kilde }}-${{ github.run_id }}
+          restore-keys: |
+            raadata-${{ inputs.kilde }}-
+            raadata-
+
       - name: Kjør sonderingen
         env:
+          # UTEN DENNE ER EN DREPT KJØRING STUM. Python blokkbuffrer stdout når
+          # den skriver til et rør (her: tee), så en prosess som blir avlivet på
+          # tidsgrensa tar hele loggen med seg i grava. Det skjedde: 45 minutter
+          # uten en eneste linje utskrift.
+          PYTHONUNBUFFERED: "1"
+          # Bare temaklassifiseringen trenger disse. Settes de ikke, feiler det
+          # steget forklarende på manglende nøkkel — de andre bryr seg ikke.
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           # Rådata utenfor repo-treet, så et uhell ikke kan commite dem.
           KUDOS_DIR: ${{ runner.temp }}/raadata/kudos
+          STORTINGET_DIR: ${{ runner.temp }}/raadata/stortinget
           STATSREGNSKAP_DIR: ${{ runner.temp }}/raadata/statsregnskapet
           VALG: ${{ inputs.kilde }}
         run: |
@@ -66,17 +126,255 @@ jobs:
               echo "########## KUDOS — hele korpuset ##########"
               python3 pipeline/hent_kudos_evalueringer.py
             fi
+            if [ "$VALG" = "kudos-temaer" ] || [ "$VALG" = "kudos-temaer-alle" ]; then
+              echo "########## KUDOS — temaklassifisering ##########"
+              # To modeller fra samme leverandør. Poenget med sammenligningen er
+              # at modellene er uavhengige av hverandre, ikke at de er fra hver
+              # sin tjeneste — og NVIDIA-nøkkelen alene rekker dermed.
+              STOR=nvidia:openai/gpt-oss-120b
+              LITEN=nvidia:openai/gpt-oss-20b
+              # Preflight FØRST, og med 120 s: 30 er vår terskel for «i live»,
+              # ikke leverandørens, og en stor modell som ligger kaldt i en kø
+              # skal ikke avskrives fordi vi ikke ventet på den.
+              if python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
+                   --modell "$STOR" --mot "$LITEN" --tidsavbrudd 120; then
+                MODELL="$STOR"
+                echo "Begge modellene svarer — kjører sammenligningen."
+              else
+                # 120b svarte ikke. Det er en opplysning, ikke en grunn til å
+                # stoppe: 20b klassifiserer korpuset like fullt, og
+                # tomodellskontrollen kan tas senere mot en annen leverandør —
+                # som uansett er en bedre uavhengighetstest enn to gpt-oss.
+                echo
+                echo "⚠ Minst én modell svarte ikke. Faller tilbake til $LITEN alene."
+                MODELL="$LITEN"
+                python3 pipeline/kategoriser_evalueringer.py --sjekk-tilkobling \
+                  --modell "$LITEN" --tidsavbrudd 120
+              fi
+              # 300 s, ikke 120: modellene ligger i NVIDIAs delte pulje og bruker
+              # lang tid på å komme i gang. Et avbrudd midt i genereringen kaster
+              # bort arbeid som var underveis, og neste forsøk starter på null.
+              if [ "$VALG" = "kudos-temaer-alle" ]; then
+                echo "Kategoriserer HELE korpuset med $MODELL …"
+                python3 pipeline/kategoriser_evalueringer.py --alle \
+                  --modell "$MODELL" --resonnering low --tidsavbrudd 300
+              elif [ "$MODELL" = "$STOR" ]; then
+                python3 pipeline/kategoriser_evalueringer.py --sammenlign 200 \
+                  --modell "$STOR" --mot "$LITEN" \
+                  --resonnering low --tidsavbrudd 300
+              else
+                echo "Måler tid og kvalitet på 300 tekster med $MODELL …"
+                python3 pipeline/kategoriser_evalueringer.py --grense 300 \
+                  --modell "$MODELL" --resonnering low --tidsavbrudd 300
+              fi
+            fi
             if [ "$VALG" = "stortinget" ] || [ "$VALG" = "alle" ]; then
               echo
               echo "########## STORTINGET — hvilket koblingsnivå finnes? ##########"
               python3 pipeline/sonder_stortinget.py
+            fi
+            if [ "$VALG" = "stortinget-fulltekst" ]; then
+              echo "########## STORTINGET — fulltekst, 10 sesjoner ##########"
+              python3 pipeline/hent_stortinget_publikasjoner.py
+            fi
+            if [ "$VALG" = "koble" ]; then
+              echo "########## KOBLING — hvem blir navngitt på Stortinget? ##########"
+              python3 pipeline/koble_evalueringer_stortinget.py
+            fi
+            if [ "$VALG" = "vedtak" ]; then
+              echo "########## VEDTAK — trakten fra navngitt til vedtatt ##########"
+              # Sonderingen skriver koblingsnøkkelen til cachen, så hentingen
+              # etterpå slipper å lete på nytt. Begge kjører her: sonderingen
+              # er sekunder, og uten den stopper hentingen uansett.
+              python3 pipeline/hent_stortinget_vedtak.py --sonder
+              python3 pipeline/hent_stortinget_vedtak.py
             fi
             if [ "$VALG" = "statsregnskapet" ] || [ "$VALG" = "alle" ]; then
               echo
               echo "########## STATSREGNSKAPET — kolonner og årssummer ##########"
               python3 pipeline/hent_statsregnskapet.py
             fi
+            if [ "$VALG" = "budsjettspor" ]; then
+              echo "########## AKT 3 — budsjettsporet, med kontrollgruppe ##########"
+              # Ingen nett: leser snapshotene fra kudos-full og statsregnskapet.
+              # Ligger de ikke i cachen, sier scriptet hvilket steg som mangler.
+              python3 pipeline/analyser_budsjettspor.py
+            fi
+            if [ "$VALG" = "historie" ]; then
+              echo "########## HISTORIEN — setter sammen de fire snapshotene ##########"
+              # Skriver historier/innhold/evalueringene/data.json i kjørerens
+              # arbeidstre. Den commites ikke herfra — den lastes opp som
+              # artefakt under, så du kan laste den ned og legge den inn selv.
+              python3 pipeline/bygg_historie_evalueringer.py
+              python3 pipeline/kontrakt.py
+              python3 pipeline/bygg_manifest.py
+            fi
+            if [ "$VALG" = "berg" ]; then
+              echo "########## BERGING — henter sjekkpunktene ut av Actions-cachen ##########"
+              # Ingenting hentes fra kildene, og ingenting skrives. Poenget er
+              # bare å få rådataene ut som en nedlastbar artefakt før cachen
+              # blir kastet: GitHub sletter cacheoppføringer som ikke er brukt
+              # på sju dager, og snapshotene lar seg ikke gjenskape senere —
+              # Kudos vokser hver uke, så en ny henting gir andre tall enn de
+              # historien er skrevet på.
+              #
+              # Steget «Berg rådataene» under gjør selve opplastingen. Her
+              # skriver vi bare en innholdsliste, så sammendraget viser hva
+              # som faktisk lå i cachen.
+              echo
+              if [ -d "$RUNNER_TEMP/raadata" ]; then
+                du -sh "$RUNNER_TEMP/raadata"
+                find "$RUNNER_TEMP/raadata" -type f | wc -l \
+                  | xargs echo "Filer i alt:"
+                echo
+                # awk, ikke «head -60». head lukker røret når den har fått sine
+                # linjer, sort dør på EPIPE — og med set -e (GitHubs standard)
+                # pluss pipefail blir en avkortet visning til en FEILET
+                # kjøring. Berginga ville da sett mislykket ut selv om
+                # artefakten lå der. awk leser strømmen ut og teller selv.
+                find "$RUNNER_TEMP/raadata" -type f \
+                  -printf '%10s  %P\n' | sort -k2 | awk 'NR<=60
+                    END { if (NR>60) printf "… og %d filer til\n", NR-60 }'
+              else
+                echo "✗ Fant ingen rådatamappe. Cachen er trolig allerede kastet."
+                echo "  Sjekk at workflowen kjøres fra SAMME grein som hentingene."
+                exit 1
+              fi
+            fi
           } 2>&1 | tee kjoring.txt
+
+      # Lagres uansett utfall. En kjøring som gikk på tidsgrensa har som regel
+      # hentet det meste, og det er den neste kjøringen som skal slippe å
+      # betale for det på nytt.
+      # «berg» er med vilje utelatt. Den kjøringen henter ingenting, så det den
+      # ville lagret er i beste fall en kopi av det som alt ligger der — og i
+      # verste fall et tomt tre under en ferskere nøkkel. Restore-nøkkelen
+      # «raadata-» plukker nyeste treff, så et tomt tre ville skygget for det
+      # gode og gjort bergingen til nettopp det tapet den skal hindre.
+      - name: Lagre sjekkpunkter
+        if: always() && inputs.kilde != 'berg'
+        uses: actions/cache/save@v5
+        continue-on-error: true
+        with:
+          path: ${{ runner.temp }}/raadata
+          key: raadata-${{ inputs.kilde }}-${{ github.run_id }}
+
+      # Rådataene ut av cachen og ned på en maskin. Dette er den ene gangen de
+      # forlater kjøreren, og det er trygt: artefakten er ikke repo-treet, så
+      # Vercel serverer den ikke (SIKKERHET.md gjelder det som commites). Alt
+      # Kudos, Stortinget og statsregnskapet gir ut er dessuten allerede
+      # publisert — det er samme vurdering som ligger bak at cachen er åpen.
+      #
+      # Pakk zip-en ut i «impromptu_raadata/» ved siden av repoet; det er der
+      # scriptene leter når KUDOS_DIR og de andre ikke er satt.
+      #
+      # if-no-files-found: error, ikke warn. En tom berging er nettopp det
+      # tilfellet du må få vite om med en gang — da er cachen borte, og en
+      # grønn hake ville fått deg til å tro at snapshotene var reddet.
+      - name: Berg rådataene
+        if: always() && inputs.kilde == 'berg'
+        uses: actions/upload-artifact@v5
+        with:
+          name: raadata
+          path: ${{ runner.temp }}/raadata
+          if-no-files-found: error
+          retention-days: 90
+
+      # Temacachen ligger i repo-treet, ikke i rådatamappa, fordi den skal
+      # sjekkes inn — den er både sporingslogg og kostnadssparer. Workflowen
+      # commiter ingenting, så den lastes opp for hånd-innlegging. if: always()
+      # fordi en kjøring som gikk på tidsgrensa har klassifisert det meste, og
+      # det er nettopp da den ikke skal kastes.
+      #
+      # MERK: --sammenlign skriver med vilje ingenting til cachen — to modeller
+      # om hverandre ville gitt et blandet grunnlag. «No files were found» etter
+      # en ren sammenligningskjøring er derfor riktig, ikke en feil. Det er
+      # --grense og --alle som produserer fila.
+      - name: Last opp temacachen
+        if: always() && startsWith(inputs.kilde, 'kudos-temaer')
+        uses: actions/upload-artifact@v5
+        continue-on-error: true
+        with:
+          name: kudostema-cache
+          path: pipeline/cache/kudostema_cache.json
+          if-no-files-found: warn
+
+      # data.json er noen kilobyte — aggregerte tall, ikke korpuset. Den lastes
+      # opp så den kan hentes ned og commites fra en maskin, uten at denne
+      # workflowen får skriverettigheter i repoet.
+      - name: Last opp den bygde historien
+        if: always() && inputs.kilde == 'historie'
+        uses: actions/upload-artifact@v5
+        continue-on-error: true
+        with:
+          name: evalueringene-data
+          path: historier/innhold/evalueringene/data.json
+          if-no-files-found: warn
+
+      # Filene lastes ikke bare opp, de commites — ellers må de hentes ut av
+      # en zip og legges inn for hånd, og det er ikke en jobb for en iPad.
+      # if: always() fordi en kjøring som gikk på tidsgrensa har gjort det
+      # meste, og det er nettopp da arbeidet ikke skal kastes.
+      - name: Commit det som hører hjemme i repoet
+        if: always()
+        continue-on-error: true
+        env:
+          VALG: ${{ inputs.kilde }}
+        run: |
+          set -o pipefail
+          # Bare disse. Aldri «git add -A»: alt annet workflowen produserer er
+          # rådata som ikke skal inn i et repo Vercel serverer statisk, og et
+          # bredt add er nettopp måten det ville skjedd på.
+          #
+          # manifest.json er med vilje IKKE med. bygg_manifest.py stempler
+          # dagens dato i den ved hver kjøring, så den ville gitt en commit
+          # uten innhold hver eneste gang.
+          case "$VALG" in
+            kudos-temaer|kudos-temaer-alle)
+              FILER="pipeline/cache/kudostema_cache.json" ;;
+            historie)
+              FILER="historier/innhold/evalueringene/data.json" ;;
+            *)
+              echo "Ingenting å commite for «$VALG»."; exit 0 ;;
+          esac
+
+          FINNES=""
+          for f in $FILER; do
+            [ -f "$f" ] && FINNES="$FINNES $f"
+          done
+          if [ -z "$FINNES" ]; then
+            # --sammenlign skriver med vilje ingen cache: to modeller om
+            # hverandre ville gitt et blandet grunnlag. Ingen fil er da riktig.
+            echo "Fant ingen av filene ($FILER) — ingenting å commite."
+            exit 0
+          fi
+          # --porcelain, ikke «git diff»: fila er usporet første gang, og en
+          # diff mot en usporet fil er tom. Da ville det aller første — og
+          # viktigste — resultatet blitt hoppet over som «uendret».
+          if [ -z "$(git status --porcelain -- $FINNES)" ]; then
+            echo "Uendret siden forrige kjøring:$FINNES"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $FINNES
+          git commit -m "$VALG fra kjøring $GITHUB_RUN_ID" \
+            -m "Skrevet av pipeline/, kjørt fra workflowen «Sonder kildene»."
+          # Greina kan ha flyttet seg mens jobben gikk. Rebase framfor merge:
+          # dette er én commit på én fil, og en merge-commit fra CI er støy.
+          git pull --rebase origin "$GITHUB_REF_NAME" || true
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "✓ Commitet til $GITHUB_REF_NAME:$FINNES — ingenting å laste ned."
+
+      - name: Vis hva som ligger lagret
+        if: always()
+        run: |
+          echo "Sjekkpunkter i ${{ runner.temp }}/raadata:"
+          du -sh "${{ runner.temp }}/raadata" 2>/dev/null || echo "  (ingenting)"
+          find "${{ runner.temp }}/raadata" -maxdepth 1 -type d 2>/dev/null \
+            | tail -n +2 | while read -r d; do
+              echo "  $(basename "$d"): $(ls -1 "$d" | wc -l) filer"
+            done
 
       - name: Legg utskriften i kjøringssammendraget
         # Kjører også når sonderingen feilet — det er nettopp da du vil lese den.

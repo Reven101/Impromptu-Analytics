@@ -53,6 +53,42 @@ API-kall. Et LLM-steg er en datakilde med egen feilrate, og behandles som det:
   å dele opp mot dem ganger bare opp antall mislykkede kall — på hver tråd.
 - **Hva som ikke får sendes:** se [SIKKERHET.md](SIKKERHET.md).
 
+## Når en historie påstår noe statistisk
+
+Fire regler, alle kjøpt dyrt under arbeidet med `evalueringene` (august 2026).
+
+**Et nullresultat fra en ødelagt måling er ikke et nullresultat.** Akt 3 ga
+p = 0,90 og «ingen målbar forskjell» — akkurat det forhåndsdefinerte svaret vi
+hadde skrevet testen for å kunne rapportere. I samme utskrift sto det at hele
+statsregnskapet 2014–2026 summerte til 10,1 mrd. Utfallet var en *andel* av den
+summen, så hver eneste verdi var regnet mot feil nevner, og testen kjørte like
+pent. **Verifiser nevneren mot et tall du kjenner utenfra** før du tolker noe
+som helst. Etter retting: 1 897 mrd i et typisk år, som er statsbudsjettet.
+Legg sjekken inn som en hard port i scriptet, ikke som noe du husker å gjøre.
+
+**Ytterpunkter som er valgt fordi de er ytterpunkter, krever permutasjonstest.**
+En vanlig tosproporsjonstest på topp mot bunn later som paret var plukket på
+forhånd. Med et titalls grupper finnes det førti-femti par, og det største
+spriket er stort selv når ingenting skiller gruppene. Målt her: p = 0,0097
+naivt mot 0,034 korrigert — og i en mellomvariant 0,0097 mot 0,17. Stokk om
+utfallet på tvers av gruppene og mål hvor ofte tilfeldighet gir like stort
+spenn; da er utvalget av ytterpunkter en del av nullhypotesen.
+
+**Uenighet mellom to modeller måler kategorilista bedre enn «annet»-andelen.**
+Husregelen sier at andelen `annet`/`uklar` er kvalitetsmålet på lista. Den
+fanger ikke alt: her lå den på 2 % mens barnevernsdokumenter ble presset inn i
+`arbeid_og_velferd` eller `kommunal_og_distrikt` alt etter hvilken modell som
+svarte. Uenighetene var ikke tilfeldig spredt — de klumpet seg der lista manglet
+et hjem. **Kjør to modeller på et utvalg og se HVOR de er uenige**, ikke bare
+hvor ofte.
+
+**Byggescriptet skal stoppe når brødteksten motsier tallene.** Teksten gjentar
+hovedtallene med ord, som den skal — et tall som bare står i en figur blir ikke
+lest. Men da kan teksten drifte i stillhet neste gang noe hentes på nytt.
+`bygg_historie_evalueringer.py` sammenligner derfor prosenttallet og den
+statistiske dommen i `tekst.md` mot det den nettopp regnet ut, og feiler på
+avvik. Den porten fanget en påstand som var blitt gal mellom to kjøringer.
+
 ## Upubliserte historier: `"utkast": true`
 
 `bygg_manifest.py` tar med **hver** mappe under `historier/innhold/` som har en gyldig
