@@ -28,7 +28,7 @@ Endepunkter:
 Rammer (fra <rot>?config): 100 kall per 10 sekunder, 1 000 000 celler per
 uttrekk. Romslig, men hierarkiet har 267 tabeller — throttle når du traverserer.
 
-FEM TING SOM KOSTER TID:
+SEKS TING SOM KOSTER TID:
 
 1. Landlista varierer fra tabell til tabell, og den inneholder ikke bare
    land. CULT01 har alle åtte områdene; CULT20 mangler Åland; POPU01 har
@@ -74,6 +74,35 @@ FEM TING SOM KOSTER TID:
 5. "updated" i uttrekket er ikke tabellens dato. json-stat2-svaret for
    CULT20 melder 2018, mens tabellisten melder desember 2025 for samme
    tabell. Listenivået er det som stemmer — hent ferskhet derfra.
+
+6. `time` sier hvilke år tabellen KAN ha, ikke hvilke ditt land har.
+   Årgangen finnes i kodelista lenge før alle har rapportert, og hullene
+   sitter i enkeltceller — ikke i land.
+
+   Målt september 2026 over alle 261 tabeller med landdimensjon (20 155
+   celler, alle åtte områder × siste 15 perioder, øvrige dimensjoner låst
+   til totalkoden): utfyllingen er jevn mellom de fem statene — Finland
+   95,9 %, Norge 95,0 %, Sverige 94,8 %, Danmark 94,4 %, Island 90,8 %.
+   Det er altså ingen «dansk slagside» i basen, som det lett ser ut til
+   fra én tabell. Skillet går mot de selvstyrte områdene: Grønland 86,9 %,
+   Åland 83,5 %, Færøyene 83,2 %, og de er i tillegg bare tilbudt i
+   30–39 % av tabellene mot 89–97 % for statene.
+
+   Men enkeltceller kan være svært gamle, og det ser du ikke uten å se
+   etter. Fire målte eksempler i kulturtabellene: Sverige har ikke levert
+   teatertall (CULT15) siden **2010**, og kino (CULT04/05) stopper i 2020;
+   Norge har ikke levert utgitte bøker (CULT17) siden **2015**; Danmark og
+   Finland stopper på bibliotek (CULT01) i 2021 og 2020, mens Sverige,
+   Norge og Island har 2024 i samme tabell.
+
+   De to siste årgangene er tynne for alle (2024: 84–87 % mot 93–99 % i
+   2014–2023), fordi kildene rapporterer med etterslep. Velger du «siste
+   år» uten å sjekke, får du derfor lett et årstall der halve Norden
+   mangler — det var akkurat det som skjedde med CULT20 for 2024, der
+   Finland, Island og Sverige ikke hadde levert.
+
+   Kjør `siste_aar_med_tall(tabell)` før du plotter en tidsserie eller
+   plukker et «siste år».
 
 Gull å grave i:
   - Norge mot Norden i kulturbruk: CULT01/04/15/16 (bibliotek, kino, teater,
@@ -188,6 +217,84 @@ def hent_tabell(tabell: str, utvalg: dict[str, list[str]]) -> dict:
     return hent_json(_url(tabell), kropp=sporring)
 
 
+def _verdiliste(data: dict) -> list:
+    """Verdiene som én flat liste med None i hullene.
+
+    json-stat2 tillater "value" både som liste med null i hullene og som
+    objekt med posisjon → verdi der hullene mangler helt. Målt på 60
+    tabeller her leverer Nordic Statistics alltid lista, aldri avkortet —
+    men formen er ikke garantert av standarden, og en tom hovedserie er
+    nettopp tilfellet der en kilde pleier å bytte. Vi tar høyde for begge.
+    """
+    antall = 1
+    for lengde in data["size"]:
+        antall *= lengde
+    verdier = data["value"]
+    if isinstance(verdier, dict):
+        ut = [None] * antall
+        for posisjon, verdi in verdier.items():
+            ut[int(posisjon)] = verdi
+        return ut
+    return list(verdier) + [None] * (antall - len(verdier))
+
+
+def _totalkode(variabel: dict) -> str:
+    """En verdi å låse en dimensjon til når vi bare skal måle dekning.
+
+    Foretrekker en totalkode framfor den første verdien: en «total»-rad
+    er utfylt oftere enn en tilfeldig underkategori, og gir derfor et
+    mindre pessimistisk dekningstall.
+    """
+    tekster = variabel.get("valueTexts") or variabel["values"]
+    for kode, tekst in zip(variabel["values"], tekster):
+        if str(kode).strip().lower() in ("tot", "total", "t", "_t", "all"):
+            return kode
+        if str(tekst).strip().lower() in ("total", "all", "both sexes"):
+            return kode
+    return variabel["values"][0]
+
+
+def siste_aar_med_tall(tabell: str) -> dict[str, str | None]:
+    """Siste periode som faktisk har en verdi, per nordisk land.
+
+    Se punkt 6: `time` lister årene tabellen kan ha, ikke årene landet
+    ditt har levert. Kjør denne før du plotter en tidsserie eller plukker
+    et «siste år» — ellers velger du lett en årgang der halve Norden
+    mangler. None betyr at landet ikke har en eneste verdi i tabellen.
+
+    Alle dimensjoner utenom land og tid låses til totalkoden, så svaret
+    beskriver hovedserien i tabellen, ikke hver enkelt underkategori.
+    """
+    meta = hent_metadata(tabell)
+    variabler = {v["code"]: v for v in meta["variables"]}
+    landvar = next((k for k in variabler if "countr" in k.lower()), None)
+    if landvar is None or "time" not in variabler:
+        raise ValueError(f"{tabell} mangler land- eller tidsdimensjon")
+
+    land = [k for k in variabler[landvar]["values"] if k in LAND]
+    utvalg = {landvar: land, "time": variabler["time"]["values"]}
+    for kode, v in variabler.items():
+        if kode not in (landvar, "time"):
+            utvalg[kode] = [_totalkode(v)]
+
+    data = hent_tabell(tabell, utvalg)
+    akser = data["id"]
+    koder = [list(data["dimension"][a]["category"]["index"]) for a in akser]
+    nyeste: dict[str, str] = {}
+    for posisjon, verdi in enumerate(_verdiliste(data)):
+        if verdi is None:
+            continue
+        rest, punkt = posisjon, {}
+        for a in reversed(range(len(akser))):
+            rest, j = divmod(rest, len(koder[a]))
+            punkt[akser[a]] = koder[a][j]
+        landkode, periode = punkt[landvar], punkt["time"]
+        # Periodene er sorterbare som tekst, både "2024" og "2024Q3".
+        if periode > nyeste.get(landkode, ""):
+            nyeste[landkode] = periode
+    return {LAND[k]: nyeste.get(k) for k in land}
+
+
 def tabell_til_rader(data: dict) -> list[dict]:
     """Brett json-stat2 ut til rader med kodetekster, ikke koder.
 
@@ -204,7 +311,7 @@ def tabell_til_rader(data: dict) -> list[dict]:
     ]
 
     rader = []
-    for i, verdi in enumerate(data["value"]):
+    for i, verdi in enumerate(_verdiliste(data)):
         rest, rad = i, {}
         for a in reversed(range(len(akser))):
             rest, j = divmod(rest, len(etiketter[a]))
@@ -275,6 +382,13 @@ def main() -> int:
     # Attribusjonen ligger i dataene, ikke i atlaset — se punkt 2 øverst.
     data = hent_tabell("Culture/CULT20.px", {"time": ["2022"], "unit": ["PCGDP"]})
     print(f"\nProdusent oppgitt av tabellen:\n  {data['source'][:150]} …")
+
+    # CULT15 er det skarpeste eksempelet på punkt 6: «time» går til 2024,
+    # men Sverige har ikke levert teatertall siden 2010.
+    print("\nSiste år med tall per land, CULT15 (teater):")
+    for land, aar in sorted(siste_aar_med_tall("Culture/CULT15.px").items(),
+                            key=lambda p: (p[1] or "", p[0]), reverse=True):
+        print(f"  {land:12s} {aar or 'ingen tall'}")
 
     meta = hent_metadata("Demography/Population size/POPU01.px")
     print("\nKodesjekk POPU01 (den kjente fella):")
