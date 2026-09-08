@@ -1,8 +1,9 @@
 # API-atlas — norske åpne datakilder
 
-Et kartlagt og kjørbart atlas over 17 offentlige norske datakilder, bygget som
-grunnmur for datahistorier og analyseprosjekter. Hver kilde har ett
-frittstående Python-script i `eksempler/` som
+Et kartlagt og kjørbart atlas over 19 datakilder — 18 offentlige API-er og én
+base som må skrapes — bygget som grunnmur for datahistorier og
+analyseprosjekter. Hver kilde har ett frittstående Python-script i
+`eksempler/` som
 
 - dokumenterer kilden (endepunkter, nøkkelkrav, lisens, dok-lenke),
 - gjør et ekte kall og viser hvordan svaret parses,
@@ -30,7 +31,7 @@ prosjekt på en av kildene.
 | ? | kilden ble aldri nådd: nett, brannmur eller proxy her hos deg |
 | ✗ | kilden svarte feil — åpne `DOK`-lenken øverst i scriptet og se hva som er endret |
 
-Skillet mellom `?` og `✗` er verdt å merke seg: uten nett ser alle sytten
+Skillet mellom `?` og `✗` er verdt å merke seg: uten nett ser alle nitten
 kildene ut som om de endret seg samtidig, og da leter du i dokumentasjonen
 etter noe som står helt stille. `?` betyr hverken bekreftet eller avkreftet
 — kjør på nytt fra et sted med åpen utgående forbindelse. Exit-koden er
@@ -45,7 +46,7 @@ virker fra telefon og nettbrett, uten Codespace. Tabellen legges i
 kjøringssammendraget, så du slipper å grave i loggen. Feiler en kilde,
 feiler jobben, og GitHub sender deg e-post; ingen e-post betyr grønt.
 
-Vil du ha Frost testet i tillegg til de seksten andre, legg
+Vil du ha Frost testet i tillegg til de atten andre, legg
 `FROST_CLIENT_ID` inn under Settings → Secrets and variables → Actions.
 Uten den hopper den kilden over seg selv, som lokalt.
 
@@ -57,6 +58,7 @@ dager. Skjer det, får du en e-post om det, og en knapp for å slå den på.
 | Kilde | Hva | Nøkkel | Script |
 |-------|-----|--------|--------|
 | **SSB** (PxWebApi v2) | all offisiell statistikk, inkl. KOSTRA | nei | `hent_ssb_statistikk.py` |
+| **Nordic Statistics** (Nordregio) | 267 tabeller der alle åtte nordiske områder er harmonisert — sammenligningen SSB alene ikke gir | nei³ | `hent_nordisk_statistikk.py` |
 | **Brreg Enhetsregisteret** | alle norske organisasjoner | nei | `hent_brreg_enheter.py` |
 | **Brreg Frivillighetsregisteret** | frivillige org. med ICNPO-kategori | nei | `hent_brreg_frivillighet.py` |
 | **tilskudd.no** (Lottstift) | statlige tildelinger til frivilligheten | nei | `hent_tilskudd_lottstift.py` |
@@ -73,9 +75,23 @@ dager. Skjer det, får du en e-post om det, og en knapp for å slå den på.
 | **Stortinget** | saker, voteringer, spørsmål siden 1945 | nei | `hent_stortinget.py` |
 | **Valgdirektoratet** | valgresultater ned til kretsnivå | nei | `hent_valgresultater.py` |
 | **Statens vegvesen NVDB** | vegnettet: fartsgrenser, trafikk, bommer | nei | `hent_nvdb_vegobjekter.py` |
+| **IbsenStage** (UiO) | ~25 000 Ibsen-oppsetninger verden over siden 1850-tallet, med medvirkende | nei² | `hent_ibsenstage.py` |
 
 ¹ krever identifiserende header (User-Agent hos MET, ET-Client-Name hos
 Entur) — scriptene setter den, med kontakt@impromptu.no som avsender.
+
+² **ingen API.** IbsenStage har verken JSON-endepunkt eller eksport — bare en
+paginert HTML-tabell som må parses, og en lisens (CC BY-NC-SA 4.0) som er
+strengere enn resten av atlaset. Les scriptet før du henter derfra: strukturen
+er observert, ikke dokumentert, og den har allerede endret seg én gang.
+
+³ **omvendt attribusjonsregel.** Nordic Statistics er hverken NLOD eller CC.
+Gjengir du tallene som de er, skal du oppgi «Source: Nordic Statistics
+database» — men bearbeider du dem, sier vilkårene at du *ikke* har lov til å
+oppgi basen som kilde. Da krediterer du produsenten bak tallene, og den står i
+`source`-feltet i hvert uttrekk (Eurostat, OECD, Nomesco-Nososco eller det
+enkelte statistikkbyrået). Siden impromptu-historier nesten alltid bearbeider,
+er det den bearbeidede varianten som gjelder her.
 
 ## Metoden (samme som resten av repoet)
 
@@ -142,6 +158,12 @@ De fleste kildene er NLOD (Norsk lisens for offentlige data) eller
 CC BY 4.0: fri bruk, også kommersielt, mot navngivelse. Oppgi alltid
 kilde — det gjør impromptu-historiene troverdige uansett. Metadata fra
 Nasjonalbiblioteket er åpne, men selve verkene kan ha opphavsrett.
+To kilder er unntak som må sjekkes hver gang. IbsenStage er CC BY-NC-SA 4.0:
+forbyr kommersiell bruk og krever at det du bygger videre deles på samme
+vilkår. Nordic Statistics snur navngivelsen: bearbeidede tall skal *ikke*
+tilskrives basen, men produsenten den henter fra — se note ³ over. Det er
+verdt å lese vilkårene selv den dagen en historie skal publiseres på tall
+derfra.
 
 ## Kilder som IKKE har åpne API-er (så du slipper å lete)
 
@@ -151,6 +173,9 @@ Nasjonalbiblioteket er åpne, men selve verkene kan ha opphavsrett.
   anleggsregisteret.no, men uten dokumentert åpent API; sjekk
   Felles datakatalog for status, eller spør Kulturdepartementet om uttrekk
 - **Matrikkelen (full)** og **Folkeregisteret** — krever avtale/hjemmel
+- **IbsenStage** har heller ikke noe API, men ligger likevel i atlaset:
+  HTML-tabellen er stabil nok til å skrapes, og `hent_ibsenstage.py`
+  dokumenterer hvordan
 
 ## Idéer på tvers av kildene
 
@@ -166,6 +191,12 @@ Kombinasjonene er gullet — én kilde er et faktum, to kilder er en historie:
   Nasjonalbiblioteket (avis-n-gram) → når snakker Norge om kultur?
 - **Reisetid til kultur**: Entur + Kartverket-geokoding → hvor mange
   minutter unna er nærmeste scene, bibliotek, kino?
+- **Ibsen som eksportvare**: IbsenStage + Nasjonalbiblioteket → hva
+  spilles ute, og hva skriver norske aviser om det hjemme?
+- **Norden som målestokk**: Nordic Statistics + SSB → er norske kulturtall
+  høye eller lave? Ett land alene er et faktum uten skala; åtte harmoniserte
+  land gir tallet en retning. Færøyene, Grønland og Åland er med som egne
+  enheter, og de mangler i nesten alle andre internasjonale baser
 
 ---
 
