@@ -15,3 +15,7 @@ __pycache__/
 .env
 .env.*
 *.env
+
+# Playwright MCP skriver skjermbilder og traces hit. Alt i repoet serveres statisk av
+# Vercel, så et innsjekket skjermbilde er et publisert skjermbilde.
+.playwright/

@@ -20,6 +20,35 @@ Utviklingsmaskinen er Windows. README og docstrings er skrevet på Mac:
 - Lokal visning: `python -m http.server 8000` fra repo-roten. ES-moduler krever http, ikke
   `file://`. `.claude/launch.json` starter den samme serveren.
 
+## Playwright MCP
+
+`.mcp.json` registrerer `@playwright/mcp` som prosjekt-scoped MCP-server. Bruksområdet er
+render-laget: konsollfeil, layout ved telefonbredde, kontrast — det `kontrakt.py` ikke
+fanger, fordi den er en hard port for *data*, ikke for det siden faktisk viser.
+
+- **Nettleseren installeres én gang:** `npx playwright install chromium`.
+- **`--browser chromium` er ikke valgfritt.** Uten flagget faller serveren tilbake på den
+  *merkevarede* Chrome-kanalen og leter etter en installert Google Chrome — den feiler med
+  «Chromium distribution 'chrome' is not found», ikke med noe som peker mot årsaken. Og en
+  auto-oppdaterende Chrome er feil grunnlag for en port som skal si det samme i dag som i går.
+- **Versjonen er pinnet med vilje.** `@latest` ville endret oppførsel stille mellom
+  kjøringer.
+- **`--isolated`** holder nettleserprofilen i minnet. En sjekk som arver cookies fra forrige
+  kjøring sjekker ikke det samme hver gang.
+- **Windows: `npx` kan feile.** `npx` er et `.cmd`-skall, og enkelte Claude Code-versjoner
+  klarer ikke spawne det uten shell. Starter ikke serveren, bytt `"command"` til `"cmd"` og
+  legg `"/c", "npx"` først i `args`. Men da virker ikke fila i Claude Code på web (Linux) —
+  hold endringen lokal, ikke commit den.
+- **Claude Code på web:** containeren har Chromium ferdig installert under
+  `/opt/pw-browsers/`, men buildnummeret matcher sjelden det denne MCP-versjonen forventer.
+  Last ikke ned på nytt — legg til `--executable-path <sti til chrome-linux/chrome>` og
+  `--no-sandbox` lokalt i stedet. Ikke commit det heller; stien er containerspesifikk.
+- **Origins er ikke låst til localhost.** Sidene henter Jost og IBM Plex Mono fra Google
+  Fonts. En sperre der ville gitt feil skrift i hvert eneste skjermbilde — altså en port som
+  feiler på sitt eget oppsett.
+- Utdata havner i `.playwright/`, gitignorert av samme grunn som `*.csv`.
+- Slug-parameteren er `?id=<mappenavn>`, ikke `?historie=` (`historie.js:57`).
+
 ## LLM som byggesteg
 
 `pipeline/llm_klient.py` kaller OpenRouter. Regelen er at modellen kjøres **kun ved
