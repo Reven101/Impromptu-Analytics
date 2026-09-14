@@ -1,0 +1,5 @@
+# diagram-design leser .diagram-design med en streng grammatikk: bare
+# "profile: <slug>", horisontal whitespace og ett avsluttende linjeskift.
+# Med core.autocrlf=true pa Windows blir fila CRLF ved utsjekk, og da er
+# markoren ugyldig - den ignoreres da stille, uten feilmelding.
+.diagram-design text eol=lf
