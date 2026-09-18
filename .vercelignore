@@ -8,7 +8,9 @@
 #
 # Nettstedet trenger bare: de fire HTML-sidene i roten, historier/historie.html,
 # historier/motor/ og per historie data.json + tekst.md, pluss manifest.json.
-# Samme syntaks som .gitignore. Sjekk etter deploy at
+# Samme syntaks som .gitignore. vercel.json svarer dessuten 404 på de samme
+# stiene, så sperren holder selv om denne fila ikke skulle bli lest ved
+# Git-deploy. Endrer du lista her, endre den der òg. Sjekk etter deploy at
 # impromptu.no/pipeline/kontrakt.py gir 404, ikke 200.
 
 # Datalaget og verktøyene
