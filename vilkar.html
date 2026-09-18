@@ -1,144 +1,132 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vilkår for bruk - Impromptu Analytics</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #FAFAF8;
-            --text-primary: #1A1A1A;
-            --text-secondary: #5C5C5C;
-            --accent: #2D5A27;
-            --border: #E5E5E0;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.7;
-            padding: 4rem 2rem;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .serif { font-family: 'Instrument Serif', serif; font-style: italic; }
-        .updated {
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-        }
-        h2 {
-            font-size: 1.25rem;
-            margin: 2.5rem 0 1rem;
-            color: var(--accent);
-        }
-        p { margin-bottom: 1rem; color: var(--text-secondary); }
-        ul { margin: 1rem 0 1rem 1.5rem; color: var(--text-secondary); }
-        li { margin-bottom: 0.5rem; }
-        a { color: var(--accent); }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 2rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-        }
-        .back-link:hover { color: var(--text-primary); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vilkår — Impromptu Analytics</title>
+  <meta name="description" content="Vilkår for bruk av impromptu.no: hva du kan gjøre med historiene, og hva vi står inne for.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="historier/motor/tokens.css">
+  <style>
+    .side-topp { text-align: center; padding: var(--rom-4) var(--rom-4) 0; }
+    .side-topp a {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .side-topp a:hover { text-decoration: underline; }
+
+    header {
+      text-align: center;
+      padding: var(--rom-5) var(--rom-4);
+      border-bottom: 3px double var(--gran);
+      max-width: var(--maal-bredde);
+      margin: 0 auto;
+    }
+    header h1 {
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--gran);
+      margin: .25em 0 .3em;
+    }
+    header p { max-width: 52ch; margin: 0 auto; color: var(--blekk-sekundaer); }
+
+    main {
+      max-width: var(--tekst-bredde);
+      margin: var(--rom-5) auto var(--rom-6);
+      padding: 0 var(--rom-4);
+    }
+    main h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--gran);
+      margin: var(--rom-5) 0 var(--rom-2);
+      text-align: center;
+    }
+    main p { color: var(--blekk); }
+    main p + p { margin-top: var(--rom-3); }
+    ul { padding-left: 1.3em; margin-top: var(--rom-2); }
+    li + li { margin-top: var(--rom-1); }
+
+    .kontakt {
+      text-align: center;
+      margin-top: var(--rom-5);
+      padding: var(--rom-5) var(--rom-4);
+    }
+
+    footer {
+      text-align: center;
+      padding: var(--rom-4) var(--rom-4) var(--rom-6);
+      color: var(--blekk-dempet);
+      font-size: .8rem;
+    }
+    footer a { color: var(--blekk-dempet); }
+    footer .skille { margin: 0 .6em; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-link">← Tilbake til forsiden</a>
-        
-        <h1>Vilkår for <span class="serif">bruk</span></h1>
-        <p class="updated">Sist oppdatert: Januar 2025</p>
-        
-        <p>Ved å bruke Impromptu Analytics («Tjenesten») aksepterer du disse vilkårene. Les dem nøye før du bruker tjenesten.</p>
-        
-        <h2>1. Om tjenesten</h2>
-        <p>Impromptu Analytics er en KI-drevet dataanalysetjeneste som lar brukere laste opp datasett og motta automatiserte analyser og innsikter.</p>
-        
-        <h2>2. Brukerkonto</h2>
-        <p>For å bruke betalte funksjoner må du opprette en konto. Du er ansvarlig for:</p>
-        <ul>
-            <li>Å oppgi korrekt informasjon</li>
-            <li>Å holde påloggingsinformasjon konfidensiell</li>
-            <li>All aktivitet som skjer under din konto</li>
-        </ul>
-        
-        <h2>3. Abonnementer og betaling</h2>
-        <p>Betalte abonnementer faktureres månedlig via Stripe. Ved å abonnere godtar du at:</p>
-        <ul>
-            <li>Betalinger trekkes automatisk hver måned</li>
-            <li>Du kan kansellere når som helst - abonnementet løper ut perioden</li>
-            <li>Ingen refusjon for delvise perioder</li>
-            <li>Priser kan endres med 30 dagers varsel</li>
-        </ul>
-        
-        <h2>4. Gratis plan</h2>
-        <p>Den gratis planen inkluderer et begrenset antall analyser per måned. Vi forbeholder oss retten til å endre eller fjerne gratis funksjoner.</p>
-        
-        <h2>5. Dine data</h2>
-        <p>Du beholder alle rettigheter til data du laster opp. Ved å bruke tjenesten gir du oss tillatelse til å:</p>
-        <ul>
-            <li>Behandle dataene dine for å utføre analysen</li>
-            <li>Sende dataene til våre KI-leverandører for analyse</li>
-        </ul>
-        <p>Vi lagrer ikke dine opplastede data permanent. Se vår <a href="personvern.html">personvernerklæring</a> for detaljer.</p>
-        
-        <h2>6. Tillatt bruk</h2>
-        <p>Du samtykker til å ikke:</p>
-        <ul>
-            <li>Bruke tjenesten til ulovlige formål</li>
-            <li>Laste opp data som inneholder personopplysninger uten lovlig grunnlag</li>
-            <li>Forsøke å omgå tekniske begrensninger</li>
-            <li>Videreselge eller dele kontotilgang</li>
-            <li>Bruke automatiserte verktøy for å belaste tjenesten</li>
-        </ul>
-        
-        <h2>7. Immaterielle rettigheter</h2>
-        <p>Tjenesten, inkludert design, kode og innhold, er beskyttet av opphavsrett og tilhører Impromptu Analytics. Du får en begrenset, ikke-eksklusiv lisens til å bruke tjenesten.</p>
-        
-        <h2>8. KI-generert innhold</h2>
-        <p>Analysene som genereres er KI-produsert og leveres «som de er». Vi garanterer ikke:</p>
-        <ul>
-            <li>Nøyaktigheten av analysene</li>
-            <li>At innsiktene er fullstendige eller feilfrie</li>
-            <li>At analysene er egnet for spesifikke formål</li>
-        </ul>
-        <p>Du er ansvarlig for å verifisere og validere alle analyseresultater før du handler på dem.</p>
-        
-        <h2>9. Ansvarsbegrensning</h2>
-        <p>I den grad loven tillater:</p>
-        <ul>
-            <li>Vi er ikke ansvarlige for indirekte tap eller følgeskader</li>
-            <li>Vårt maksimale ansvar er begrenset til beløpet du har betalt de siste 12 månedene</li>
-            <li>Vi garanterer ikke uavbrutt eller feilfri tjeneste</li>
-        </ul>
-        
-        <h2>10. Tilgjengelighet</h2>
-        <p>Vi tilstreber høy oppetid, men kan ikke garantere uavbrutt tilgang. Planlagt vedlikehold varsles i rimelig tid.</p>
-        
-        <h2>11. Endringer i vilkårene</h2>
-        <p>Vi kan endre disse vilkårene. Vesentlige endringer varsles 30 dager før de trer i kraft. Fortsatt bruk etter endringer innebærer aksept.</p>
-        
-        <h2>12. Oppsigelse</h2>
-        <p>Du kan når som helst avslutte din konto. Vi kan suspendere eller avslutte din tilgang ved brudd på vilkårene.</p>
-        
-        <h2>13. Lovvalg og tvister</h2>
-        <p>Disse vilkårene reguleres av norsk lov. Tvister skal søkes løst i minnelighet, dernest ved de alminnelige domstoler i Norge.</p>
-        
-        <h2>14. Kontakt</h2>
-        <p>Spørsmål om vilkårene? Kontakt oss på:<br>
-        E-post: kontakt@impromptu.no</p>
+  <div class="side-topp"><a href="./">← Til datahistoriene</a></div>
+
+  <header>
+    <div class="eyebrow">Impromptu Analytics</div>
+    <h1>Vilkår</h1>
+    <p>impromptu.no er gratis å lese og krever ingen konto. Dette er det du kan
+      regne med, og det vi ber om tilbake.</p>
+  </header>
+
+  <main>
+    <h2>Innholdet</h2>
+    <p>Datahistoriene bygger på offentlig tilgjengelige tall fra kilder som
+      Statistisk sentralbyrå, Brønnøysundregistrene, Nasjonalbiblioteket og
+      Stortinget. Kilden står oppgitt under hver historie, med dato for når
+      tallene ble hentet, og lenke til datasettet slik at du kan ettergå dem.</p>
+    <p>Vi gjør vårt beste for at tall og tolkninger er riktige, og retter feil
+      når vi finner dem eller får beskjed. Men historiene er journalistikk, ikke
+      offisiell statistikk: tallene kan være foreldet siden de ble hentet,
+      kildene kan ha rettet seg, og tolkningene er våre. Bruk kildene direkte
+      for beslutninger som krever oppdaterte eller autoritative tall.</p>
+
+    <h2>Bruk av historiene</h2>
+    <p>Tekst, figurer og utforming er laget av Impromptu Analytics. Du kan sitere
+      og lenke fritt, og gjengi figurer i ikke-kommersiell sammenheng, så lenge
+      impromptu.no og den opprinnelige datakilden oppgis. Ta kontakt for annen
+      bruk.</p>
+    <p>Tallene bak historiene tilhører kildene og er tilgjengelige på deres
+      egne vilkår, som regel en åpen lisens. De vilkårene gjelder uavhengig av
+      disse.</p>
+
+    <h2>Hva som ikke finnes her</h2>
+    <ul>
+      <li>Ingen brukerkonto, innlogging eller betaling.</li>
+      <li>Ingen opplasting av egne data.</li>
+      <li>Ingen informasjonskapsler eller sporing — se
+        <a href="personvern.html">personvernerklæringen</a>.</li>
+    </ul>
+
+    <h2>Oppdrag</h2>
+    <p>Konsulentoppdrag avtales særskilt og reguleres av den enkelte avtalen, ikke
+      av disse vilkårene. Se <a href="tjenester.html">tjenester</a>.</p>
+
+    <div class="kontakt kort-flate">
+      <div class="mono-etikett">Kontakt</div>
+      <p style="margin-top: var(--rom-2);"><a href="mailto:kontakt@impromptu.no">kontakt@impromptu.no</a></p>
+      <p class="mono-etikett" style="margin-top: var(--rom-3);">Sist oppdatert september 2026</p>
     </div>
+  </main>
+
+  <footer>
+    © 2026 Impromptu Analytics
+    <span class="skille">·</span><a href="tjenester.html">Tjenester</a>
+    <span class="skille">·</span><a href="personvern.html">Personvern</a>
+  </footer>
 </body>
 </html>

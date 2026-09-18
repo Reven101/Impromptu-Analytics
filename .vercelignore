@@ -1,0 +1,33 @@
+# Hva Vercel IKKE skal legge ut på impromptu.no.
+#
+# Repoet serveres statisk, fil for fil. Uten denne fila var alt her offentlig
+# nedlastbart — pipeline-scriptene, LLM-cachene på 14 MB, CLAUDE.md,
+# SIKKERHET.md (som navngir arbeidsgiverens sensitive mapper) og redaksjonens
+# egne notater ved siden av hver publisert sak. Ingenting av det var hemmelig,
+# men ingenting av det var ment for lesere heller.
+#
+# Nettstedet trenger bare: de fire HTML-sidene i roten, historier/historie.html,
+# historier/motor/ og per historie data.json + tekst.md, pluss manifest.json.
+# Samme syntaks som .gitignore. Sjekk etter deploy at
+# impromptu.no/pipeline/kontrakt.py gir 404, ikke 200.
+
+# Datalaget og verktøyene
+pipeline/
+api-atlas/
+
+# Prosjektfiler
+.github/
+.claude/
+.diagram-design
+.gitattributes
+.gitignore
+CLAUDE.md
+SIKKERHET.md
+README.md
+historier/README.md
+
+# Redaksjonelle notater per historie. tekst.md og data.json IKKE med her —
+# de er selve historien.
+historier/innhold/*/DATANOTAT.md
+historier/innhold/*/REDAKTORSJEKK.md
+historier/innhold/*/redaksjon.json

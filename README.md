@@ -86,6 +86,10 @@ byggesteg — filene serveres som de er.
 
 - `tjenester.html` — nøktern presentasjon av konsulentvirksomheten
   (Impromptu Analytics), lenket diskret fra footeren
-- `personvern.html` / `vilkar.html`
-- `api/analyze.js` — legacy fra et tidligere analyseprodukt; ikke i bruk
-  på nettstedet
+- `personvern.html` / `vilkar.html` — korte og sanne for et statisk nettsted:
+  ingen konto, ingen opplasting, ingen sporing
+
+Det skal ikke finnes noen `api/`-mappe i repoet. Vercel deployer alt under
+`api/` som serverless-funksjoner uten at noe må konfigureres, så en «legacy»-fil
+der er i drift fra første push. Den forrige (`api/analyze.js`, en proxy mot
+Anthropic) lå live på impromptu.no/api/analyze i over et år før den ble fjernet.

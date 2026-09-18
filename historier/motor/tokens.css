@@ -129,3 +129,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-radius: 999px;
   padding: 3px 12px;
 }
+
+/* Utkast-banner — vises kun når meta.utkast = true. Flagget holder historien
+   utenfor forsiden, men data.json ligger i samme mappe som de publiserte og
+   serveres like fullt. Den som har lenken, skal se at dette ikke er publisert. */
+.utkast-banner {
+  max-width: var(--maal-bredde);
+  margin: var(--rom-4) auto 0;
+  padding: var(--rom-3) var(--rom-4);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #7A4A12;
+  background: rgba(217, 164, 65, .18);
+  border: 1px solid var(--sennep);
+  border-radius: var(--radius);
+}

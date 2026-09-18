@@ -96,6 +96,13 @@ avvik. Den porten fanget en påstand som var blitt gal mellom to kjøringer.
 fortsatt som alle andre (den skal være publiserbar i det øyeblikket flagget fjernes), men den
 havner ikke på forsiden, og scriptet skriver ut hvilke historier som ble holdt utenfor.
 
+**Flagget skjuler, det sperrer ikke.** `data.json` ligger i samme mappe som de publiserte
+og serveres av Vercel like fullt, så `historie.html?id=<slug>` virker for alle som har
+lenken. Det er meningen — et utkast må kunne ses over i nettleseren — men `historie.js`
+legger derfor et «Utkast — ikke publisert»-banner øverst og setter `noindex`. Skal en
+historie faktisk bort fra nettet, må mappa ut av `historier/innhold/` (eller inn i
+`.vercelignore`).
+
 Tidligere fantes ingen slik mekanisme: eneste måte å holde tilbake på var å la være å commite
 manifestet, og da ble historien stille republisert neste gang noen kjørte scriptet av andre
 grunner. `tilskuddskontroll` («21 milliarder, 3 evalueringer») ble tatt ut på den måten
