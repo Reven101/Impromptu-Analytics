@@ -80,6 +80,19 @@ async function main() {
   const rot = document.getElementById("historie");
   rot.replaceChildren();
 
+  /* Utkast: bygg_manifest.py holder historien utenfor forsiden, men fila
+     serveres uansett, så alle med lenken kan åpne den. Det er ønsket (man må
+     kunne se over et utkast før det publiseres), men da skal det stå at det
+     er et utkast — og søkemotorer skal ikke indeksere det. */
+  if (meta.utkast) {
+    rot.appendChild(el("div", "utkast-banner",
+      "Utkast — ikke publisert. Tall og tekst kan endre seg før historien går på forsiden."));
+    const robots = document.createElement("meta");
+    robots.name = "robots";
+    robots.content = "noindex";
+    document.head.appendChild(robots);
+  }
+
   /* topptekst: eyebrow → tittel → ev. demodata-merke */
   const topp = el("header", "historie-topp");
   topp.appendChild(el("div", "eyebrow", `${meta.kilde} · ${meta.geografi}`));

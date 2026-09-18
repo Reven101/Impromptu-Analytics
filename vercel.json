@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    { "src": "^/pipeline(/.*)?$", "status": 404 },
+    { "src": "^/api-atlas(/.*)?$", "status": 404 },
+    { "src": "^/\\..*", "status": 404 },
+    { "src": "^/(CLAUDE|SIKKERHET|README)\\.md$", "status": 404 },
+    { "src": "^/vercel\\.json$", "status": 404 },
+    { "src": "^/historier/README\\.md$", "status": 404 },
+    { "src": "^/historier/innhold/[^/]+/(DATANOTAT|REDAKTORSJEKK)\\.md$", "status": 404 },
+    { "src": "^/historier/innhold/[^/]+/redaksjon\\.json$", "status": 404 },
+    { "handle": "filesystem" }
+  ]
+}
