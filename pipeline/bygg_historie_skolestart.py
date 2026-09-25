@@ -141,6 +141,7 @@ def main() -> None:
             eier[r["orgnr"]].add(r["eierform"])
     utd = {r["bydel"]: tall(r["andel_hoyere_utdanning"]) for r in les(SSB / "utdanning_bydel.csv")}
     utd_pers = {r["bydel"]: tall(r["personer_16_pluss"]) for r in les(SSB / "utdanning_bydel.csv")}
+    utd_aar = les(SSB / "utdanning_bydel.csv")[0]["aar"]
 
     # --- Kontroll: kjent nevner
     oslo_utd = sum(utd[b] * utd_pers[b] for b in utd) / sum(utd_pers.values())
@@ -306,15 +307,16 @@ def main() -> None:
                 "fotnote": ("Nasjonale prøver i regning og lesing ved starten av 8. klasse, offentlige skoler, "
                             "2023–2026. Ett skoleår = det elevene går fram fra 8. til 9. klasse."),
             },
-            "skolene": {
-                "type": "rangering",
-                "tittel": "Vestkanten samler seg på toppen. Østkanten sprer seg.",
-                "undertekst": ("Skoleår foran den svakeste offentlige ungdomsskolen i Oslo, målt i september "
-                               "i 8. klasse. Vestkantskolene er uthevet."),
+            "kart_skole": {
+                "type": "bydelskart",
+                "tittel": "Hvor langt foran er elevene når de begynner i åttende?",
+                "undertekst": (f"Skoleår foran {lavest}, snitt av bydelens offentlige ungdomsskoler, "
+                               "nasjonale prøver i regning og lesing 2023–2026"),
                 "enhet": "skoleår",
-                "fremhev": [s["navn"] for s in vest],
-                "rader": [{"navn": s["navn"], "verdi": aar_foran(s["np8"]),
-                           "detalj": f"{s['bydel']}, {s['omraade']}"} for s in skoler.values()],
+                "desimaler": 1,
+                "verdier": {b: round((x - bydsnitt[lavest]) / vekst, 2) for b, x in bydsnitt.items()},
+                "detalj": {b: f"{len(byd[b])} skoler; {komma(utd[b])} % av de voksne har høyere utdanning"
+                           for b in bydsnitt},
             },
             "spennet": {
                 "type": "rangering",
@@ -324,15 +326,13 @@ def main() -> None:
                 "rader": [{"navn": o[0].upper() + o[1:], "verdi": round(s["spenn_aar"], 1),
                            "detalj": f"{s['n']} skoler"} for o, s in stat.items() if s["n"] >= 3],
             },
-            "bydelene": {
-                "type": "rangering",
-                "tittel": "Skolene følger foreldrenes utdanning",
-                "undertekst": (f"Skoleår foran {lavest} ved starten av 8. klasse, snitt av bydelens offentlige "
-                               "ungdomsskoler. I parentes: andel voksne med høyere utdanning (SSB)."),
-                "enhet": "skoleår",
-                "rader": [{"navn": f"{b} ({round(utd[b])} %)", "verdi": round((x - bydsnitt[lavest]) / vekst, 2),
-                           "detalj": f"{len(byd[b])} skoler; {komma(utd[b])} % med høyere utdanning"}
-                          for b, x in bydsnitt.items()],
+            "kart_utdanning": {
+                "type": "bydelskart",
+                "tittel": "Andel voksne med høyere utdanning",
+                "undertekst": f"Personer 16 år og over, {utd_aar} (SSB, tabell 09434)",
+                "enhet": "prosent",
+                "desimaler": 0,
+                "verdier": {b: v for b, v in utd.items() if b != "Marka"},
             },
             "femte": {
                 "type": "kortgalleri",
@@ -385,6 +385,19 @@ def main() -> None:
         if mangler:
             raise SystemExit("tekst.md stemmer ikke med tallene. Finner ikke:\n  "
                              + "\n  ".join(f"{n}: «{t}»" for n, t in mangler.items()))
+    # Skolelista er bakgrunnsmateriale: den skal ikke publiseres (historien navngir
+    # ikke enkeltskoler), og den skal ikke i repoet, som er offentlig på GitHub.
+    liste = UDIR / "skolestart_skoleliste.csv"
+    with open(liste, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["skole", "bydel", "omraade", "np8_regning_lesing", "skoleaar_foran_svakeste",
+                    "elever_per_prove_2023_26", "loft_8_til_9", "orgnr"])
+        laveste = min(s_["np8"] for s_ in skoler.values())
+        for o, s_ in sorted(skoler.items(), key=lambda x: -x[1]["np8"]):
+            w.writerow([s_["navn"], s_["bydel"], s_["omraade"], round(s_["np8"], 2),
+                        round((s_["np8"] - laveste) / vekst, 2), int(s_["elever"]),
+                        None if s_["loft"] is None else round(s_["loft"], 2), o])
+
     ut = INNHOLD_DIR / SLUG
     ut.mkdir(parents=True, exist_ok=True)
     (ut / "data.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -399,6 +412,7 @@ def main() -> None:
           f"reell variasjon {reell_loft:.2f} (n={len(loft)})")
     print(f"Privatskoler utelatt: {', '.join(private)}")
     print("Tall teksten må inneholde:", *[f"  {n}: {t}" for n, t in tall_i_teksten.items()], sep="\n")
+    print(f"Bakgrunnsmateriale (ikke publisert): {liste}")
     print(f"✓ Skrev {ut / 'data.json'}. Husk: python pipeline/bygg_manifest.py")
 
 

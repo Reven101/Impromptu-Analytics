@@ -9,6 +9,7 @@
 
 import { escapeHtml } from "./markdown.js";
 import { VERDEN, VERDEN_VIEWBOX } from "./verdensgeometri.js";
+import { OSLO, OSLO_ETIKETT, OSLO_VIEWBOX } from "./oslogeometri.js";
 
 const nb = new Intl.NumberFormat("nb-NO");
 const SERIE_FARGER = ["#0E7D59", "#A9761B", "#B23A28", "#3E6CB0", "#C05A6E", "#8A4A82"];
@@ -547,6 +548,121 @@ function lagVerdenskart(spec, meta) {
 }
 
 /* ============================================================
+   4c. BYDELSKART — Oslos 15 bydeler (+ Sentrum) som ekte flater.
+
+   Geometrien er generert av pipeline/lag_oslogeometri.py og ligger
+   ferdig projisert i oslogeometri.js; her males den bare. Marka er
+   utelatt der, fordi den er større enn resten av byen.
+
+   `verdier` nøkles på bydelsnavn slik SSB og Oslo kommune skriver dem
+   («St. Hanshaugen», «Søndre Nordstrand»). Lineær skala: bydelstall
+   spenner sjelden over størrelsesordener, og legenden skriver ut hver
+   grense. Navn og verdi står direkte i flaten — fargen er aldri eneste
+   bærer av tallet — og tekstfargen velges etter flatens lyshet, som i
+   fylkeskartet. `detalj` (valgfri) gir én linje ekstra i tooltip og tabell.
+   ============================================================ */
+function lagBydelskart(spec, meta) {
+  const fig = figurRamme({ ...spec, undertekst: spec.undertekst || spec.enhet || meta.enhet });
+  const verdier = spec.verdier || {};
+  const enhet = spec.enhet || meta.enhet;
+  const tall = Object.values(verdier).filter((v) => typeof v === "number");
+  const min = Math.min(...tall), maks = Math.max(...tall);
+  const grenser = [];
+  for (let i = 1; i < RAMPE.length; i++) grenser.push(min + ((maks - min) * i) / RAMPE.length);
+  const trinn = (v) => {
+    let i = 0;
+    while (i < grenser.length && v >= grenser[i]) i++;
+    return i;
+  };
+  const des = spec.desimaler ?? 1;
+  const vis = (v) => new Intl.NumberFormat("nb-NO", { maximumFractionDigits: des, minimumFractionDigits: des }).format(v);
+
+  const ytre = el("div", "viz-kart-ytre");
+  const tooltip = lagTooltip(ytre);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", OSLO_VIEWBOX);
+  svg.setAttribute("class", "viz-verdenskart viz-bydelskart");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", spec.tittel || "Kart over Oslos bydeler");
+
+  const etiketter = [];
+  for (const [navn, d] of Object.entries(OSLO)) {
+    const v = verdier[navn];
+    const bane = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    bane.setAttribute("d", d);
+    bane.setAttribute("class", typeof v === "number" ? "viz-land" : "viz-land viz-land-tom");
+    bane.setAttribute("tabindex", "0");
+    bane.setAttribute("aria-label", typeof v === "number" ? `${navn}: ${vis(v)} ${enhet || ""}` : `${navn}: ingen data`);
+    if (typeof v === "number") bane.style.fill = RAMPE[trinn(v)];
+    const visT = (ev) => {
+      const rb = ytre.getBoundingClientRect();
+      const x = ev.clientX ? ev.clientX - rb.left : rb.width / 2;
+      const y = ev.clientY ? ev.clientY - rb.top : rb.height / 2;
+      tooltip.vis(x, y, [
+        { verdi: typeof v === "number" ? `${vis(v)} ${enhet || ""}` : "ingen data", etikett: navn },
+        ...(spec.detalj && spec.detalj[navn] ? [{ verdi: "", etikett: spec.detalj[navn] }] : []),
+      ]);
+    };
+    bane.addEventListener("pointerenter", visT);
+    bane.addEventListener("pointermove", visT);
+    bane.addEventListener("focus", visT);
+    bane.addEventListener("pointerleave", tooltip.skjul);
+    bane.addEventListener("blur", tooltip.skjul);
+    svg.appendChild(bane);
+    /* Sentrum er for lite til å bære tekst; tallet står i tooltip og tabell. */
+    if (typeof v === "number" && OSLO_ETIKETT[navn] && navn !== "Sentrum") {
+      etiketter.push([navn, v, OSLO_ETIKETT[navn], trinn(v)]);
+    }
+  }
+  /* Etikettene tegnes etter alle flatene, så ingen nabobydel legger seg over dem. */
+  for (const [navn, v, [x, y], t] of etiketter) {
+    const lys = t >= 3;   /* de tre mørkeste trinnene får lys tekst (kontrast ≥ 4.5:1) */
+    const tekst = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tekst.setAttribute("x", x);
+    tekst.setAttribute("y", y);
+    tekst.setAttribute("text-anchor", "middle");
+    tekst.setAttribute("class", "viz-bydel-etikett" + (lys ? " viz-bydel-etikett-lys" : ""));
+    const t1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    t1.setAttribute("x", x);
+    t1.textContent = navn;
+    const t2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    t2.setAttribute("x", x);
+    t2.setAttribute("dy", "1.2em");
+    t2.setAttribute("class", "viz-bydel-verdi");
+    t2.textContent = vis(v);
+    tekst.appendChild(t1);
+    tekst.appendChild(t2);
+    svg.appendChild(tekst);
+  }
+  ytre.appendChild(svg);
+
+  const legend = el("div", "viz-kart-legend viz-bydel-legend");
+  const trapp = el("div", "viz-kart-trapp");
+  const skala = el("span", "viz-kart-skala");
+  for (const farge of RAMPE) {
+    const s = el("span");
+    s.style.background = farge;
+    skala.appendChild(s);
+  }
+  trapp.appendChild(skala);
+  const merker = el("div", "viz-kart-merker");
+  for (const v of [min, ...grenser, maks]) merker.appendChild(el("span", "mono-etikett", vis(v)));
+  trapp.appendChild(merker);
+  legend.appendChild(trapp);
+  ytre.appendChild(legend);
+  fig.appendChild(ytre);
+
+  const harDetalj = spec.detalj && Object.keys(spec.detalj).length;
+  fig.appendChild(lagTabell(
+    harDetalj ? ["Bydel", enhet || "Verdi", "Merknad"] : ["Bydel", enhet || "Verdi"],
+    Object.entries(verdier)
+      .sort((a, b) => b[1] - a[1])
+      .map(([navn, v]) => (harDetalj ? [navn, vis(v), spec.detalj[navn] || "–"] : [navn, vis(v)]))
+  ));
+  return fig;
+}
+
+/* ============================================================
    5. KORTGALLERI — rutenett av fakta-kort.
    ============================================================ */
 function lagKortgalleri(spec) {
@@ -686,6 +802,7 @@ const REGISTER = {
   tidslinje: lagTidslinje,
   kart: lagKart,
   verdenskart: lagVerdenskart,
+  bydelskart: lagBydelskart,
   kortgalleri: lagKortgalleri,
   rangering: lagRangering,
 };

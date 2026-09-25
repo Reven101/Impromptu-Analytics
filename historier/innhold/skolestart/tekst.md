@@ -6,7 +6,7 @@ Kjære foreldre på vestkanten. Dere har fulgt med på skolevalget, lest anmelde
 
 Hver høst, noen uker etter at de har begynt i åttende klasse, tar elevene nasjonale prøver i regning og lesing. Prøvene måler hva elevene har med seg inn i ungdomsskolen: barneskolen, hjemmet, nabolaget. Vi har sett på resultatene for alle 53 offentlige ungdomsskoler i Oslo de tre siste årene, og regnet om forskjellene til skoleår. Fra åttende til niende klasse går de samme elevene fram om lag 3,8 skalapoeng. Det er ett skoleår.
 
-[[viz:skolene]]
+[[viz:kart_skole]]
 
 I ytre vest, i Vestre Aker, Nordre Aker og Ullern, ligger alle skolene øverst og tett i tett. Mellom den beste og den svakeste er det 0,5 skoleår. Skolene skiller seg litt, men lite: typisk 0,8 poeng fra snittet, der tilfeldigheter alene ville gitt 0,4 poeng. Hvilken skole barnet ditt går på, spiller liten rolle. Senk skuldrene.
 
@@ -20,7 +20,7 @@ Privatskolene er holdt utenfor. Wang Ung og Akademiet realfagsskole ligger helt 
 
 ## Det handler om foreldrene
 
-[[viz:bydelene]]
+[[viz:kart_utdanning]]
 
 Skolenes snitt følger bydelens utdanningsnivå tett. Korrelasjonen mellom andelen voksne med høyere utdanning og skolenes resultater ved skolestart er 0,85. I Stovner har 29,9 prosent av de voksne høyere utdanning, og elevene der starter lengst bak.
 

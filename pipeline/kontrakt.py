@@ -19,7 +19,7 @@ Enhver snapshot-fil (innhold/<slug>/data.json) skal ha denne formen:
       },
       "visninger": {
         "<viz-id>": {"type": "hero" | "tidslinje" | "kart" | "kortgalleri"
-                     | "verdenskart" | "rangering", ...}
+                     | "verdenskart" | "bydelskart" | "rangering", ...}
       }
     }
 
@@ -51,7 +51,7 @@ PAKREVDE_METAFELT = [
     "beskrivelse",
 ]
 
-GYLDIGE_VISNINGSTYPER = {"hero", "tidslinje", "kart", "verdenskart", "kortgalleri",
+GYLDIGE_VISNINGSTYPER = {"hero", "tidslinje", "kart", "verdenskart", "bydelskart", "kortgalleri",
                          "rangering"}
 
 INNHOLD_DIR = Path(__file__).resolve().parent.parent / "historier" / "innhold"
