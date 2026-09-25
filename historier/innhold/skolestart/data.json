@@ -1,0 +1,352 @@
+{
+ "meta": {
+  "tittel": "En gladmelding til foreldrene på vestkanten",
+  "kilde": "Utdanningsdirektoratet (nasjonale prøver); SSB (utdanningsnivå, tabell 09434)",
+  "kilde_url": "https://www.udir.no/tall-og-forskning/statistikk/statistikk-grunnskole/",
+  "dato_hentet": "2026-09-25",
+  "geografi": "Oslo, offentlige ungdomsskoler og bydeler",
+  "enhet": "skoleår",
+  "oppdateringsfrekvens": "årlig",
+  "beskrivelse": "I ytre vest skiller det 0,5 skoleår mellom beste og svakeste ungdomsskole. I ytre øst skiller det 2,7. Forskjellen er der før første skoledag — og ungdomsskolen tetter den ikke.",
+  "utkast": true
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Ungdomsskolene i Oslo",
+   "sporsmal": "Spiller det noen rolle hvilken ungdomsskole barnet går på?",
+   "rader": [
+    {
+     "etikett": "ytre vest",
+     "verdi": "0,5 skoleår",
+     "detalj": "mellom beste og svakeste skole"
+    },
+    {
+     "etikett": "ytre øst",
+     "verdi": "2,7 skoleår",
+     "detalj": "mellom beste og svakeste skole"
+    }
+   ],
+   "fotnote": "Nasjonale prøver i regning og lesing ved starten av 8. klasse, offentlige skoler, 2023–2026. Ett skoleår = det elevene går fram fra 8. til 9. klasse."
+  },
+  "kart_skole": {
+   "type": "bydelskart",
+   "tittel": "Hvor langt foran er elevene når de begynner i åttende?",
+   "undertekst": "Skoleår foran Stovner, snitt av bydelens offentlige ungdomsskoler, nasjonale prøver i regning og lesing 2023–2026",
+   "enhet": "skoleår",
+   "desimaler": 1,
+   "verdier": {
+    "Østensjø": 1.48,
+    "Grorud": 0.09,
+    "Søndre Nordstrand": 0.04,
+    "Ullern": 2.0,
+    "Nordstrand": 1.64,
+    "Alna": 0.17,
+    "Nordre Aker": 2.25,
+    "St. Hanshaugen": 1.92,
+    "Grünerløkka": 0.9,
+    "Gamle Oslo": 0.76,
+    "Stovner": 0.0,
+    "Vestre Aker": 2.41,
+    "Bjerke": 0.43,
+    "Frogner": 1.66,
+    "Sagene": 1.41
+   },
+   "detalj": {
+    "Østensjø": "7 skoler; 49,6 % av de voksne har høyere utdanning",
+    "Grorud": "3 skoler; 35,8 % av de voksne har høyere utdanning",
+    "Søndre Nordstrand": "4 skoler; 36,7 % av de voksne har høyere utdanning",
+    "Ullern": "2 skoler; 66,4 % av de voksne har høyere utdanning",
+    "Nordstrand": "6 skoler; 55,2 % av de voksne har høyere utdanning",
+    "Alna": "3 skoler; 36,8 % av de voksne har høyere utdanning",
+    "Nordre Aker": "3 skoler; 65,3 % av de voksne har høyere utdanning",
+    "St. Hanshaugen": "2 skoler; 68,1 % av de voksne har høyere utdanning",
+    "Grünerløkka": "3 skoler; 63,7 % av de voksne har høyere utdanning",
+    "Gamle Oslo": "2 skoler; 60,8 % av de voksne har høyere utdanning",
+    "Stovner": "5 skoler; 29,9 % av de voksne har høyere utdanning",
+    "Vestre Aker": "3 skoler; 66,8 % av de voksne har høyere utdanning",
+    "Bjerke": "4 skoler; 49,3 % av de voksne har høyere utdanning",
+    "Frogner": "3 skoler; 66,8 % av de voksne har høyere utdanning",
+    "Sagene": "3 skoler; 67,9 % av de voksne har høyere utdanning"
+   }
+  },
+  "spennet": {
+   "type": "rangering",
+   "tittel": "Hvor mye betyr skolen? Det kommer an på hvor du bor",
+   "undertekst": "Skoleår mellom beste og svakeste offentlige ungdomsskole i hvert område",
+   "enhet": "skoleår",
+   "rader": [
+    {
+     "navn": "Ytre øst",
+     "verdi": 2.7,
+     "detalj": "22 skoler"
+    },
+    {
+     "navn": "Sør",
+     "verdi": 2.2,
+     "detalj": "10 skoler"
+    },
+    {
+     "navn": "Ytre vest",
+     "verdi": 0.5,
+     "detalj": "8 skoler"
+    },
+    {
+     "navn": "Indre vest",
+     "verdi": 0.9,
+     "detalj": "5 skoler"
+    },
+    {
+     "navn": "Indre øst",
+     "verdi": 1.4,
+     "detalj": "8 skoler"
+    }
+   ]
+  },
+  "kart_utdanning": {
+   "type": "bydelskart",
+   "tittel": "Andel voksne med høyere utdanning",
+   "undertekst": "Personer 16 år og over, 2025 (SSB, tabell 09434)",
+   "enhet": "prosent",
+   "desimaler": 0,
+   "verdier": {
+    "Gamle Oslo": 60.8,
+    "Grünerløkka": 63.7,
+    "Sagene": 67.9,
+    "St. Hanshaugen": 68.1,
+    "Frogner": 66.8,
+    "Ullern": 66.4,
+    "Vestre Aker": 66.8,
+    "Nordre Aker": 65.3,
+    "Bjerke": 49.3,
+    "Grorud": 35.8,
+    "Stovner": 29.9,
+    "Alna": 36.8,
+    "Østensjø": 49.6,
+    "Nordstrand": 55.2,
+    "Søndre Nordstrand": 36.7,
+    "Sentrum": 59.3
+   }
+  },
+  "femte": {
+   "type": "kortgalleri",
+   "tittel": "Forskjellen er der allerede i femte klasse",
+   "undertekst": "Skalapoeng over eller under Oslo-snittet, offentlige skoler, regning og lesing",
+   "kort": [
+    {
+     "overtittel": "Ytre vest, 5. klasse",
+     "verdi": "+3,9",
+     "detalj": "23 barneskoler"
+    },
+    {
+     "overtittel": "Ytre vest, 8. klasse",
+     "verdi": "+4,4",
+     "detalj": "8 ungdomsskoler"
+    },
+    {
+     "overtittel": "Ytre øst, 5. klasse",
+     "verdi": "−2,1",
+     "detalj": "38 barneskoler"
+    },
+    {
+     "overtittel": "Ytre øst, 8. klasse",
+     "verdi": "−2,0",
+     "detalj": "22 ungdomsskoler"
+    }
+   ]
+  },
+  "femten_aar": {
+   "type": "tidslinje",
+   "tittel": "Østkanten har sprikt mer enn vestkanten i 19 av 19 år",
+   "undertekst": "Spredning i grunnskolepoeng mellom de samme offentlige ungdomsskolene (standardavvik, poeng). Vest = indre og ytre vest; øst = øst og sør.",
+   "enhet": "poeng",
+   "x_navn": "Skoleår (vår)",
+   "serier": [
+    {
+     "navn": "Øst og sør",
+     "punkter": [
+      [
+       2008,
+       2.26
+      ],
+      [
+       2009,
+       2.58
+      ],
+      [
+       2010,
+       2.18
+      ],
+      [
+       2011,
+       2.34
+      ],
+      [
+       2012,
+       2.43
+      ],
+      [
+       2013,
+       2.78
+      ],
+      [
+       2014,
+       2.62
+      ],
+      [
+       2015,
+       2.55
+      ],
+      [
+       2016,
+       2.68
+      ],
+      [
+       2017,
+       2.56
+      ],
+      [
+       2018,
+       2.43
+      ],
+      [
+       2019,
+       2.16
+      ],
+      [
+       2020,
+       2.15
+      ],
+      [
+       2021,
+       2.18
+      ],
+      [
+       2022,
+       2.33
+      ],
+      [
+       2023,
+       2.36
+      ],
+      [
+       2024,
+       2.89
+      ],
+      [
+       2025,
+       2.32
+      ],
+      [
+       2026,
+       2.59
+      ]
+     ]
+    },
+    {
+     "navn": "Vest",
+     "punkter": [
+      [
+       2008,
+       1.32
+      ],
+      [
+       2009,
+       1.47
+      ],
+      [
+       2010,
+       1.62
+      ],
+      [
+       2011,
+       1.1
+      ],
+      [
+       2012,
+       1.1
+      ],
+      [
+       2013,
+       1.45
+      ],
+      [
+       2014,
+       1.12
+      ],
+      [
+       2015,
+       1.28
+      ],
+      [
+       2016,
+       1.63
+      ],
+      [
+       2017,
+       1.8
+      ],
+      [
+       2018,
+       1.64
+      ],
+      [
+       2019,
+       1.64
+      ],
+      [
+       2020,
+       2.12
+      ],
+      [
+       2021,
+       1.71
+      ],
+      [
+       2022,
+       1.61
+      ],
+      [
+       2023,
+       1.73
+      ],
+      [
+       2024,
+       1.56
+      ],
+      [
+       2025,
+       1.59
+      ],
+      [
+       2026,
+       1.53
+      ]
+     ]
+    }
+   ]
+  },
+  "loftet": {
+   "type": "kortgalleri",
+   "tittel": "Ungdomsskolen løfter like mye overalt",
+   "undertekst": "Framgang fra 8. til 9. klasse for de samme elevene, utover landets, i skalapoeng",
+   "kort": [
+    {
+     "overtittel": "Skolene på vestkanten",
+     "verdi": "+0,26",
+     "detalj": "skalapoeng, snitt"
+    },
+    {
+     "overtittel": "Skolene på østkanten og i sør",
+     "verdi": "+0,15",
+     "detalj": "skalapoeng, snitt — forskjellen er innenfor tilfeldighetene (p = 0,59)"
+    },
+    {
+     "overtittel": "Forskjell mellom skolene",
+     "verdi": "Ingen målbar",
+     "detalj": "variasjonen er ikke større enn tilfeldigheter (53 skoler, tre kull)"
+    }
+   ]
+  }
+ }
+}

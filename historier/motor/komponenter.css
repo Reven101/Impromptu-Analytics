@@ -235,6 +235,19 @@
   transition: opacity .12s;
 }
 .viz-land-tom { fill: var(--papir); stroke: var(--linje); stroke-dasharray: 2 2; }
+/* Bydelskartet: 1000 enheter bredt, så strek og tekst er i viewBox-enheter.
+   Tykkere grense enn verdenskartet — her er det få, store flater. */
+.viz-bydelskart { max-width: 640px; margin: 0 auto; }
+.viz-bydelskart .viz-land { stroke: var(--kort); stroke-width: 2.5; }
+.viz-bydel-etikett {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 16px; letter-spacing: .01em; fill: var(--blekk);
+  pointer-events: none;
+}
+.viz-bydel-etikett .viz-bydel-verdi { font-family: var(--font-sans, "Jost", sans-serif); font-size: 24px; font-weight: 600; }
+.viz-bydel-etikett-lys { fill: var(--kort); }
+/* Desimaltall trenger bredere trinn enn verdenskartets heltall. */
+.viz-bydel-legend .viz-kart-skala span { width: 52px; }
 .viz-land:hover { opacity: .78; }
 .viz-kart-tom-nokkel { display: inline-flex; align-items: center; gap: var(--rom-1); margin-left: var(--rom-3); }
 .viz-kart-tom-rute {
