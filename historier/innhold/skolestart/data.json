@@ -1,0 +1,459 @@
+{
+ "meta": {
+  "tittel": "En gladmelding til foreldrene på vestkanten",
+  "kilde": "Utdanningsdirektoratet (nasjonale prøver); SSB (utdanningsnivå, tabell 09434)",
+  "kilde_url": "https://www.udir.no/tall-og-forskning/statistikk/statistikk-grunnskole/",
+  "dato_hentet": "2026-09-25",
+  "geografi": "Oslo, offentlige ungdomsskoler og bydeler",
+  "enhet": "skoleår",
+  "oppdateringsfrekvens": "årlig",
+  "beskrivelse": "I ytre vest skiller det 0,5 skoleår mellom beste og svakeste ungdomsskole. I ytre øst skiller det 2,7. Forskjellen er der før første skoledag — og ungdomsskolen tetter den ikke.",
+  "utkast": true
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Ungdomsskolene i Oslo",
+   "sporsmal": "Spiller det noen rolle hvilken ungdomsskole barnet går på?",
+   "rader": [
+    {
+     "etikett": "ytre vest",
+     "verdi": "0,5 skoleår",
+     "detalj": "mellom beste og svakeste skole"
+    },
+    {
+     "etikett": "ytre øst",
+     "verdi": "2,7 skoleår",
+     "detalj": "mellom beste og svakeste skole"
+    }
+   ],
+   "fotnote": "Nasjonale prøver i regning og lesing ved starten av 8. klasse, offentlige skoler, 2023–2026. Ett skoleår = det elevene går fram fra 8. til 9. klasse."
+  },
+  "skolene": {
+   "type": "rangering",
+   "tittel": "Vestkanten samler seg på toppen. Østkanten sprer seg.",
+   "undertekst": "Skoleår foran den svakeste offentlige ungdomsskolen i Oslo, målt i september i 8. klasse. Vestkantskolene er uthevet.",
+   "enhet": "skoleår",
+   "fremhev": [
+    "Bjørnsletta",
+    "Engebråten",
+    "Fagerborg",
+    "Hovseter",
+    "Majorstuen",
+    "Marienlyst",
+    "Midtstuen",
+    "Morellbakken",
+    "Nordberg",
+    "Ris",
+    "Ruseløkka",
+    "Uranienborg",
+    "Øraker"
+   ],
+   "rader": [
+    {
+     "navn": "Abildsø",
+     "verdi": 2.1,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Apalløkka",
+     "verdi": 1.09,
+     "detalj": "Grorud, ytre øst"
+    },
+    {
+     "navn": "Bjørnholt",
+     "verdi": 0.33,
+     "detalj": "Søndre Nordstrand, sør"
+    },
+    {
+     "navn": "Bjørnsletta",
+     "verdi": 2.58,
+     "detalj": "Ullern, ytre vest"
+    },
+    {
+     "navn": "Bjøråsen",
+     "verdi": 0.27,
+     "detalj": "Grorud, ytre øst"
+    },
+    {
+     "navn": "Brannfjell",
+     "verdi": 2.58,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Bøler",
+     "verdi": 2.66,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Ellingsrud",
+     "verdi": 0.78,
+     "detalj": "Alna, ytre øst"
+    },
+    {
+     "navn": "Engebråten",
+     "verdi": 2.81,
+     "detalj": "Nordre Aker, ytre vest"
+    },
+    {
+     "navn": "Fagerborg",
+     "verdi": 2.13,
+     "detalj": "St. Hanshaugen, indre vest"
+    },
+    {
+     "navn": "Frydenberg",
+     "verdi": 1.53,
+     "detalj": "Grünerløkka, indre øst"
+    },
+    {
+     "navn": "Fyrstikkalleen",
+     "verdi": 1.57,
+     "detalj": "Gamle Oslo, indre øst"
+    },
+    {
+     "navn": "Granstangen",
+     "verdi": 0.23,
+     "detalj": "Stovner, ytre øst"
+    },
+    {
+     "navn": "Groruddalen",
+     "verdi": 0.66,
+     "detalj": "Grorud, ytre øst"
+    },
+    {
+     "navn": "Haugenstua",
+     "verdi": 0.53,
+     "detalj": "Stovner, ytre øst"
+    },
+    {
+     "navn": "Haugerud",
+     "verdi": 0.7,
+     "detalj": "Alna, ytre øst"
+    },
+    {
+     "navn": "Hauketo",
+     "verdi": 0.8,
+     "detalj": "Søndre Nordstrand, sør"
+    },
+    {
+     "navn": "Holmlia",
+     "verdi": 0.79,
+     "detalj": "Søndre Nordstrand, sør"
+    },
+    {
+     "navn": "Hovseter",
+     "verdi": 2.83,
+     "detalj": "Vestre Aker, ytre vest"
+    },
+    {
+     "navn": "Høyenhall",
+     "verdi": 1.81,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Jordal",
+     "verdi": 1.12,
+     "detalj": "Gamle Oslo, indre øst"
+    },
+    {
+     "navn": "Karlsrud",
+     "verdi": 1.96,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Kastellet",
+     "verdi": 2.53,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Lambertseter",
+     "verdi": 1.21,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Lindeberg",
+     "verdi": 0.76,
+     "detalj": "Alna, ytre øst"
+    },
+    {
+     "navn": "Linderud",
+     "verdi": 0.0,
+     "detalj": "Bjerke, ytre øst"
+    },
+    {
+     "navn": "Lofsrud",
+     "verdi": 0.58,
+     "detalj": "Søndre Nordstrand, sør"
+    },
+    {
+     "navn": "Majorstuen",
+     "verdi": 2.39,
+     "detalj": "Frogner, indre vest"
+    },
+    {
+     "navn": "Manglerud",
+     "verdi": 2.07,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Marienlyst",
+     "verdi": 2.88,
+     "detalj": "St. Hanshaugen, indre vest"
+    },
+    {
+     "navn": "Midtstuen",
+     "verdi": 3.05,
+     "detalj": "Vestre Aker, ytre vest"
+    },
+    {
+     "navn": "Morellbakken",
+     "verdi": 2.66,
+     "detalj": "Nordre Aker, ytre vest"
+    },
+    {
+     "navn": "Nordberg",
+     "verdi": 3.01,
+     "detalj": "Nordre Aker, ytre vest"
+    },
+    {
+     "navn": "Nordpolen",
+     "verdi": 1.96,
+     "detalj": "Sagene, indre øst"
+    },
+    {
+     "navn": "Nordseter",
+     "verdi": 2.53,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Nordstrand",
+     "verdi": 2.48,
+     "detalj": "Nordstrand, sør"
+    },
+    {
+     "navn": "Oppsal",
+     "verdi": 2.28,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Ris",
+     "verdi": 3.09,
+     "detalj": "Vestre Aker, ytre vest"
+    },
+    {
+     "navn": "Rommen",
+     "verdi": 0.24,
+     "detalj": "Stovner, ytre øst"
+    },
+    {
+     "navn": "Ruseløkka",
+     "verdi": 2.4,
+     "detalj": "Frogner, indre vest"
+    },
+    {
+     "navn": "Sagene",
+     "verdi": 1.59,
+     "detalj": "Sagene, indre øst"
+    },
+    {
+     "navn": "Skullerud",
+     "verdi": 1.23,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Skøyenåsen",
+     "verdi": 2.29,
+     "detalj": "Østensjø, ytre øst"
+    },
+    {
+     "navn": "Sofienberg",
+     "verdi": 1.05,
+     "detalj": "Grünerløkka, indre øst"
+    },
+    {
+     "navn": "Stasjonsfjellet",
+     "verdi": 1.74,
+     "detalj": "Stovner, ytre øst"
+    },
+    {
+     "navn": "Teglverket",
+     "verdi": 1.86,
+     "detalj": "Grünerløkka, indre øst"
+    },
+    {
+     "navn": "Tokerud",
+     "verdi": 0.15,
+     "detalj": "Stovner, ytre øst"
+    },
+    {
+     "navn": "Uranienborg",
+     "verdi": 1.94,
+     "detalj": "Frogner, indre vest"
+    },
+    {
+     "navn": "Veitvet",
+     "verdi": 0.53,
+     "detalj": "Bjerke, ytre øst"
+    },
+    {
+     "navn": "Voldsløkka",
+     "verdi": 2.42,
+     "detalj": "Sagene, indre øst"
+    },
+    {
+     "navn": "Vollebekk",
+     "verdi": 1.45,
+     "detalj": "Bjerke, ytre øst"
+    },
+    {
+     "navn": "Øraker",
+     "verdi": 2.58,
+     "detalj": "Ullern, ytre vest"
+    },
+    {
+     "navn": "Årvoll",
+     "verdi": 2.06,
+     "detalj": "Bjerke, ytre øst"
+    }
+   ]
+  },
+  "spennet": {
+   "type": "rangering",
+   "tittel": "Hvor mye betyr skolen? Det kommer an på hvor du bor",
+   "undertekst": "Skoleår mellom beste og svakeste offentlige ungdomsskole i hvert område",
+   "enhet": "skoleår",
+   "rader": [
+    {
+     "navn": "Ytre øst",
+     "verdi": 2.7,
+     "detalj": "22 skoler"
+    },
+    {
+     "navn": "Sør",
+     "verdi": 2.2,
+     "detalj": "10 skoler"
+    },
+    {
+     "navn": "Ytre vest",
+     "verdi": 0.5,
+     "detalj": "8 skoler"
+    },
+    {
+     "navn": "Indre vest",
+     "verdi": 0.9,
+     "detalj": "5 skoler"
+    },
+    {
+     "navn": "Indre øst",
+     "verdi": 1.4,
+     "detalj": "8 skoler"
+    }
+   ]
+  },
+  "bydelene": {
+   "type": "rangering",
+   "tittel": "Skolene følger foreldrenes utdanning",
+   "undertekst": "Skoleår foran Stovner ved starten av 8. klasse, snitt av bydelens offentlige ungdomsskoler. I parentes: andel voksne med høyere utdanning (SSB).",
+   "enhet": "skoleår",
+   "rader": [
+    {
+     "navn": "Østensjø (50 %)",
+     "verdi": 1.48,
+     "detalj": "7 skoler; 49,6 % med høyere utdanning"
+    },
+    {
+     "navn": "Grorud (36 %)",
+     "verdi": 0.09,
+     "detalj": "3 skoler; 35,8 % med høyere utdanning"
+    },
+    {
+     "navn": "Søndre Nordstrand (37 %)",
+     "verdi": 0.04,
+     "detalj": "4 skoler; 36,7 % med høyere utdanning"
+    },
+    {
+     "navn": "Ullern (66 %)",
+     "verdi": 2.0,
+     "detalj": "2 skoler; 66,4 % med høyere utdanning"
+    },
+    {
+     "navn": "Nordstrand (55 %)",
+     "verdi": 1.64,
+     "detalj": "6 skoler; 55,2 % med høyere utdanning"
+    },
+    {
+     "navn": "Alna (37 %)",
+     "verdi": 0.17,
+     "detalj": "3 skoler; 36,8 % med høyere utdanning"
+    },
+    {
+     "navn": "Nordre Aker (65 %)",
+     "verdi": 2.25,
+     "detalj": "3 skoler; 65,3 % med høyere utdanning"
+    },
+    {
+     "navn": "St. Hanshaugen (68 %)",
+     "verdi": 1.92,
+     "detalj": "2 skoler; 68,1 % med høyere utdanning"
+    },
+    {
+     "navn": "Grünerløkka (64 %)",
+     "verdi": 0.9,
+     "detalj": "3 skoler; 63,7 % med høyere utdanning"
+    },
+    {
+     "navn": "Gamle Oslo (61 %)",
+     "verdi": 0.76,
+     "detalj": "2 skoler; 60,8 % med høyere utdanning"
+    },
+    {
+     "navn": "Stovner (30 %)",
+     "verdi": 0.0,
+     "detalj": "5 skoler; 29,9 % med høyere utdanning"
+    },
+    {
+     "navn": "Vestre Aker (67 %)",
+     "verdi": 2.41,
+     "detalj": "3 skoler; 66,8 % med høyere utdanning"
+    },
+    {
+     "navn": "Bjerke (49 %)",
+     "verdi": 0.43,
+     "detalj": "4 skoler; 49,3 % med høyere utdanning"
+    },
+    {
+     "navn": "Frogner (67 %)",
+     "verdi": 1.66,
+     "detalj": "3 skoler; 66,8 % med høyere utdanning"
+    },
+    {
+     "navn": "Sagene (68 %)",
+     "verdi": 1.41,
+     "detalj": "3 skoler; 67,9 % med høyere utdanning"
+    }
+   ]
+  },
+  "loftet": {
+   "type": "kortgalleri",
+   "tittel": "Ungdomsskolen løfter like mye overalt",
+   "undertekst": "Framgang fra 8. til 9. klasse for de samme elevene, utover landets, i skalapoeng",
+   "kort": [
+    {
+     "overtittel": "Skolene på vestkanten",
+     "verdi": "+0,26",
+     "detalj": "skalapoeng, snitt"
+    },
+    {
+     "overtittel": "Skolene på østkanten og i sør",
+     "verdi": "+0,15",
+     "detalj": "skalapoeng, snitt — forskjellen er innenfor tilfeldighetene (p = 0,59)"
+    },
+    {
+     "overtittel": "Forskjell mellom skolene",
+     "verdi": "Ingen målbar",
+     "detalj": "variasjonen er ikke større enn tilfeldigheter (53 skoler, tre kull)"
+    }
+   ]
+  }
+ }
+}
