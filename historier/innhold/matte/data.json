@@ -1,0 +1,533 @@
+{
+ "meta": {
+  "tittel": "Like gode i matte, ulike valg",
+  "kilde": "Utdanningsdirektoratet, Statistikkbanken",
+  "kilde_url": "https://www.udir.no/tall-og-forskning/statistikk/",
+  "dato_hentet": "2026-09-25",
+  "geografi": "Oslo og hele landet",
+  "enhet": "prosent",
+  "oppdateringsfrekvens": "årlig",
+  "beskrivelse": "Jentene og guttene i Oslo får samme karakter på matteeksamen i 10. klasse. Året etter velger 41,4 prosent av jentene teoretisk matte, mot 52,4 prosent av guttene.",
+  "utkast": true
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Matematikk i Oslo",
+   "sporsmal": "Hvem velger teoretisk matte — når alle er like gode?",
+   "rader": [
+    {
+     "etikett": "jenter og gutter, matteeksamen 10. trinn",
+     "verdi": "4,0 / 3,9",
+     "detalj": "Oslo 2024-25, snittkarakter"
+    },
+    {
+     "etikett": "av jentene velger teoretisk matte",
+     "verdi": "41,4 %",
+     "detalj": "Oslo 2024-25, 1T av 1T + 1P"
+    },
+    {
+     "etikett": "av guttene",
+     "verdi": "52,4 %",
+     "detalj": "samme år, samme byen"
+    }
+   ],
+   "fotnote": "Studieforberedende utdanningsprogram, vg1."
+  },
+  "eksamen_10": {
+   "type": "tidslinje",
+   "tittel": "Oslo ligger 0,4 karakterpoeng over landet i matte",
+   "undertekst": "Skriftlig eksamen i matematikk, 10. trinn, snittkarakter. Eksamen avlyst 2020–2022; linjene trekkes over hullet.",
+   "enhet": "karakter",
+   "x_navn": "Skoleår (vår)",
+   "serier": [
+    {
+     "navn": "Hele landet",
+     "punkter": [
+      [
+       2016,
+       3.3
+      ],
+      [
+       2017,
+       3.4
+      ],
+      [
+       2018,
+       3.6
+      ],
+      [
+       2019,
+       3.6
+      ],
+      [
+       2023,
+       3.5
+      ],
+      [
+       2024,
+       3.3
+      ],
+      [
+       2025,
+       3.5
+      ],
+      [
+       2026,
+       3.5
+      ]
+     ]
+    },
+    {
+     "navn": "Oslo",
+     "punkter": [
+      [
+       2016,
+       3.5
+      ],
+      [
+       2017,
+       3.7
+      ],
+      [
+       2018,
+       4.0
+      ],
+      [
+       2019,
+       3.9
+      ],
+      [
+       2023,
+       3.8
+      ],
+      [
+       2024,
+       3.8
+      ],
+      [
+       2025,
+       3.9
+      ],
+      [
+       2026,
+       4.0
+      ]
+     ]
+    }
+   ]
+  },
+  "tre_malinger": {
+   "type": "kortgalleri",
+   "tittel": "Tre målinger, tre svar",
+   "undertekst": "Gutter og jenter i Oslo, matematikk",
+   "kort": [
+    {
+     "overtittel": "Nasjonale prøver i regning, 9. trinn",
+     "verdi": "Gutter +3,2",
+     "detalj": "skalapoeng, snitt 2022–26 (lesing: jenter +2,5)"
+    },
+    {
+     "overtittel": "Skriftlig eksamen, 10. trinn",
+     "verdi": "4,0 / 3,9",
+     "detalj": "jenter / gutter, 2024-25"
+    },
+    {
+     "overtittel": "Standpunkt, 10. trinn",
+     "verdi": "3,9 / 3,8",
+     "detalj": "jenter / gutter, 2024-25"
+    }
+   ]
+  },
+  "valget": {
+   "type": "tidslinje",
+   "tittel": "Jentene velger bort teoretisk matte",
+   "undertekst": "Andel som tar 1T av alle som tar 1T eller 1P, studieforberedende vg1",
+   "enhet": "prosent",
+   "x_navn": "Skoleår (vår)",
+   "serier": [
+    {
+     "navn": "Gutter, landet",
+     "punkter": [
+      [
+       2014,
+       53.2
+      ],
+      [
+       2015,
+       51.8
+      ],
+      [
+       2016,
+       49.5
+      ],
+      [
+       2017,
+       45.1
+      ],
+      [
+       2018,
+       45.9
+      ],
+      [
+       2019,
+       46.0
+      ],
+      [
+       2020,
+       46.8
+      ],
+      [
+       2021,
+       49.0
+      ],
+      [
+       2022,
+       48.2
+      ],
+      [
+       2023,
+       48.3
+      ],
+      [
+       2024,
+       48.0
+      ],
+      [
+       2025,
+       48.1
+      ]
+     ]
+    },
+    {
+     "navn": "Jenter, landet",
+     "punkter": [
+      [
+       2014,
+       43.4
+      ],
+      [
+       2015,
+       42.7
+      ],
+      [
+       2016,
+       41.5
+      ],
+      [
+       2017,
+       40.6
+      ],
+      [
+       2018,
+       40.4
+      ],
+      [
+       2019,
+       40.6
+      ],
+      [
+       2020,
+       41.1
+      ],
+      [
+       2021,
+       40.6
+      ],
+      [
+       2022,
+       39.9
+      ],
+      [
+       2023,
+       38.9
+      ],
+      [
+       2024,
+       37.0
+      ],
+      [
+       2025,
+       37.0
+      ]
+     ]
+    },
+    {
+     "navn": "Gutter, Oslo",
+     "punkter": [
+      [
+       2014,
+       55.9
+      ],
+      [
+       2015,
+       51.6
+      ],
+      [
+       2016,
+       49.9
+      ],
+      [
+       2017,
+       53.3
+      ],
+      [
+       2018,
+       49.6
+      ],
+      [
+       2019,
+       50.0
+      ],
+      [
+       2020,
+       49.4
+      ],
+      [
+       2021,
+       58.6
+      ],
+      [
+       2022,
+       53.8
+      ],
+      [
+       2023,
+       50.7
+      ],
+      [
+       2024,
+       53.0
+      ],
+      [
+       2025,
+       52.4
+      ]
+     ]
+    },
+    {
+     "navn": "Jenter, Oslo",
+     "punkter": [
+      [
+       2014,
+       47.7
+      ],
+      [
+       2015,
+       47.1
+      ],
+      [
+       2016,
+       45.2
+      ],
+      [
+       2017,
+       44.6
+      ],
+      [
+       2018,
+       44.2
+      ],
+      [
+       2019,
+       46.6
+      ],
+      [
+       2020,
+       44.0
+      ],
+      [
+       2021,
+       46.8
+      ],
+      [
+       2022,
+       43.0
+      ],
+      [
+       2023,
+       42.3
+      ],
+      [
+       2024,
+       38.6
+      ],
+      [
+       2025,
+       41.4
+      ]
+     ]
+    }
+   ]
+  },
+  "skolene": {
+   "type": "rangering",
+   "tittel": "Fra 4 til 76 prosent: skolene i Oslo",
+   "undertekst": "Andel som tar 1T av 1T + 1P, skoleårene 2023–2025, skoler med minst 100 elever",
+   "enhet": "prosent",
+   "rader": [
+    {
+     "navn": "Nydalen",
+     "verdi": 75.5,
+     "detalj": "277 av 367 elever"
+    },
+    {
+     "navn": "Oslo katedralskole",
+     "verdi": 71.6,
+     "detalj": "272 av 380 elever"
+    },
+    {
+     "navn": "Ullern",
+     "verdi": 68.7,
+     "detalj": "395 av 575 elever"
+    },
+    {
+     "navn": "Oslo private gymnasium",
+     "verdi": 66.7,
+     "detalj": "90 av 135 elever"
+    },
+    {
+     "navn": "Foss",
+     "verdi": 63.9,
+     "detalj": "381 av 596 elever"
+    },
+    {
+     "navn": "Elvebakken",
+     "verdi": 63.3,
+     "detalj": "472 av 746 elever"
+    },
+    {
+     "navn": "Kuben",
+     "verdi": 53.2,
+     "detalj": "263 av 494 elever"
+    },
+    {
+     "navn": "Valle Hovin",
+     "verdi": 53.1,
+     "detalj": "206 av 388 elever"
+    },
+    {
+     "navn": "Kristelig gymnasium",
+     "verdi": 52.4,
+     "detalj": "185 av 353 elever"
+    },
+    {
+     "navn": "Wang",
+     "verdi": 52.0,
+     "detalj": "216 av 415 elever"
+    },
+    {
+     "navn": "Blindern",
+     "verdi": 48.8,
+     "detalj": "257 av 527 elever"
+    },
+    {
+     "navn": "Edvard Munch",
+     "verdi": 46.6,
+     "detalj": "305 av 655 elever"
+    },
+    {
+     "navn": "Vika",
+     "verdi": 46.0,
+     "detalj": "192 av 417 elever"
+    },
+    {
+     "navn": "Oslo Handelsgymnasium",
+     "verdi": 41.5,
+     "detalj": "228 av 550 elever"
+    },
+    {
+     "navn": "Kongshavn",
+     "verdi": 38.5,
+     "detalj": "144 av 374 elever"
+    },
+    {
+     "navn": "Fyrstikkalleen skole",
+     "verdi": 36.9,
+     "detalj": "154 av 417 elever"
+    },
+    {
+     "navn": "Lambertseter",
+     "verdi": 34.4,
+     "detalj": "208 av 604 elever"
+    },
+    {
+     "navn": "Persbråten",
+     "verdi": 33.7,
+     "detalj": "123 av 365 elever"
+    },
+    {
+     "navn": "Bjerke",
+     "verdi": 31.3,
+     "detalj": "178 av 568 elever"
+    },
+    {
+     "navn": "Akademiet Oslo",
+     "verdi": 28.3,
+     "detalj": "89 av 315 elever"
+    },
+    {
+     "navn": "Hellerud",
+     "verdi": 27.9,
+     "detalj": "83 av 297 elever"
+    },
+    {
+     "navn": "Hartvig Nissens skole",
+     "verdi": 26.8,
+     "detalj": "125 av 467 elever"
+    },
+    {
+     "navn": "Heltberg private gymnas",
+     "verdi": 25.5,
+     "detalj": "28 av 110 elever"
+    },
+    {
+     "navn": "Stovner",
+     "verdi": 24.3,
+     "detalj": "42 av 173 elever"
+    },
+    {
+     "navn": "Bjørnholt",
+     "verdi": 23.1,
+     "detalj": "28 av 121 elever"
+    },
+    {
+     "navn": "Hersleb",
+     "verdi": 21.9,
+     "detalj": "43 av 196 elever"
+    },
+    {
+     "navn": "Otto Treider private gymnas",
+     "verdi": 17.5,
+     "detalj": "31 av 177 elever"
+    },
+    {
+     "navn": "Ulsrud",
+     "verdi": 4.0,
+     "detalj": "7 av 177 elever"
+    }
+   ]
+  },
+  "lekkasjen": {
+   "type": "rangering",
+   "tittel": "Jentene forsvinner på veien",
+   "undertekst": "Jentenes andel av elevene i hvert mattekurs, hele landet 2024-25",
+   "enhet": "prosent",
+   "sorter": false,
+   "rader": [
+    {
+     "navn": "1T (vg1)",
+     "verdi": 49.2
+    },
+    {
+     "navn": "R1 (vg2)",
+     "verdi": 46.4
+    },
+    {
+     "navn": "R2 (vg3)",
+     "verdi": 38.5
+    }
+   ]
+  }
+ }
+}
