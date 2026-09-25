@@ -503,6 +503,35 @@
     }
    ]
   },
+  "toppen": {
+   "type": "rangering",
+   "tittel": "Guttenes forsprang på toppen krymper fra 11 til 3 prosentpoeng",
+   "undertekst": "Oslo, samme kull. Nasjonal prøve i regning i 9. klasse: andel på høyeste mestringsnivå. Matteeksamen i 10. klasse: andel med 5 eller 6.",
+   "enhet": "prosent",
+   "sorter": false,
+   "fremhev": [
+    "Jenter, nasjonal prøve",
+    "Jenter, eksamen"
+   ],
+   "rader": [
+    {
+     "navn": "Gutter, nasjonal prøve",
+     "verdi": 31.2
+    },
+    {
+     "navn": "Jenter, nasjonal prøve",
+     "verdi": 20.5
+    },
+    {
+     "navn": "Gutter, eksamen",
+     "verdi": 38.5
+    },
+    {
+     "navn": "Jenter, eksamen",
+     "verdi": 35.3
+    }
+   ]
+  },
   "lekkasjen": {
    "type": "rangering",
    "tittel": "Jentene forsvinner på veien",

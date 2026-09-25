@@ -20,6 +20,22 @@ På nasjonale prøver i regning i niende klasse leder guttene i Oslo med 3,2 ska
 
 Det er ikke noe i disse tallene som tilsier at jentene burde holde seg unna matte.
 
+## Prøven guttene vinner
+
+Det er verdt å stoppe ved det som skjer mellom niende og tiende. Vi har fulgt de samme kullene fra nasjonale prøver i åttende og niende klasse til eksamen i tiende.
+
+På prøvene i regning leder guttene i Oslo med 3,0 skalapoeng i åttende og 3,7 i niende. Forspranget krymper ikke på veien, det vokser litt. Så, på eksamen året etter, er det nesten borte.
+
+[[viz:toppen]]
+
+Forskjellen sitter i toppen. På den nasjonale prøven i niende når 31 prosent av guttene og 20 prosent av jentene det høyeste mestringsnivået. På eksamen året etter får 38 og 35 prosent karakteren 5 eller 6.
+
+Det er ikke fordi andre elever stiller til eksamen. Hvem som kommer opp i matte, avgjøres ved trekk. Guttene får litt oftere fritak fra de nasjonale prøvene, i snitt 1,0 prosentpoeng mer enn jentene i regning, men det er for lite til å forklare forskjellen, og det gjelder lesing minst like mye.
+
+Det er heller ikke noe særegent for matte. I lesing leder jentene på de nasjonale prøvene, og på norskeksamen er forspranget deres, regnet om til samme skala, 1,4 ganger så stort. Jentene gjør det relativt bedre på eksamen enn på prøvene i begge fag.
+
+Hva det skyldes, kan ikke disse tallene avgjøre. Prøvene er digitale, korte og har tidspress; eksamen er en lang dag med utregninger og forklaringer. Prøvene teller ikke for eleven, eksamen gjør det. Og tiende klasse øver mot eksamen. Men det betyr at påstanden om at gutter er bedre i regning, hviler på én bestemt måling. På målingen som teller for elevene, er forskjellen nesten borte.
+
 ## Valget
 
 [[viz:valget]]

@@ -106,10 +106,80 @@ def kursantall(rader: list[dict]) -> dict:
     return ut
 
 
+# -------------------------------------------- prøven mot eksamen
+
+KULL = [("2022-23", "2023-24", "2024-25"), ("2023-24", "2024-25", "2025-26"),
+        ("2024-25", "2025-26", None)]   # (8. trinn, 9. trinn, eksamen 10. trinn) for samme kull
+
+
+def proven_mot_eksamen(np_rader: list[dict], eks_rader: list[dict]) -> dict:
+    """Følger kullene fra nasjonale prøver i 8. og 9. trinn til eksamen i 10.
+
+    Forskjellene regnes om til standardavvik så prøvene (sd 10 skalapoeng per
+    konstruksjon) og eksamen (sd fra karakterfordelingen) kan sammenlignes.
+    Udir oppgir skalapoeng per kjønn i hele tall, så hver måling er grov (0,1 sd);
+    derfor snitt over kull.
+    """
+    npv: dict = {}
+    for r in np_rader:
+        if r["nivaa"] != "skole" and r["kjonn"] in ("Gutt", "Jente") and r["skalapoeng"]:
+            npv[(r["navn"], r["prove"], r["trinn"][:2].strip("."), r["skoleaar"], r["kjonn"])] = r
+    eks: dict = {}
+    for r in eks_rader:
+        if r["kjonn"] in ("Gutt", "Jente"):
+            eks[(r["navn"], r["fag_kode"], r["skoleaar"], r["kjonn"])] = r
+
+    def fordeling(r):
+        p = [tall(r[f"k{i}_pst"]) or 0 for i in range(1, 7)]
+        m = sum((i + 1) * x for i, x in enumerate(p)) / sum(p)
+        return m, (sum(x * ((i + 1) - m) ** 2 for i, x in enumerate(p)) / sum(p)) ** 0.5
+
+    def gutt_foran_np(navn, prove, trinn, aar):          # i skalapoeng
+        g, j = npv.get((navn, prove, trinn, aar, "Gutt")), npv.get((navn, prove, trinn, aar, "Jente"))
+        return None if not g or not j else tall(g["skalapoeng"]) - tall(j["skalapoeng"])
+
+    def jente_foran_eks_sd(navn, fag, aar):
+        g, j = eks.get((navn, fag, aar, "Gutt")), eks.get((navn, fag, aar, "Jente"))
+        if not g or not j:
+            return None
+        (mg, sg), (mj, sj) = fordeling(g), fordeling(j)
+        return (mj - mg) / ((sg ** 2 + sj ** 2) / 2) ** 0.5
+
+    ut = {}
+    for navn in ("Hele landet", "Oslo"):
+        for prove, fag in (("Regning", "MAT0015"), ("Lesing", "NOR0218")):
+            np8 = [gutt_foran_np(navn, prove, "8", a8) for a8, _, _ in KULL]
+            np9 = [gutt_foran_np(navn, prove, "9", a9) for _, a9, _ in KULL]
+            par = [(-gutt_foran_np(navn, prove, "9", a9) / 10, jente_foran_eks_sd(navn, fag, e))
+                   for _, a9, e in KULL if e and gutt_foran_np(navn, prove, "9", a9) is not None]
+            ut[(navn, prove)] = {
+                "np8": statistics.fmean(x for x in np8 if x is not None),
+                "np9": statistics.fmean(x for x in np9 if x is not None),
+                "np9_sd_jente": statistics.fmean(a for a, _ in par),
+                "eks_sd_jente": statistics.fmean(b for _, b in par),
+                "kull": len(par),
+            }
+    # Toppen og fritak, Oslo: nasjonale prøver 9. trinn mot eksamen for samme kull
+    def snitt_np(maal, kj, prove="Regning"):
+        return statistics.fmean(tall(npv[("Oslo", prove, "9", a9, kj)][maal]) for _, a9, e in KULL if e)
+    def topp_eks(kj):
+        return statistics.fmean((tall(eks[("Oslo", "MAT0015", e, kj)]["k5_pst"]) or 0)
+                                + (tall(eks[("Oslo", "MAT0015", e, kj)]["k6_pst"]) or 0) for _, _, e in KULL if e)
+    ut["topp"] = {kj: {"np": snitt_np("nivaa5_pst", kj), "eks": topp_eks(kj)} for kj in ("Gutt", "Jente")}
+    ut["fritak"] = {prove: snitt_np("fritatt_pst", "Gutt", prove) - snitt_np("fritatt_pst", "Jente", prove)
+                    for prove in ("Regning", "Lesing")}
+    return ut
+
+
 def main() -> None:
     e10 = eksamen_10(les("ungdomsskole_oslo_karakterer.csv"))
     np_rader = les("matte_oslo_np.csv")
     gap_np, niva_np = np_gap(np_rader)
+    pe = proven_mot_eksamen(np_rader, les("matte_oslo_eksamensfordeling.csv"))
+    reg_o, les_o = pe[("Oslo", "Regning")], pe[("Oslo", "Lesing")]
+    if not (reg_o["np9"] > 0 and abs(reg_o["eks_sd_jente"]) < 0.15):
+        raise SystemExit(f"Mønsteret har endret seg (regning Oslo: {reg_o}) — skriv seksjonen om før du bygger.")
+    norsk_ganger = les_o["eks_sd_jente"] / les_o["np9_sd_jente"]
     vgs_rader = les("matte_oslo_vgs_matte.csv")
     k = kursantall(vgs_rader)
     navn_skole = {r["orgnr"]: r["navn"] for r in vgs_rader if r["nivaa"] == "skole"}
@@ -181,6 +251,12 @@ def main() -> None:
         "forsprang": f"{komma(oslo_forsprang)} karakterpoeng",
         "lop": f"{komma(lop['1T'])}, {komma(lop['R1'])} og {komma(lop['R2'])} prosent",
         "s1": f"fra {int(s1_topp):,} til {int(s1_na):,}".replace(",", " "),
+        "np8": f"{komma(reg_o['np8'])} skalapoeng i åttende",
+        "np9": f"{komma(reg_o['np9'])} i niende",
+        "topp_np": f"{round(pe['topp']['Gutt']['np'])} prosent av guttene og {round(pe['topp']['Jente']['np'])} prosent av jentene",
+        "topp_eks": f"{round(pe['topp']['Gutt']['eks'])} og {round(pe['topp']['Jente']['eks'])} prosent",
+        "fritak": f"{komma(pe['fritak']['Regning'])} prosentpoeng",
+        "norsk": f"{komma(norsk_ganger)} ganger så stort",
     }
 
     data = {
@@ -253,6 +329,23 @@ def main() -> None:
                 "enhet": "prosent",
                 "rader": skoler,
             },
+            "toppen": {
+                "type": "rangering",
+                "tittel": (f"Guttenes forsprang på toppen krymper fra "
+                           f"{round(pe['topp']['Gutt']['np'] - pe['topp']['Jente']['np'])} til "
+                           f"{round(pe['topp']['Gutt']['eks'] - pe['topp']['Jente']['eks'])} prosentpoeng"),
+                "undertekst": ("Oslo, samme kull. Nasjonal prøve i regning i 9. klasse: andel på høyeste "
+                               "mestringsnivå. Matteeksamen i 10. klasse: andel med 5 eller 6."),
+                "enhet": "prosent",
+                "sorter": False,
+                "fremhev": ["Jenter, nasjonal prøve", "Jenter, eksamen"],
+                "rader": [
+                    {"navn": "Gutter, nasjonal prøve", "verdi": round(pe["topp"]["Gutt"]["np"], 1)},
+                    {"navn": "Jenter, nasjonal prøve", "verdi": round(pe["topp"]["Jente"]["np"], 1)},
+                    {"navn": "Gutter, eksamen", "verdi": round(pe["topp"]["Gutt"]["eks"], 1)},
+                    {"navn": "Jenter, eksamen", "verdi": round(pe["topp"]["Jente"]["eks"], 1)},
+                ],
+            },
             "lekkasjen": {
                 "type": "rangering",
                 "tittel": "Jentene forsvinner på veien",
@@ -282,6 +375,7 @@ def main() -> None:
     ut = INNHOLD_DIR / SLUG
     ut.mkdir(parents=True, exist_ok=True)
     (ut / "data.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Prøven mot eksamen: {pe}")
     print("Tall teksten må inneholde:", *[f"  {n}: {v}" for n, v in tall_i_teksten.items()], sep="\n")
     print(f"Skoler: {len(skoler)}, fra {lav} til {hoy} %")
     print(f"✓ Skrev {ut / 'data.json'}. Husk: python pipeline/bygg_manifest.py")

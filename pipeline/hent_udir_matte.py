@@ -14,7 +14,10 @@ Tabeller, for hele landet, Oslo og hver Oslo-skole, splittet på kjønn:
                 matematikk på studieforberedende: 1P/1T (vg1) og R1, R2, S1, S2,
                 alle læreplankoder, 2007-08 →
     np          nasjonale prøver 8. og 9. trinn i regning, lesing og engelsk:
-                skalapoeng, usikkerhet og antall elever, 2022-23 →
+                skalapoeng, usikkerhet, antall elever, mestringsnivåfordeling og
+                andel fritatt / ikke deltatt, 2022-23 →
+    eksamensfordeling  karakterfordeling på skriftlig eksamen i matte og norsk,
+                10. trinn, land og Oslo, etter kjønn, 2022-23 →
 
 Antall elever i STANDPUNKT er antall som tok faget. Det er grunnlaget for å
 regne ut hvor mange som velger teoretisk matte (1T) framfor praktisk (1P).
@@ -84,8 +87,8 @@ def hent_np() -> list[dict]:
     for aar in fv["SkoleAarID"]:
         filtre = {**side["filterDefaultVerdier"], "SkoleAarID": [aar["id"]], "TrinnID": [7, 8],
                   "KjoennID": KJONN, "EierformID": [-10], "ProevetypeID": [1, 2, 3],
-                  "VisAntallRaderDeltatt": [1], "VisMestringsnivaafordeling": [0],
-                  "VisDeltakelsestatusfordeling": [0], "VisMaaltall": [0]}
+                  "VisAntallRaderDeltatt": [1], "VisMestringsnivaafordeling": [1],
+                  "VisDeltakelsestatusfordeling": [1], "VisMaaltall": [0]}
         hoder, rader = rapport_pivot(side, filtre, "**")
         # Prøvetype og trinn står i kolonnehodet; dimensjoner() i vgs-scriptet kjenner dem ikke.
         biter = gsk_smelt_np(hoder, rader, enheter)
@@ -100,7 +103,11 @@ TRINN = {"8. årstrinn", "9. årstrinn"}
 
 def gsk_smelt_np(hoder, rader, enheter) -> list[dict]:
     from hent_udir_vgs_oslo import skoleaar_navn, tall
-    maal = {"Skalapoeng": "skalapoeng", "Usikkerhet": "usikkerhet", "Antall elever deltatt": "antall"}
+    # Mestringsnivå og deltakelse er prosent av elevene. Guttenes forsprang i regning
+    # ligger i toppen (nivå 5), og fritak er testet som forklaring — derfor med.
+    maal = {"Skalapoeng": "skalapoeng", "Usikkerhet": "usikkerhet", "Antall elever deltatt": "antall",
+            **{f"Mestringsnivå {i}": f"nivaa{i}_pst" for i in range(1, 6)},
+            "Fritatt": "fritatt_pst", "Ikke deltatt": "ikke_deltatt_pst"}
     ut = []
     for r in rader:
         enhet = gsk.klassifiser(r["id"].split("."), enheter)
@@ -128,6 +135,45 @@ def gsk_smelt_np(hoder, rader, enheter) -> list[dict]:
             post[maal[hode[-1]]] = v
             post["prikket"] = post["prikket"] or p
         ut += [p for p in grupper.values() if p["prikket"] or p.get("skalapoeng") is not None]
+    return ut
+
+
+def hent_eksamensfordeling() -> list[dict]:
+    """Karakterfordeling på skriftlig eksamen i matte og norsk, 10. trinn (LK20), etter kjønn.
+
+    Brukes til å regne om kjønnsforskjellen på eksamen til standardavvik, så den
+    kan sammenlignes med nasjonale prøvene (sd 10 skalapoeng). Bare land og Oslo.
+    """
+    side = rapportside("GSK_GSKarakterer")
+    fv = enhetsoppslag(side)
+    enheter = {e["id"]: e for e in fv["EnhetID"]}
+    fag = {f["id"]: f for f in fv["FagID"] if f["kode"] in ("MAT0015", "NOR0218")}
+    maal = {"Snittkarakter": "snitt", "Antall elever": "antall",
+            **{f"Karakteren {i}": f"k{i}_pst" for i in range(1, 7)}}
+    ut = []
+    for tid in fv["TidID"]:
+        if tid["id"] < 202306:             # LK20-kodene finnes fra 2022-23
+            continue
+        filtre = {**side["filterDefaultVerdier"], "FagID": list(fag), "TidID": [tid["id"]],
+                  "KaraktertypeID": [3], "KjoennID": KJONN, "EierformID": [-10],
+                  "VisAntallPersoner": [1], "VisKarakterfordeling": [1]}
+        hoder, rader = rapport_pivot(side, filtre, "**")
+        for r in rader:
+            deler = r["id"].split(".")
+            enhet = gsk.klassifiser(deler[1:], enheter) if len(deler) > 1 else None
+            if enhet is None or enhet["nivaa"] == "skole":
+                continue
+            grupper: dict = {}
+            for hode, verdi in zip(hoder, r["data"]):
+                from hent_udir_vgs_oslo import skoleaar_navn, tall
+                post = grupper.setdefault(hode[3], {"skoleaar": skoleaar_navn(hode[0]), **enhet,
+                                                    "navn": r["navn"].strip(), "kjonn": hode[3],
+                                                    "fag_kode": fag[int(deler[0])]["kode"]})
+                if hode[-1] not in maal:
+                    raise SystemExit(f"Ukjent mål {hode[-1]!r} i karakterfordelingen")
+                post[maal[hode[-1]]] = tall(verdi)[0]
+            ut += [p for p in grupper.values() if p.get("snitt") is not None]
+        print(f"  eksamensfordeling {tid['navn']}", flush=True)
     return ut
 
 
@@ -159,11 +205,13 @@ def main() -> int:
     vgs = hent_vgs_matte()
     print("Nasjonale prøver 8. og 9. trinn …")
     np_ = hent_np()
+    print("Karakterfordeling på eksamen, 10. trinn …")
+    eksfordeling = hent_eksamensfordeling()
     prikk = sum(1 for r in vgs if r["nivaa"] == "skole" and r["kjonn"] != "Alle kjønn" and r["prikket"])
     print(f"\nKontrolltall: vgs {len(vgs)} rader ({prikk} prikkede skole×kjønn-celler), np {len(np_)} rader")
     kontroller(vgs, np_)
     args.ut.mkdir(parents=True, exist_ok=True)
-    tabeller = {"vgs_matte": vgs, "np": np_}
+    tabeller = {"vgs_matte": vgs, "np": np_, "eksamensfordeling": eksfordeling}
     pakke = {"meta": {"kilde": "Utdanningsdirektoratet, Statistikkbanken", "lisens": "NLOD 2.0",
                       "kilde_url": "https://www.udir.no/tall-og-forskning/statistikk/",
                       "dato_hentet": date.today().isoformat(), "script": "pipeline/hent_udir_matte.py"},
