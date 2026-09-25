@@ -1,0 +1,261 @@
+{
+ "meta": {
+  "tittel": "Standpunktet som følger skolen",
+  "kilde": "Utdanningsdirektoratet, Statistikkbanken",
+  "kilde_url": "https://www.udir.no/tall-og-forskning/statistikk/statistikk-grunnskole/",
+  "dato_hentet": "2026-09-25",
+  "geografi": "Oslo, ungdomsskoler og videregående skoler",
+  "enhet": "karakterpoeng",
+  "oppdateringsfrekvens": "årlig",
+  "beskrivelse": "Samme eksamen, ulikt standpunkt. Mellom en snill og en streng ungdomsskole i Oslo ligger om lag 3,8 grunnskolepoeng — og det er de poengene elevene konkurrerer med om plass på videregående.",
+  "utkast": true
+ },
+ "visninger": {
+  "hero": {
+   "type": "hero",
+   "eyebrow": "Karakterer i Oslo",
+   "sporsmal": "Hva er et standpunkt verdt — og kommer det an på skolen?",
+   "rader": [
+    {
+     "etikett": "grunnskolepoeng skiller en snill og en streng ungdomsskole",
+     "verdi": "≈ 3,8",
+     "detalj": "10. mot 90. persentil, justert for elevgrunnlaget"
+    },
+    {
+     "etikett": "karakterpoeng strengere enn landet",
+     "verdi": "0,13",
+     "detalj": "Oslo samlet, standpunkt mot eksamen 2022–25"
+    },
+    {
+     "etikett": "ungdomsskoler sammenlignet",
+     "verdi": "58",
+     "detalj": "minst 60 eksamensbesvarelser 2022–25"
+    }
+   ],
+   "fotnote": "Skriftlig eksamen i norsk, matematikk og engelsk, 10. trinn."
+  },
+  "oslo_landet": {
+   "type": "tidslinje",
+   "tittel": "Oslo har mindre gap enn landet i alle de åtte eksamensårene siden 2016",
+   "undertekst": "Standpunkt minus skriftlig eksamen, 10. trinn, snitt av norsk, matematikk og engelsk. Eksamen ble avlyst 2020–2022; linjene trekkes over hullet.",
+   "enhet": "karakterpoeng",
+   "x_navn": "Skoleår (vår)",
+   "serier": [
+    {
+     "navn": "Hele landet",
+     "punkter": [
+      [
+       2016,
+       0.27
+      ],
+      [
+       2017,
+       0.23
+      ],
+      [
+       2018,
+       0.27
+      ],
+      [
+       2019,
+       0.27
+      ],
+      [
+       2023,
+       0.47
+      ],
+      [
+       2024,
+       0.4
+      ],
+      [
+       2025,
+       0.27
+      ],
+      [
+       2026,
+       0.23
+      ]
+     ]
+    },
+    {
+     "navn": "Oslo",
+     "punkter": [
+      [
+       2016,
+       0.17
+      ],
+      [
+       2017,
+       0.17
+      ],
+      [
+       2018,
+       0.03
+      ],
+      [
+       2019,
+       0.2
+      ],
+      [
+       2023,
+       0.33
+      ],
+      [
+       2024,
+       0.27
+      ],
+      [
+       2025,
+       0.13
+      ],
+      [
+       2026,
+       0.07
+      ]
+     ]
+    }
+   ]
+  },
+  "snillest": {
+   "type": "rangering",
+   "tittel": "Snillest: standpunkt høyere enn eksamen tilsier",
+   "undertekst": "Omtrentlige grunnskolepoeng over det elevgrunnlaget tilsier, sammenlignet med en typisk Oslo-skole. Bare skoler der usikkerheten ikke krysser null.",
+   "enhet": "grunnskolepoeng",
+   "rader": [
+    {
+     "navn": "Sagene",
+     "verdi": 2.4,
+     "detalj": "0,32 karakterpoeng; 146 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Sofienberg",
+     "verdi": 2.3,
+     "detalj": "0,30 karakterpoeng; 390 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Nordberg",
+     "verdi": 2.2,
+     "detalj": "0,29 karakterpoeng; 472 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Wang Ung Oslo AS",
+     "verdi": 2.2,
+     "detalj": "0,29 karakterpoeng; 368 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Bjørnsletta",
+     "verdi": 2.1,
+     "detalj": "0,27 karakterpoeng; 313 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Uranienborg",
+     "verdi": 2.1,
+     "detalj": "0,27 karakterpoeng; 264 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Granstangen",
+     "verdi": 2.0,
+     "detalj": "0,27 karakterpoeng; 365 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Stasjonsfjellet",
+     "verdi": 1.9,
+     "detalj": "0,26 karakterpoeng; 276 eksamensbesvarelser 2022–25"
+    }
+   ]
+  },
+  "strengest": {
+   "type": "rangering",
+   "tittel": "Strengest: standpunkt lavere enn eksamen tilsier",
+   "undertekst": "Omtrentlige grunnskolepoeng under det elevgrunnlaget tilsier, sammenlignet med en typisk Oslo-skole. Bare skoler der usikkerheten ikke krysser null.",
+   "enhet": "grunnskolepoeng",
+   "rader": [
+    {
+     "navn": "Rommen",
+     "verdi": 2.4,
+     "detalj": "0,32 karakterpoeng; 154 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Høyenhall",
+     "verdi": 2.2,
+     "detalj": "0,29 karakterpoeng; 210 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Skøyenåsen",
+     "verdi": 2.1,
+     "detalj": "0,28 karakterpoeng; 638 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Hovseter",
+     "verdi": 2.0,
+     "detalj": "0,26 karakterpoeng; 663 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Oppsal",
+     "verdi": 1.9,
+     "detalj": "0,25 karakterpoeng; 161 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Morellbakken",
+     "verdi": 1.8,
+     "detalj": "0,23 karakterpoeng; 364 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Øraker",
+     "verdi": 1.5,
+     "detalj": "0,19 karakterpoeng; 388 eksamensbesvarelser 2022–25"
+    },
+    {
+     "navn": "Hauketo",
+     "verdi": 1.2,
+     "detalj": "0,16 karakterpoeng; 292 eksamensbesvarelser 2022–25"
+    }
+   ]
+  },
+  "vgs": {
+   "type": "kortgalleri",
+   "tittel": "På videregående flytter det seg",
+   "undertekst": "Norsk hovedmål vg3, skriftlig eksamen (obligatorisk for alle) mot standpunkt",
+   "kort": [
+    {
+     "overtittel": "Gap i Oslo 2023–25",
+     "verdi": "0,40",
+     "detalj": "landet: 0,45 karakterpoeng"
+    },
+    {
+     "overtittel": "Spredning mellom skolene",
+     "verdi": "0,21",
+     "detalj": "standardavvik, 28 skoler"
+    },
+    {
+     "overtittel": "Stabilitet 2013–19 → 2023–25",
+     "verdi": "0,01",
+     "detalj": "korrelasjon mellom periodene, 26 skoler"
+    }
+   ]
+  },
+  "metode": {
+   "type": "kortgalleri",
+   "tittel": "Hvor sikkert er dette?",
+   "undertekst": "Kontrollene historien må bestå for å bygges",
+   "kort": [
+    {
+     "overtittel": "Ikke støy",
+     "verdi": "87 %",
+     "detalj": "av skoleforskjellene er større enn eksamenstrekket forklarer"
+    },
+    {
+     "overtittel": "Stabilt over tid",
+     "verdi": "0,32",
+     "detalj": "korrelasjon LK06 → LK20, 51 skoler"
+    },
+    {
+     "overtittel": "Per 0,1 i slakkhet",
+     "verdi": "+0,76",
+     "detalj": "grunnskolepoeng, ved likt eksamensnivå"
+    }
+   ]
+  }
+ }
+}
