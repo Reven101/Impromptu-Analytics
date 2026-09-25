@@ -1,6 +1,6 @@
 # API-atlas — norske åpne datakilder
 
-Et kartlagt og kjørbart atlas over 19 datakilder — 18 offentlige API-er og én
+Et kartlagt og kjørbart atlas over 20 datakilder — 19 offentlige API-er og én
 base som må skrapes — bygget som grunnmur for datahistorier og
 analyseprosjekter. Hver kilde har ett frittstående Python-script i
 `eksempler/` som
@@ -76,6 +76,7 @@ dager. Skjer det, får du en e-post om det, og en knapp for å slå den på.
 | **Valgdirektoratet** | valgresultater ned til kretsnivå | nei | `hent_valgresultater.py` |
 | **Statens vegvesen NVDB** | vegnettet: fartsgrenser, trafikk, bommer | nei | `hent_nvdb_vegobjekter.py` |
 | **IbsenStage** (UiO) | ~25 000 Ibsen-oppsetninger verden over siden 1850-tallet, med medvirkende | nei² | `hent_ibsenstage.py` |
+| **Udir Statistikkbanken** | skolestatistikk per skole: Elevundersøkelsen, nasjonale prøver, grunnskolepoeng, vgs-karakterer, fravær | nei³ | `hent_udir_statistikkbank.py` |
 
 ¹ krever identifiserende header (User-Agent hos MET, ET-Client-Name hos
 Entur) — scriptene setter den, med kontakt@impromptu.no som avsender.
@@ -84,6 +85,11 @@ Entur) — scriptene setter den, med kontakt@impromptu.no som avsender.
 paginert HTML-tabell som må parses, og en lisens (CC BY-NC-SA 4.0) som er
 strengere enn resten av atlaset. Les scriptet før du henter derfra: strukturen
 er observert, ikke dokumentert, og den har allerede endret seg én gang.
+
+³ **delvis udokumentert.** Bare Elevundersøkelsen ligger i det åpne eksport-API-et.
+Resten hentes fra rapport-endepunktene som statistikkbankens egne nettsider
+kaller, og Udir sier at API-et «vil endres uten varsel». Rapportkodene og
+fellene står i scriptet.
 
 ³ **omvendt attribusjonsregel.** Nordic Statistics er hverken NLOD eller CC.
 Gjengir du tallene som de er, skal du oppgi «Source: Nordic Statistics
