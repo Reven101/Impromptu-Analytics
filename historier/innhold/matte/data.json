@@ -14,25 +14,20 @@
   "hero": {
    "type": "hero",
    "eyebrow": "Matematikk i Oslo",
-   "sporsmal": "Hvem velger teoretisk matte — når alle er like gode?",
+   "sporsmal": "Like gode på matteeksamen i tiende. Hvem velger teoretisk matte?",
    "rader": [
     {
-     "etikett": "jenter og gutter, matteeksamen 10. trinn",
-     "verdi": "4,0 / 3,9",
-     "detalj": "Oslo 2024-25, snittkarakter"
+     "etikett": "jenter",
+     "verdi": "4 av 10",
+     "detalj": "velger teoretisk matte (1T)"
     },
     {
-     "etikett": "av jentene velger teoretisk matte",
-     "verdi": "41,4 %",
-     "detalj": "Oslo 2024-25, 1T av 1T + 1P"
-    },
-    {
-     "etikett": "av guttene",
-     "verdi": "52,4 %",
-     "detalj": "samme år, samme byen"
+     "etikett": "gutter",
+     "verdi": "5 av 10",
+     "detalj": "velger teoretisk matte (1T)"
     }
    ],
-   "fotnote": "Studieforberedende utdanningsprogram, vg1."
+   "fotnote": "Eksamenssnitt i matematikk, 10. trinn: jenter 4,0, gutter 3,9. Valget: studieforberedende vg1. Oslo, 2024-25."
   },
   "eksamen_10": {
    "type": "tidslinje",

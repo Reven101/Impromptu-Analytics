@@ -287,20 +287,18 @@ def main() -> None:
         "visninger": {
             "hero": {
                 "type": "hero",
-                "eyebrow": "Karakterer i Oslo",
-                "sporsmal": "Hva er et standpunkt verdt — og kommer det an på skolen?",
+                # Ett tall, sagt som en setning. Den første versjonen hadde tre tall
+                # med fagord (persentil, karakterpoeng, eksamensbesvarelser) og
+                # skremte bort lesere før de kom til teksten som forklarer dem.
+                "eyebrow": "Ungdomsskolene i Oslo",
+                "sporsmal": "To elever gjør det like godt på eksamen. Får de samme standpunkt?",
                 "rader": [
-                    {"etikett": "grunnskolepoeng skiller en snill og en streng ungdomsskole",
-                     "verdi": f"≈ {komma(spenn_gsp)}",
-                     "detalj": "10. mot 90. persentil, justert for elevgrunnlaget"},
-                    {"etikett": "karakterpoeng strengere enn landet",
-                     "verdi": komma(abs(oslo_rel), 2),
-                     "detalj": "Oslo samlet, standpunkt mot eksamen 2022–25"},
-                    {"etikett": "ungdomsskoler sammenlignet",
-                     "verdi": str(len(B)),
-                     "detalj": f"minst {MIN_EKSAMEN} eksamensbesvarelser 2022–25"},
+                    {"etikett": "grunnskolepoeng kan skille dem",
+                     "verdi": f"Nesten {round(spenn_gsp)}",
+                     "detalj": "bare fordi de går på hver sin ungdomsskole"},
                 ],
-                "fotnote": "Skriftlig eksamen i norsk, matematikk og engelsk, 10. trinn.",
+                "fotnote": (f"Forskjellen mellom en romslig og en streng skole blant {len(B)} ungdomsskoler "
+                            "i Oslo, 2022–25. Grunnskolepoengene avgjør hvem som kommer inn hvor på videregående."),
             },
             "oslo_landet": {
                 "type": "tidslinje",

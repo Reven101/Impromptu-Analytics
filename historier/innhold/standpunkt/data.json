@@ -13,26 +13,16 @@
  "visninger": {
   "hero": {
    "type": "hero",
-   "eyebrow": "Karakterer i Oslo",
-   "sporsmal": "Hva er et standpunkt verdt — og kommer det an på skolen?",
+   "eyebrow": "Ungdomsskolene i Oslo",
+   "sporsmal": "To elever gjør det like godt på eksamen. Får de samme standpunkt?",
    "rader": [
     {
-     "etikett": "grunnskolepoeng skiller en snill og en streng ungdomsskole",
-     "verdi": "≈ 3,8",
-     "detalj": "10. mot 90. persentil, justert for elevgrunnlaget"
-    },
-    {
-     "etikett": "karakterpoeng strengere enn landet",
-     "verdi": "0,13",
-     "detalj": "Oslo samlet, standpunkt mot eksamen 2022–25"
-    },
-    {
-     "etikett": "ungdomsskoler sammenlignet",
-     "verdi": "58",
-     "detalj": "minst 60 eksamensbesvarelser 2022–25"
+     "etikett": "grunnskolepoeng kan skille dem",
+     "verdi": "Nesten 4",
+     "detalj": "bare fordi de går på hver sin ungdomsskole"
     }
    ],
-   "fotnote": "Skriftlig eksamen i norsk, matematikk og engelsk, 10. trinn."
+   "fotnote": "Forskjellen mellom en romslig og en streng skole blant 58 ungdomsskoler i Oslo, 2022–25. Grunnskolepoengene avgjør hvem som kommer inn hvor på videregående."
   },
   "oslo_landet": {
    "type": "tidslinje",

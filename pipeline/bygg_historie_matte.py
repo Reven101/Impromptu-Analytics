@@ -200,17 +200,18 @@ def main() -> None:
         "visninger": {
             "hero": {
                 "type": "hero",
+                # Brøk i tideler leses raskere enn desimalprosent; de nøyaktige
+                # tallene står i teksten.
                 "eyebrow": "Matematikk i Oslo",
-                "sporsmal": "Hvem velger teoretisk matte — når alle er like gode?",
+                "sporsmal": "Like gode på matteeksamen i tiende. Hvem velger teoretisk matte?",
                 "rader": [
-                    {"etikett": "jenter og gutter, matteeksamen 10. trinn", "verdi": f"{komma(e_oslo_j)} / {komma(e_oslo_g)}",
-                     "detalj": f"Oslo {SISTE}, snittkarakter"},
-                    {"etikett": "av jentene velger teoretisk matte", "verdi": f"{komma(a1[('Oslo', 'Jente')])} %",
-                     "detalj": f"Oslo {SISTE}, 1T av 1T + 1P"},
-                    {"etikett": "av guttene", "verdi": f"{komma(a1[('Oslo', 'Gutt')])} %",
-                     "detalj": "samme år, samme byen"},
+                    {"etikett": "jenter", "verdi": f"{round(a1[('Oslo', 'Jente')] / 10)} av 10",
+                     "detalj": "velger teoretisk matte (1T)"},
+                    {"etikett": "gutter", "verdi": f"{round(a1[('Oslo', 'Gutt')] / 10)} av 10",
+                     "detalj": "velger teoretisk matte (1T)"},
                 ],
-                "fotnote": "Studieforberedende utdanningsprogram, vg1.",
+                "fotnote": (f"Eksamenssnitt i matematikk, 10. trinn: jenter {komma(e_oslo_j)}, gutter {komma(e_oslo_g)}. "
+                            f"Valget: studieforberedende vg1. Oslo, {SISTE}."),
             },
             "eksamen_10": {
                 "type": "tidslinje",
