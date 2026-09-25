@@ -2,7 +2,8 @@
 
 Kjøring (etter hent_udir_ungdomsskole_oslo.py):
 
-    python pipeline/hent_skolested_oslo.py
+    python pipeline/hent_skolested_oslo.py               # ungdomsskolene
+    python pipeline/hent_skolested_oslo.py --barneskole  # barneskolene (5. trinn)
 
 Leser skolelista fra impromptu_raadata/udir/ungdomsskole_oslo_karakterer.csv og
 skriver impromptu_raadata/udir/ungdomsskoler_sted.csv:
@@ -62,7 +63,10 @@ def koordinater(gate: str, postnummer: str):
 
 
 def main() -> int:
-    with open(RAADATA_DIR / "ungdomsskole_oslo_karakterer.csv", encoding="utf-8") as f:
+    barneskole = "--barneskole" in sys.argv
+    kilde = "barneskole_oslo_np.csv" if barneskole else "ungdomsskole_oslo_karakterer.csv"
+    utfil = "barneskoler_sted.csv" if barneskole else "ungdomsskoler_sted.csv"
+    with open(RAADATA_DIR / kilde, encoding="utf-8") as f:
         skoler = {}
         for r in csv.DictReader(f):
             if r["nivaa"] == "skole":
@@ -82,7 +86,7 @@ def main() -> int:
     naermeste = [f"{r['navn']} → {r['bydel']}" for r in ut if r["bydel_metode"] == "nærmeste"]
     if len(uten) > len(ut) * 0.2:
         raise SystemExit(f"{len(uten)} av {len(ut)} skoler uten bydel — har Brreg eller Kartverket endret seg?")
-    with open(RAADATA_DIR / "ungdomsskoler_sted.csv", "w", newline="", encoding="utf-8") as f:
+    with open(RAADATA_DIR / utfil, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(ut[0]))
         w.writeheader()
         w.writerows(ut)

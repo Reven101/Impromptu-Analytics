@@ -26,6 +26,24 @@ Skolenes snitt følger bydelens utdanningsnivå tett. Korrelasjonen mellom andel
 
 Indre øst er unntaket som bekrefter regelen. Gamle Oslo, Grünerløkka og Sagene har like mange høyt utdannede som vestkanten, men skolene ligger midt på treet. Mange av de høyt utdannede i indre by har ikke barn i skolealder, og bydelssnittet sier derfor mindre om hvem som faktisk sitter i klasserommet.
 
+## Allerede i femte klasse
+
+Hvis forskjellene er der når elevene begynner på ungdomsskolen, må de ha oppstått før. Vi har gjort samme regnestykke for 103 offentlige barneskoler, med de nasjonale prøvene i femte klasse de fire siste årene.
+
+[[viz:femte]]
+
+Mønsteret er det samme. Barneskolene i ytre vest ligger tett, med en spredning på 1,1 poeng i ytre vest og 2,9 i ytre øst. Bydelens utdanningsnivå følger skolenes snitt nesten like tett som på ungdomsskolen; korrelasjonen er 0,82. Og avstanden mellom områdene er den samme i femte og åttende klasse: ytre vest ligger 3,9 skalapoeng over Oslo-snittet i femte klasse og 4,4 i åttende, ytre øst 2,1 under i femte og 2,0 i åttende. Tre år på mellomtrinnet flytter ingenting.
+
+## Femten år med samme mønster
+
+Nasjonale prøver fikk ny skala i 2022, så prøvetallene går ikke lenger tilbake. Men grunnskolepoengene, snittet av karakterene elevene går ut av tiende klasse med, finnes for hver skole siden 2008.
+
+[[viz:femten_aar]]
+
+Østkanten har sprikt mer enn vestkanten i 19 av 19 år. Og skolene holder plassen sin: korrelasjonen mellom en skoles grunnskolepoeng i 2012–2016 og i 2022–2026 er 0,88. Skolene som lå lavt for ti år siden, ligger lavt i dag.
+
+Forskjellen er mindre i grunnskolepoeng enn på prøvene. Karakterer skiller dårligere enn prøver, og standpunkt settes av lærere som vurderer mot egne elever. Men den forsvinner aldri.
+
 ## Vendingen: skolen gjør ikke forskjellen
 
 Så langt kunne dette vært en historie om at østkantskolene er dårligere. Det er det ikke.

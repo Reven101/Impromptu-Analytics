@@ -74,6 +74,63 @@ def komma(v: float, des: int = 1) -> str:
     return f"{v:.{des}f}".replace(".", ",").replace("-", "−")
 
 
+def sd(x: list[float]) -> float:
+    return statistics.stdev(x) if len(x) > 1 else 0.0
+
+
+def pearson(x: list[float], y: list[float]) -> float:
+    mx, my = statistics.fmean(x), statistics.fmean(y)
+    return (sum((a - mx) * (b - my) for a, b in zip(x, y))
+            / (sum((a - mx) ** 2 for a in x) * sum((b - my) ** 2 for b in y)) ** 0.5)
+
+
+def barneskolene() -> list[dict]:
+    """Nasjonale prøver 5. trinn, regning og lesing, offentlige barneskoler, alle år.
+
+    Samme utvalgsregler som for ungdomsskolene. Skalaen på 5. trinn er en egen
+    skala (snitt 50, sd 10), så sammenligningen med 8. trinn gjøres som avvik fra
+    Oslo-snittet i skalapoeng, ikke i skoleår.
+    """
+    sted = {r["orgnr"]: r for r in les(UDIR / "barneskoler_sted.csv")}
+    sw: dict = defaultdict(lambda: [0.0, 0.0])
+    for r in les(UDIR / "barneskole_oslo_np.csv"):
+        if (r["nivaa"] == "skole" and r["eierform"] == "Offentlig skole" and r["prove"] in PROVER
+                and r["skalapoeng"] and r["antall"]):
+            sw[r["orgnr"]][0] += tall(r["skalapoeng"]) * tall(r["antall"])
+            sw[r["orgnr"]][1] += tall(r["antall"])
+    skoler = []
+    for o, (w, n) in sw.items():
+        omr = (sted.get(o) or {}).get("omraade")
+        if omr and omr != "sentrum" and n / len(PROVER) >= MIN_ELEVER:
+            skoler.append({"np5": w / n, "omraade": omr, "bydel": sted[o]["bydel"]})
+    return skoler
+
+
+def grunnskolepoeng_over_tid(orgnr: set, omraade: dict) -> dict:
+    """Spredning i grunnskolepoeng mellom de samme skolene, vest mot øst/sør, hvert år."""
+    per: dict = defaultdict(lambda: defaultdict(list))
+    skole_aar: dict = defaultdict(dict)
+    for r in les(UDIR / "ungdomsskole_oslo_grunnskolepoeng.csv"):
+        if (r["nivaa"] == "skole" and r["orgnr"] in orgnr and r["eierform"] == "Alle eierformer"
+                and r["kjonn"] == "Alle kjønn" and r["poeng"]):
+            side = "vest" if "vest" in omraade[r["orgnr"]] else "øst"
+            per[r["skoleaar"]][side].append(tall(r["poeng"]))
+            skole_aar[r["orgnr"]][r["skoleaar"]] = tall(r["poeng"])
+    serier = {"vest": [], "øst": []}
+    for aar in sorted(per):
+        if len(per[aar]["vest"]) >= 5 and len(per[aar]["øst"]) >= 5:
+            for side in serier:
+                serier[side].append([int(aar[:4]) + 1, round(sd(per[aar][side]), 2)])
+    tidlig = ["2011-12", "2012-13", "2013-14", "2014-15", "2015-16"]
+    sent = ["2021-22", "2022-23", "2023-24", "2024-25", "2025-26"]
+    par = [(statistics.fmean(d[a] for a in tidlig if a in d), statistics.fmean(d[a] for a in sent if a in d))
+           for d in skole_aar.values() if any(a in d for a in tidlig) and any(a in d for a in sent)]
+    return {"serier": serier, "r_stabil": pearson([a for a, _ in par], [b for _, b in par]),
+            "n_stabil": len(par),
+            "aar_ost_mer": sum(o[1] > v[1] for v, o in zip(serier["vest"], serier["øst"])),
+            "aar_totalt": len(serier["vest"])}
+
+
 def main() -> None:
     np_rader = [r for r in les(UDIR / "matte_oslo_np.csv")
                 if r["kjonn"] == "Alle kjønn" and r["prove"] in PROVER and r["skalapoeng"]]
@@ -176,6 +233,25 @@ def main() -> None:
              / (sum((a - mx) ** 2 for a in xs) * sum((b - my) ** 2 for b in ys)) ** 0.5)
     lavest = min(bydsnitt, key=bydsnitt.get)
 
+    # --- Barneskolene (5. trinn) og grunnskolepoeng over 15 år
+    b5 = barneskolene()
+    oslo5 = statistics.fmean(s_["np5"] for s_ in b5)
+    oslo8 = statistics.fmean(s_["np8"] for s_ in skoler.values())
+    avvik = {o: (statistics.fmean(s_["np5"] for s_ in b5 if s_["omraade"] == o) - oslo5,
+                 statistics.fmean(s_["np8"] for s_ in skoler.values() if s_["omraade"] == o) - oslo8)
+             for o in ("ytre vest", "indre vest", "indre øst", "sør", "ytre øst")}
+    sd5_vest = sd([s_["np5"] for s_ in b5 if s_["omraade"] == "ytre vest"])
+    sd5_ost = sd([s_["np5"] for s_ in b5 if s_["omraade"] == "ytre øst"])
+    if not sd5_vest < sd5_ost:
+        raise SystemExit("Barneskolene i ytre vest spriker ikke mindre enn i ytre øst — skriv om seksjonen.")
+    b5_byd: dict = defaultdict(list)
+    for s_ in b5:
+        b5_byd[s_["bydel"]].append(s_["np5"])
+    r_utd5 = pearson([utd[b] for b in b5_byd], [statistics.fmean(x) for x in b5_byd.values()])
+    gsp = grunnskolepoeng_over_tid(set(skoler), {o: s_["omraade"] for o, s_ in skoler.items()})
+    if gsp["aar_ost_mer"] < gsp["aar_totalt"] * 0.8:
+        raise SystemExit(f"Øst spriker mer bare i {gsp['aar_ost_mer']} av {gsp['aar_totalt']} år — skriv om seksjonen.")
+
     ytre_vest, ytre_ost = stat["ytre vest"], stat["ytre øst"]
     tall_i_teksten = {
         "spenn_vest": f"{komma(ytre_vest['spenn_aar'])} skoleår",
@@ -189,6 +265,14 @@ def main() -> None:
         "loft_vest": f"{komma(loft_vest, 2)}",
         "loft_ost": f"{komma(loft_ost, 2)}",
         "ganger": f"{round(ytre_ost['sd'] / ytre_ost['stoy'])} ganger",
+        "n_barneskoler": f"{len(b5)} offentlige barneskoler",
+        "sd5": f"{komma(sd5_vest)} poeng i ytre vest og {komma(sd5_ost)} i ytre øst",
+        "avvik_vest": (f"{komma(avvik['ytre vest'][0])} skalapoeng over Oslo-snittet i femte klasse og "
+                       f"{komma(avvik['ytre vest'][1])} i åttende"),
+        "avvik_ost": f"{komma(-avvik['ytre øst'][0])} under i femte og {komma(-avvik['ytre øst'][1])} i åttende",
+        "r_utd5": f"{komma(r_utd5, 2)}",
+        "gsp_aar": f"{gsp['aar_ost_mer']} av {gsp['aar_totalt']} år",
+        "gsp_r": f"{komma(gsp['r_stabil'], 2)}",
     }
 
     def aar_foran(x):   # skoleår foran den svakeste offentlige skolen i Oslo
@@ -250,6 +334,31 @@ def main() -> None:
                            "detalj": f"{len(byd[b])} skoler; {komma(utd[b])} % med høyere utdanning"}
                           for b, x in bydsnitt.items()],
             },
+            "femte": {
+                "type": "kortgalleri",
+                "tittel": "Forskjellen er der allerede i femte klasse",
+                "undertekst": "Skalapoeng over eller under Oslo-snittet, offentlige skoler, regning og lesing",
+                "kort": [
+                    {"overtittel": "Ytre vest, 5. klasse", "verdi": f"+{komma(avvik['ytre vest'][0])}",
+                     "detalj": f"{sum(s_['omraade'] == 'ytre vest' for s_ in b5)} barneskoler"},
+                    {"overtittel": "Ytre vest, 8. klasse", "verdi": f"+{komma(avvik['ytre vest'][1])}",
+                     "detalj": f"{ytre_vest['n']} ungdomsskoler"},
+                    {"overtittel": "Ytre øst, 5. klasse", "verdi": komma(avvik["ytre øst"][0]),
+                     "detalj": f"{sum(s_['omraade'] == 'ytre øst' for s_ in b5)} barneskoler"},
+                    {"overtittel": "Ytre øst, 8. klasse", "verdi": komma(avvik["ytre øst"][1]),
+                     "detalj": f"{ytre_ost['n']} ungdomsskoler"},
+                ],
+            },
+            "femten_aar": {
+                "type": "tidslinje",
+                "tittel": f"Østkanten har sprikt mer enn vestkanten i {gsp['aar_ost_mer']} av {gsp['aar_totalt']} år",
+                "undertekst": ("Spredning i grunnskolepoeng mellom de samme offentlige ungdomsskolene "
+                               "(standardavvik, poeng). Vest = indre og ytre vest; øst = øst og sør."),
+                "enhet": "poeng",
+                "x_navn": "Skoleår (vår)",
+                "serier": [{"navn": "Øst og sør", "punkter": gsp["serier"]["øst"]},
+                           {"navn": "Vest", "punkter": gsp["serier"]["vest"]}],
+            },
             "loftet": {
                 "type": "kortgalleri",
                 "tittel": "Ungdomsskolen løfter like mye overalt",
@@ -280,6 +389,9 @@ def main() -> None:
     ut.mkdir(parents=True, exist_ok=True)
     (ut / "data.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
+    print(f"5. trinn: {len(b5)} skoler, sd vest {sd5_vest:.2f} øst {sd5_ost:.2f}, r_utd {r_utd5:.2f}; avvik {avvik}")
+    print(f"Grunnskolepoeng: øst mer i {gsp['aar_ost_mer']}/{gsp['aar_totalt']} år, "
+          f"stabilitet r={gsp['r_stabil']:.2f} (n={gsp['n_stabil']})")
     print(f"Vekst per skoleår: {vekst:.2f} | Oslo høyere utdanning {oslo_utd:.1f} % | r(utdanning, skolesnitt) = {r_utd:.2f}")
     for o, s in sorted(stat.items(), key=lambda x: x[1]["snitt"]):
         print(f"  {o:<11} n={s['n']:>2} snitt {s['snitt']:.1f} sd {s['sd']:.2f} støy {s['stoy']:.2f} spenn {s['spenn_aar']:.2f} år")
